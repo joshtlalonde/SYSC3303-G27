@@ -1,6 +1,9 @@
 public class Scheduler {
 	
     private User_input user_input;
+
+	private int curr_floor;
+	private Boolean direction_up;
 	
 	public synchronized void put(User_input input) {
 		while (user_input != null) {
@@ -13,7 +16,7 @@ public class Scheduler {
 		}
 		
 		// Set the user_input to the one that was read by the floor
-        	user_input = input;
+        user_input = input;
 		// Notify Chefs that there are ingredients on the plate
 		notifyAll();
 	}
@@ -27,6 +30,22 @@ public class Scheduler {
                 return null;
             }
 		}
+
+		System.out.println(Thread.currentThread().getName() + " is moving to floor " + user_input.getFloor() + " to pick up user");
+		// Sleep for travel time
+		try {
+			Thread.sleep(1000); 
+		} catch (InterruptedException e) {}
+		
+		System.out.println(Thread.currentThread().getName() + " is moving user to floor " + user_input.getCar_button() + " to drop off user");
+		// Sleep for travel time
+		try {
+			Thread.sleep(1000); 
+		} catch (InterruptedException e) {}
+
+		// Update the schedulers known information
+		curr_floor = user_input.getCar_button();
+		direction_up = user_input.getFloor_button();
 		
 		// Notify Agent that the plate is empty
 		notifyAll();
