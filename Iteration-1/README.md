@@ -36,3 +36,7 @@ Elevator simply takes information from the scheduler using its get() method.
 ## Sanya
 
 ## Partha
+
+# Setup and Test Instructions
+Download the `Elevator.java`, `Floor.java`, and `Scheduler.java` files and open them within a java project on eclipse
+Run Eclipse from the `Scheduler.java` file to start the main program within that class
