@@ -31,7 +31,7 @@ Elevator simply takes information from the scheduler using its get() method.
 
 ## Sanskar
 
-## Jacob
+## Jakob
 
 ## Sanya
 
