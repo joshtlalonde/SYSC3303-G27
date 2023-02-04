@@ -30,7 +30,9 @@ Elevator simply takes information from the scheduler using its get() method.
   - Wrote the file_to_user() within Floor 
 
 ## Sanskar
-
+  - Wrote the Elevator class
+  - Made the Readme file
+  
 ## Jakob
 
 ## Sanya
