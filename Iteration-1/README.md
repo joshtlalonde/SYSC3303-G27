@@ -33,6 +33,9 @@ Elevator simply takes information from the scheduler using its get() method.
 ## Sanskar
 
 ## Jakob
+  - Wrote the put() function within the Scheduler. 
+  - Wrote the main function within the Scheduler.
+  - Debugged and tested files.
 
 ## Sanya
 
