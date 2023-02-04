@@ -27,7 +27,7 @@ Elevator simply takes information from the scheduler using its get() method.
 # Responsibilities
 ## Josh
   - Wrote the get() Function within the Scheduler. 
-  - Wrote the csv_to_user() within Floor 
+  - Wrote the file_to_user() within Floor 
 
 ## Sanskar
 
