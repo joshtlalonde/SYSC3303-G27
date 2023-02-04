@@ -42,6 +42,8 @@ Elevator simply takes information from the scheduler using its get() method.
 ## Sanya : 101205395
 
 ## Partha : 101191302
+  - Wrote the Floor class
+  - Wrote the User_input class
 
 # Setup and Test Instructions
 Download the `Elevator.java`, `Floor.java`, and `Scheduler.java` files and open them within a java project on eclipse
