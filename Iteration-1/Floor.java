@@ -15,7 +15,7 @@ public class Floor implements Runnable {
 		//LocalTime t = LocalTime.parse(words[0], DateTimeFormatter.ISO_LOCAL_TIME);
 		String t = words[0];
 		int f = Integer.parseInt(words[1]);
-		Boolean fb = Boolean.parseBoolean(words[2]);
+		Boolean fb = words[2].toLowerCase().equals("up") ? true : false;
 		int cb = Integer.parseInt(words[3]);
 
 		// Create new user
