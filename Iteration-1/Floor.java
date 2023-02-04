@@ -8,7 +8,7 @@ public class Floor implements Runnable {
 		this.scheduler = scheduler;	
 	}
 	
-	public User_input csv_to_user(String line) {
+	public User_input file_to_user(String line) {
 		String[] words = line.split(",");
 		
 		// Convert strings to their appropriate types
@@ -31,7 +31,7 @@ public class Floor implements Runnable {
 			reader = new BufferedReader(new FileReader("../floor_input.txt"));
 			
 			while((line = reader.readLine()) != null) {
-				User_input user_input = csv_to_user(line);
+				User_input user_input = file_to_user(line);
 				System.out.println(Thread.currentThread().getName() + " got " + user_input + " from the csv file");
 
 				// Puts the user_input into the scheduler
