@@ -4,7 +4,7 @@
 - Floor.java
 - elevator.java
 - Scheduler.java
-- floor_input.csv
+- floor_input.txt
 - UML-diagrams
 
 In-depth description about each file and their roles:
