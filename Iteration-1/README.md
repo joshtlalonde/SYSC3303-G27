@@ -25,21 +25,23 @@ The scheduler is the brain of the program. Its function is to take user inputs t
 Elevator simply takes information from the scheduler using its get() method. 
 
 # Responsibilities
-## Josh
+## Josh : 101109655
   - Wrote the get() Function within the Scheduler. 
   - Wrote the file_to_user() within Floor 
   - Worked on ensuring the integration of Floor and Elevator into the Scheduler subsystem
 
-## Sanskar
-
-## Jakob
+## Sanskar : 101189876
+  - Wrote the Elevator class and file
+  - Made and completed the Readme file
+  - Tested program files
+## Jakob : 101201314
   - Wrote the put() function within the Scheduler. 
   - Wrote the main function within the Scheduler.
   - Debugged and tested files.
 
-## Sanya
+## Sanya : 101205395
 
-## Partha
+## Partha : 101191302
 
 # Setup and Test Instructions
 Download the `Elevator.java`, `Floor.java`, and `Scheduler.java` files and open them within a java project on eclipse
