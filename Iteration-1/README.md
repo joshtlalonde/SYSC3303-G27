@@ -12,7 +12,7 @@ In-depth description about each file and their roles:
 ## UML-diagrams 
 Folder containing two UML diagrams (one class and sequence diagram) describing the elevator system and their functions/methods. The class diagram shows the subsystems and their relations to other subsystems in a blue-print/schematic format. The sequence diagram on the other hand shows these subsystems in the context of their lifelines. 
 
-## floor_input.csv
+## floor_input.txt
 This is the file within which the user input is stored, polled and received from the rest of the subsystems. Its format is primarily in a table with columns for Time, Floor, Floor button and Car button. These provide key information that the rest of the subsystems need to schedule and execute. 
 
 ## Floor.java
