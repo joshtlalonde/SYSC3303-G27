@@ -24,7 +24,7 @@ The scheduler is the brain of the program. Its function is to take user inputs t
 ## Elevator.java
 Elevator simply takes information from the scheduler using its get() method. 
 
-# Responsibilities
+# Responsibilities [Make less verbose]
 ## Josh : 101109655
   - Wrote the get() Function within the Scheduler. 
   - Wrote the file_to_user() within Floor 
