@@ -11,14 +11,14 @@
 
 # Format
 ## StateName 
-- Events
+### Events
   - What event makes the system enter this state
   - What event will occur to leave the state
-- Actions (optional)
+### Actions (optional)
   - What action occurs at the entry of the state
   - What action occurs at the exit of the state
   - What action occurs at the transition to the next state
-- Activities (optional)
+### Activities (optional)
   - What activities occur during the execution of this state
 
 Try to come up with as many as possible (at least two)
