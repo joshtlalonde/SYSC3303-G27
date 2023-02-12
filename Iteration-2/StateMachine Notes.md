@@ -1,6 +1,9 @@
 # TODO
 - We should be coming up with some states and how they interact by Monday.
   - That way we can have something to go off of once we're done midterms.
+  - Try to come up with as many states as you can think of 
+    - We need the states of the elevator and scheduler (ex: moving, request)
+    - And what actions/events occur between the states (ex: button click, doors closed)
 - This is my suggestion on how we should continue working in github
   - Create a Branch with your name
   - Make changes to the files as needed
@@ -8,10 +11,6 @@
   - Allow people to write notes on the pull request before it is agreed that it is good
     - Unit tests are a requirement so that should be run with any code that is written before pushed to main
   - Push to main 
-
-Try to come up with as many states as you can think of 
-- We need the states of the elevator and scheduler (ex: moving, request)
-- And what actions/events occur between the states (ex: button click, doors closed)
 
 # Format
 ## StateName 
