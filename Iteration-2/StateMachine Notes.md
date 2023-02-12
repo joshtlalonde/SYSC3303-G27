@@ -9,6 +9,10 @@
     - Unit tests are a requirement so that should be run with any code that is written before pushed to main
   - Push to main 
 
+Try to come up with as many states as you can think of 
+- We need the states of the elevator and scheduler (ex: moving, request)
+- And what actions/events occur between the states (ex: button click, doors closed)
+
 # Format
 ## StateName 
 ### Events
@@ -21,6 +25,4 @@
 ### Activities (optional)
   - What activities occur during the execution of this state
 
-Try to come up with as many as possible (at least two)
-- We need the states of the elevator and scheduler (ex: moving, request)
-- And what actions/events occur between the states (ex: button click, doors closed)
+
