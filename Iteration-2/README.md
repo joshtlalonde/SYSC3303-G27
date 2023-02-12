@@ -13,5 +13,6 @@
   - Should say who is printing it not what thread is printing it
   - Like the scheduler got this message from the elevator (Which would be a thread)
   
- ## New additions
- - Create State Machine Diagram of the elevator and scheduler subsystems and how they interact
+## New additions
+- Create State Machine Diagram of the elevator and scheduler subsystems and how they interact
+  - Refer to [StateMachine Notes](https://github.com/joshtlalonde/SYSC3303-G27/blob/main/Iteration-2/StateMachine%20Notes.md) for how we should get started
