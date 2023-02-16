@@ -35,13 +35,19 @@ public class Scheduler {
 		// Sleep for travel time
 		try {
 			Thread.sleep(1000); 
-		} catch (InterruptedException e) {}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 		
 		System.out.println(Thread.currentThread().getName() + " is moving user to floor " + user_input.getCar_button() + " to drop off user");
 		// Sleep for travel time
 		try {
 			Thread.sleep(1000); 
-		} catch (InterruptedException e) {}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 
 		// Update the schedulers known information
 		curr_floor = user_input.getCar_button();
