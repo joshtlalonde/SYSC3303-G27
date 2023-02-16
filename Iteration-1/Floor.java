@@ -41,7 +41,10 @@ public class Floor implements Runnable {
 				// Sleep for 1 second
 				try {
 					Thread.sleep(1000); 
-				} catch (InterruptedException e) {}
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+         				System.exit(1);
+				}
 			}
 		} catch (FileNotFoundException e) {
 			System.out.println("Failed to open File: " + e);
@@ -55,7 +58,9 @@ public class Floor implements Runnable {
 		try {
 			reader.close();
 		} catch (IOException e) {
+			System.out.print("IO Exception: likely:");
 			System.out.println("Failed to close File: " + e);
+         		System.exit(1);
 		}
 	}
 }
