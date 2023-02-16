@@ -26,7 +26,9 @@ class Elevator implements Runnable
             // Sleep for 1 second
             try {
 	            Thread.sleep(1000); 
-	        } catch (InterruptedException e) {}
+	        } catch (InterruptedException e) {
+			System.exit(1);
+		 }
         }
     }
 }
