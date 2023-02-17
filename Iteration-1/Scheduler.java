@@ -17,7 +17,7 @@ public class Scheduler {
 		
 		// Set the user_input to the one that was read by the floor
         user_input = input;
-		// Notify Chefs that there are ingredients on the plate
+		// Notify elevator that new user has arrived
 		notifyAll();
 	}
 	
@@ -31,7 +31,7 @@ public class Scheduler {
             }
 		}
 
-		System.out.println(Thread.currentThread().getName() + " is moving to floor " + user_input.getFloor() + " to pick up user");
+		System.out.println("Scheduler: Elevator is moving to floor " + user_input.getFloor() + " to pick up user");
 		// Sleep for travel time
 		try {
 			Thread.sleep(1000); 
@@ -40,7 +40,7 @@ public class Scheduler {
 			System.exit(1);
 		}
 		
-		System.out.println(Thread.currentThread().getName() + " is moving user to floor " + user_input.getCar_button() + " to drop off user");
+		System.out.println("Scheduler: Elevator is moving user to floor " + user_input.getCar_button() + " to drop off user");
 		// Sleep for travel time
 		try {
 			Thread.sleep(1000); 
@@ -53,7 +53,7 @@ public class Scheduler {
 		curr_floor = user_input.getCar_button();
 		direction_up = user_input.getFloor_button();
 		
-		// Notify Agent that the plate is empty
+		// Notify Floor that elevator is available
 		notifyAll();
 		// Copy user_input values
 		User_input input = user_input;
