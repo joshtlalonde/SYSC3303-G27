@@ -32,11 +32,11 @@ public class Floor implements Runnable {
 			
 			while((line = reader.readLine()) != null) {
 				User_input user_input = file_to_user(line);
-				System.out.println(Thread.currentThread().getName() + " got " + user_input + " from the csv file");
+				System.out.println("Floor: Retreived " + user_input + " from file");
 
 				// Puts the user_input into the scheduler
 				scheduler.put(user_input);
-				System.out.println(Thread.currentThread().getName() + " put " + user_input + " into the scheduler");
+				System.out.println("Floor: Put " + user_input + " into the scheduler");
 
 				// Sleep for 1 second
 				try {
@@ -67,10 +67,10 @@ public class Floor implements Runnable {
 
 class User_input{
 	//private LocalTime time;
-	private String time;
-	private int floor;
-	private boolean floor_button;
-	private int car_button;
+	private String time; // Timestamp of when button was clicked
+	private int floor; // Floor that button was clicked on
+	private boolean floor_button; // Direction that user wants to go
+	private int car_button; // Button that was clicked in elevator to decide destination floor
 	
 	
 	//Making the constructor for the user input class

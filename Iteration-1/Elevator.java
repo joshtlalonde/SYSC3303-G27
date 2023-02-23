@@ -13,10 +13,10 @@ class Elevator implements Runnable
     public void run()
     {
         while(true){
-            System.out.println(Thread.currentThread().getName() + " is ready on floor " + floor);
+            System.out.println("Elevator: Ready on floor " + floor);
             User_input user_input = scheduler.get();
             
-            System.out.println(Thread.currentThread().getName() + " moved to " + user_input.getCar_button() + " floor");
+            System.out.println("Elevator: Moved to " + user_input.getCar_button() + " floor");
             
             // Set the floor elevator is on
             floor = user_input.getCar_button();
