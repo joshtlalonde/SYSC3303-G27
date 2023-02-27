@@ -27,7 +27,7 @@ class Elevator implements Runnable
         while(true){       
             // TODO: This is only Handling one request at a time for the moment
             // Elevator has arrived at a floor
-            System.out.println("Elevator: Ready on floor " + arrivalSensor.getFloor());
+//            System.out.println("Elevator: Ready on floor " + arrivalSensor.getFloor());
             ArrayList<UserInput> floorRequests = getFloorRequests(arrivalSensor.getFloor(), motor.getDirectionUp());
             ArrayList<UserInput> elevatorRequests = getElevatorRequests(arrivalSensor.getFloor());
 
@@ -69,8 +69,10 @@ class Elevator implements Runnable
             elevatorArrival(arrivalSensor.getFloor(), floorRequests, elevatorRequests);
 
             // Close the door
-            door.close();
-            System.out.println("Elevator: Closing door on floor " + arrivalSensor.getFloor());
+            if (door.getIsOpen()) {
+                door.close();
+                System.out.println("Elevator: Closing door on floor " + arrivalSensor.getFloor());
+            }
 
             // Sleep for 1 sec
             try {
@@ -89,23 +91,22 @@ class Elevator implements Runnable
                 }
             }
 
-            // Start to move the elevator
-            if (arrivalSensor.getFloor() == scheduler.getNumberOfFloors() - 1 || (arrivalSensor.getFloor() - buttonToService.getButtonFloor()) > 0) {
-                // Motor start moving down
-                System.out.println("Elevator: Motor starting to move down");
-                // Set arrival sensor to next floor
-                arrivalSensor.setFloor(arrivalSensor.getFloor() - 1);
-                motor.startMoving(false);
-            } else if (arrivalSensor.getFloor() == 0 || (arrivalSensor.getFloor() - buttonToService.getButtonFloor()) < 0) {
-                // Motor start moving up
-                System.out.println("Elevator: Motor starting to move up");
-                motor.startMoving(true);
-                // Set arrival sensor to next floor
-                arrivalSensor.setFloor(arrivalSensor.getFloor() + 1);
+            if (buttonToService != null) {
+                // Start to move the elevator
+                if (arrivalSensor.getFloor() == scheduler.getNumberOfFloors() - 1 || (arrivalSensor.getFloor() - buttonToService.getButtonFloor()) > 0) {
+                    // Motor start moving down
+                    System.out.println("Elevator: Motor starting to move down");
+                    // Set arrival sensor to next floor
+                    arrivalSensor.setFloor(arrivalSensor.getFloor() - 1);
+                    motor.startMoving(false);
+                } else if (arrivalSensor.getFloor() == 0 || (arrivalSensor.getFloor() - buttonToService.getButtonFloor()) < 0) {
+                    // Motor start moving up
+                    System.out.println("Elevator: Motor starting to move up");
+                    motor.startMoving(true);
+                    // Set arrival sensor to next floor
+                    arrivalSensor.setFloor(arrivalSensor.getFloor() + 1);
+                }
             }
-
-            
-
         }
     }
 
@@ -119,8 +120,10 @@ class Elevator implements Runnable
 
     public void moveToGetUser(int floor) {
         // Close the door
-        door.close();
-        System.out.println("Elevator: Closing door on floor " + floor);
+        if (door.getIsOpen()) {
+            door.close();
+            System.out.println("Elevator: Closing door on floor " + arrivalSensor.getFloor());
+        }
 
         // Sleep for 1 sec
         try {
