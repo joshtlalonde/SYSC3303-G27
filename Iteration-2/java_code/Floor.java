@@ -2,11 +2,11 @@ import java.io.*;
 import java.util.*;
 
 public class Floor implements Runnable {
-	static final int NUMBER_OF_FLOORS = 20; // Number of floors in the building
+	// static final int NUMBER_OF_FLOORS = 20; // Number of floors in the building
 
 	private Scheduler scheduler; // Scheduler that the Floor is associated to
-	private ArrayList<FloorButton> floorButton = new ArrayList<FloorButton>(); // Holds the buttons for each of the floors (up and down)
 	private DirectionLamp directionLamp; // direction lamp for the floor	
+	private ArrayList<FloorButton> floorButton = new ArrayList<FloorButton>(); // Holds the buttons for each of the floors (up and down)
 	
 	/** Constructor for Floor */
 	public Floor(Scheduler scheduler, DirectionLamp directionLamp) {
@@ -14,7 +14,7 @@ public class Floor implements Runnable {
 		this.directionLamp = directionLamp;
 
 		// Create as many buttons as there are floors 
-		for (int i = 0; i < NUMBER_OF_FLOORS; i++) {
+		for (int i = 0; i < scheduler.getNumberOfFloors(); i++) {
 			floorButton.add(new FloorButton(i));
 		}
 	}
@@ -68,9 +68,9 @@ public class Floor implements Runnable {
 	}
 
 	/** Waits until Elevator has arrived, let users on, then reset buttons */
-	public void elevatorArrival() {
+	public void elevatorArrival(int floor) {
 		// Waits until the request is being serviced by the elevator
-		UserInput userInput = scheduler.respondFloorRequest();
+		UserInput userInput = scheduler.respondFloorRequest(floor);
 		System.out.println("Floor: " + userInput + " is being serviced by the elevator");
 
 		// Reset the button depending on what floor it was pressed on
@@ -99,9 +99,7 @@ public class Floor implements Runnable {
 				sendRequest(userInput);
 
 				// Waits until the request is being serviced by the elevator
-				elevatorArrival();
-
-
+				elevatorArrival(userInput.getFloor());
 
 				// Sleep for 1 second
 				try {
@@ -173,10 +171,10 @@ class UserInput{
  *  Each button has a lamp associated to it
  */
 class FloorButton {
-	private boolean buttonState; // Defines the state of the button, On or Off
-	private FloorLamp buttonLamp; // Used to hold the associated lamp of the button
-	private boolean buttonDirectionUp;
-	private int buttonFloor;
+	private boolean buttonState = false; // Defines the state of the button, On or Off
+	private FloorLamp buttonLamp = new FloorLamp(); // Used to hold the associated lamp of the button
+	private boolean buttonDirectionUp = false;
+	private int buttonFloor = 0;
 
 	public FloorButton(int floor) {
 		this.buttonFloor = floor;
@@ -220,26 +218,27 @@ class FloorButton {
 
 /** Used to simulate the lamp for the floor buttons */
 class FloorLamp {
-	private boolean lampState; // Defines the state of the lamp, On or Off
+	private boolean lampState = false; // Defines the state of the lamp, On or Off
 
-	// Defines the state of the lamp, On or Off
+	// Sets lamp state to On
 	public void turnOn() {
 		lampState = true;
 	}
 
-	// Defines the state of the lamp, On or Off
+	// Sets lamp state to Off
 	public void turnOff() {
 		lampState = false;
 	}
 
-	// Defines the state of the lamp, On or Off
+	// Returns the lamp state
 	public boolean getLampState() {
 		return lampState;
 	}
 }
 
 class DirectionLamp {
-	private int floor;
+	private int floor = 0;
+	private boolean directionUp = false;
 
 	public int getFloor() {
 		return floor;
@@ -247,5 +246,13 @@ class DirectionLamp {
 
 	public void setFloor(int floor) {
 		this.floor = floor;
+	}
+
+	public boolean getDirectionUp() {
+		return directionUp;
+	}
+
+	public void setDirectionUp(boolean direction) {
+		this.directionUp = direction;
 	}
 }
