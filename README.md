@@ -39,18 +39,15 @@ Elevator simply takes information from the scheduler using its get() method. The
 Unit tests are essentially used to test the code. This folder contains two files Test.java and ButtonLampTest.java.
 ButtonLampTest.ajava checks the state of the floor button including whether the floor button is pressed or not. Test.java on the other hand,  checks if the expected result is same as the actual result in the floor reading.
 
-# Responsibilities [Make less verbose]
-## Josh : 101109655
-
+# Responsibilities 
+## Josh : 101109655 (Coded new classes, created class diagram)
 
 ## Sanskar : 101189876
   
 ## Jakob : 101201314
   
-
 ## Sanya : 101205395
  
-
 ## Partha : 101191302 (Coded the unit tests)
   
 
