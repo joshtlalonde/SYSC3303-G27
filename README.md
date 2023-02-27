@@ -42,9 +42,9 @@ ButtonLampTest.ajava checks the state of the floor button including whether the 
 # Responsibilities 
 ## Josh : 101109655 (Coded new classes, created class diagram)
 
-## Sanskar : 101189876
+## Sanskar : 101189876 (Created Sequence diagram, Aided with code choices)
   
-## Jakob : 101201314
+## Jakob : 101201314 (Created Sequence diagram, Aided with code choices)
   
 ## Sanya : 101205395(Wrote the readme file, helped with the state diagram and edited some code)
  
