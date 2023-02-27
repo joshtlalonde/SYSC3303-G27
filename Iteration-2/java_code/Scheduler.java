@@ -15,6 +15,7 @@ public class Scheduler {
 
 	/** Adds a new Floor request to the list of floorRequests */
 	public synchronized void addFloorRequest(UserInput userInput) {		
+		System.out.println("Scheduler: Adding Floor Request to list " + userInput);
 		floorRequests.add(userInput);
 		notifyAll();
 	}
@@ -33,6 +34,7 @@ public class Scheduler {
 
 		for (UserInput request : floorRequests) {
 			if (request.getFloor() == floor) {
+				System.out.println("Scheduler: Notifiying Floor of elevator arrival at floor " + floor);
 				return request;
 			}
 		}
@@ -76,6 +78,7 @@ public class Scheduler {
 			}
 		}
 
+		System.out.println("Scheduler: Picking up a user at floor " + floor);
 		servicingFloor = floor;
 		notifyAll();
 
@@ -84,6 +87,7 @@ public class Scheduler {
 
 	/** Add a request to the elevator list */
 	public synchronized void addElevatorRequest(UserInput userInput) {		
+		System.out.println("Scheduler: Adding Elevator Request to list " + userInput);
 		elevatorRequests.add(userInput);
 		notifyAll();
 	}
@@ -107,9 +111,10 @@ public class Scheduler {
 			elevatorRequests.remove(elevatorRequest);
 		}
 
+		System.out.println("Scheduler: Dropping off a user at floor " + floor);
 		servicingFloor = floor;
 		notifyAll();
-		
+
 		return users;
 	}
 
