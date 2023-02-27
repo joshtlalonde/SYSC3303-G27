@@ -1,17 +1,28 @@
 import java.io.*;
+import java.util.*;
 
 public class Floor implements Runnable {
-	private Scheduler scheduler;
+	static final int NUMBER_OF_FLOORS = 20; // Number of floors in the building
+
+	private Scheduler scheduler; // Scheduler that the Floor is associated to
+	private ArrayList<FloorButton> floorButton = new ArrayList<FloorButton>(); // Holds the buttons for each of the floors (up and down)
+	private DirectionLamp directionLamp; // direction lamp for the floor	
 	
 	/** Constructor for Floor */
-	public Floor(Scheduler scheduler) {
+	public Floor(Scheduler scheduler, DirectionLamp directionLamp) {
 		this.scheduler = scheduler;	
+		this.directionLamp = directionLamp;
+
+		// Create as many buttons as there are floors 
+		for (int i = 0; i < NUMBER_OF_FLOORS; i++) {
+			floorButton.add(new FloorButton(i));
+		}
 	}
 	
-	public User_input fileToUser(String line) {
+	// Converts a line from a csv file into the appropriate types of UserInput
+	public UserInput fileToUser(String line) {
 		String[] words = line.split(",");
 		
-		// Convert strings to their appropriate types
 		//LocalTime t = LocalTime.parse(words[0], DateTimeFormatter.ISO_LOCAL_TIME);
 		String t = words[0];
 		int f = Integer.parseInt(words[1]);
@@ -19,7 +30,56 @@ public class Floor implements Runnable {
 		int cb = Integer.parseInt(words[3]);
 
 		// Create new user
-		return new User_input(t, f, fb, cb);
+		return new UserInput(t, f, fb, cb);
+	}
+
+	/** Defines what is done when a button is pressed */
+	public void buttonPress(UserInput userInput) {
+		// Activate the correct button depending on user input
+		if (userInput.getFloorButtonUp()) {
+			// Get the button of the floor that it was pressed on
+			for (FloorButton button : floorButton) {
+				if (button.getButtonFloor() == userInput.getFloor()) {
+					// Set the button to be Up and turn it on
+					button.pressUp();
+					break;
+				}
+			}
+		} else {
+			// Get the button of the floor that it was pressed on
+			for (FloorButton button : floorButton) {
+				if (button.getButtonFloor() == userInput.getFloor()) {
+					// Set the button to be Down and turn it on
+					button.pressDown();
+					break;
+				}
+			}
+		}
+
+		// Send request to scheduler
+		sendRequest(userInput);
+	}
+
+	/** Sends request to the Scheduler */
+	private void sendRequest(UserInput userInput) {
+		// Puts the user_input into the scheduler
+		scheduler.addFloorRequest(userInput);
+		System.out.println("Floor: Added " + userInput + " into the scheduler");
+	}
+
+	/** Waits until Elevator has arrived, let users on, then reset buttons */
+	public void elevatorArrival() {
+		// Waits until the request is being serviced by the elevator
+		UserInput userInput = scheduler.respondFloorRequest();
+		System.out.println("Floor: " + userInput + " is being serviced by the elevator");
+
+		// Reset the button depending on what floor it was pressed on
+		for (FloorButton button : floorButton) {
+			if (button.getButtonFloor() == userInput.getFloor()) {
+				button.reset();
+				break;
+			}
+		}
 	}
 
 	/** Function to be run on Thread.start() */
@@ -31,19 +91,24 @@ public class Floor implements Runnable {
 			reader = new BufferedReader(new FileReader("../floor_input.txt"));
 			
 			while((line = reader.readLine()) != null) {
-				User_input user_input = fileToUser(line);
-				System.out.println("Floor: Retreived " + user_input + " from file");
+				// Returns a UserInput object from the next line in the text file
+				UserInput userInput = fileToUser(line);
+				System.out.println("Floor: Retreived " + userInput + " from file");
 
-				// Puts the user_input into the scheduler
-				scheduler.put(user_input);
-				System.out.println("Floor: Put " + user_input + " into the scheduler");
+				// Puts the user input into the scheduler
+				sendRequest(userInput);
+
+				// Waits until the request is being serviced by the elevator
+				elevatorArrival();
+
+
 
 				// Sleep for 1 second
 				try {
 					Thread.sleep(1000); 
 				} catch (InterruptedException e) {
 					e.printStackTrace();
-         				System.exit(1);
+         			System.exit(1);
 				}
 			}
 		} catch (FileNotFoundException e) {
@@ -65,25 +130,26 @@ public class Floor implements Runnable {
 	}
 }
 
-class User_input{
+/** Used to get the information for simulating a user from a text file */
+class UserInput{
 	//private LocalTime time;
 	private String time; // Timestamp of when button was clicked
 	private int floor; // Floor that button was clicked on
-	private boolean floor_button; // Direction that user wants to go
-	private int car_button; // Button that was clicked in elevator to decide destination floor
+	private boolean floorButtonUp; // Direction that user wants to go
+	private int carButton; // Button that was clicked in elevator to decide destination floor
 	
 	
 	//Making the constructor for the user input class
-	public User_input(String time, int floor, boolean floor_button, int car_button) {
+	public UserInput(String time, int floor, boolean floorButtonUp, int carButton) {
 		this.time = time;
 		this.floor = floor;
-		this.floor_button= floor_button;
-		this.car_button = car_button;
+		this.floorButtonUp= floorButtonUp;
+		this.carButton = carButton;
 	}
 	
 	@Override
 	public String toString() {
-		return "{time: " + time + ", floor: " + floor + ", floor_button: " + floor_button + ", car_button: " + car_button + "}";
+		return "{time: " + time + ", floor: " + floor + ", floor_button: " + floorButtonUp + ", car_button: " + carButton + "}";
 	}
 	
 	//Getting the data from the user input
@@ -93,46 +159,93 @@ class User_input{
 	public int getFloor() {
 		return floor;
 	}
-	public boolean getFloor_button() {
-		return floor_button;
+	public boolean getFloorButtonUp() {
+		return floorButtonUp;
 	}
-	public int getCar_button() {
-		return car_button;
+	public int getCarButton() {
+		return carButton;
 	}
 	
 }
 
+/** Used to simulate a button on the floor
+ *  Each button has a floor number associated to it
+ *  Each button has a lamp associated to it
+ */
 class FloorButton {
-	private boolean buttonState;
-	private FloorLamp buttonLamp; 
+	private boolean buttonState; // Defines the state of the button, On or Off
+	private FloorLamp buttonLamp; // Used to hold the associated lamp of the button
+	private boolean buttonDirectionUp;
+	private int buttonFloor;
 
-	public void press() {
+	public FloorButton(int floor) {
+		this.buttonFloor = floor;
+	}
+
+	// Sets the button state On, the direction to Up, and turns on the Lamp
+	public void pressUp() {
+		buttonDirectionUp = true;
 		buttonState = true;
 		buttonLamp.turnOn();
 	}
 
+	// Sets the button state On, the direction to Down, and turns on the Lamp
+	public void pressDown() {
+		buttonDirectionUp = false;
+		buttonState = true;
+		buttonLamp.turnOn();
+	}
+
+	// Sets the button state to Off and turns off the Lamp
 	public void reset() {
 		buttonState = false;
 		buttonLamp.turnOff();
 	}
 
+	// Returns the current state of the Button
 	public boolean getButtonState() {
 		return buttonState;
 	}
+
+	// Returns the floor of the Button
+	public int getButtonFloor() {
+		return buttonFloor;
+	}
+
+	// Returns the Button direction that was pressed
+	public boolean getButtonDirectionUp() {
+		return buttonDirectionUp;
+	}
 }
 
+/** Used to simulate the lamp for the floor buttons */
 class FloorLamp {
-	private boolean lampState;
+	private boolean lampState; // Defines the state of the lamp, On or Off
 
+	// Defines the state of the lamp, On or Off
 	public void turnOn() {
 		lampState = true;
 	}
 
+	// Defines the state of the lamp, On or Off
 	public void turnOff() {
 		lampState = false;
 	}
 
+	// Defines the state of the lamp, On or Off
 	public boolean getLampState() {
 		return lampState;
+	}
+}
+
+class DirectionLamp {
+	private int floor;
+
+	public int getFloor() {
+		return floor;
+	}
+
+	public void setFloor(int floor) {
+		this.floor = floor;
 	}
 }
