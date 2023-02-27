@@ -36,11 +36,13 @@ The scheduler is the brain of the program. Its function is to take user inputs t
 Elevator simply takes information from the scheduler using its get() method. The elevator also has lights and buttons to the elevator. When an elevator button is pressed, it will transition from one floor to another.
 
 ## Unit Tests
-Unit tests are essentially used to test the code. This folder contains two files Test.java and ButtonLampTest.java
+Unit tests are essentially used to test the code. This folder contains two files Test.java and ButtonLampTest.java.
+ButtonLampTest.ajava checks the state of the floor button including whether the floor button is pressed or not.
 
 # Responsibilities [Make less verbose]
 ## Josh : 101109655
-  
+
+
 ## Sanskar : 101189876
   
 ## Jakob : 101201314
