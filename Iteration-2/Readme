@@ -22,13 +22,14 @@ State diagram is used to describe the change in state by any kind of input event
 This is the file within which the user input is stored, polled and received from the rest of the subsystems. Its format is primarily in a table with columns for Time, Floor, Floor button and Car button. These provide key information that the rest of the subsystems need to schedule and execute. 
 
 ## Floor.java
-This file represents a floor in the building within which the elevator functions. The primary task for the floor is to retrieve and send data from the floor_input file to provide updates for user input and current status to the scheduler. 
+This file represents a floor in the building within which the elevator functions. The primary task for the floor is to retrieve and send data from the floor_input file to provide updates for user input and current status to the scheduler. The floor also has floor buttons which communicates with the scheduler to determine which floor to go to.
 
 ## Scheduler.java
 The scheduler is the brain of the program. Its function is to take user inputs that it receives from Floor and create algorithms that the elevators will follow to satisfy the requests of users. A notable method that it uses for communication is get(). get() serves to take modified information based off of the input and algorithm that is being executed to be used by elevator.
 
 ## Elevator.java
-Elevator simply takes information from the scheduler using its get() method. 
+Elevator simply takes information from the scheduler using its get() method. The elevator also has lights and buttons to the elevator. When an elevator button is pressed, it will transition from one floor to another.
+
 
 # Responsibilities [Make less verbose]
 ## Josh : 101109655
