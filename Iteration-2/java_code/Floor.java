@@ -8,7 +8,7 @@ public class Floor implements Runnable {
 		this.scheduler = scheduler;	
 	}
 	
-	public User_input file_to_user(String line) {
+	public User_input fileToUser(String line) {
 		String[] words = line.split(",");
 		
 		// Convert strings to their appropriate types
@@ -31,7 +31,7 @@ public class Floor implements Runnable {
 			reader = new BufferedReader(new FileReader("../floor_input.txt"));
 			
 			while((line = reader.readLine()) != null) {
-				User_input user_input = file_to_user(line);
+				User_input user_input = fileToUser(line);
 				System.out.println("Floor: Retreived " + user_input + " from file");
 
 				// Puts the user_input into the scheduler
@@ -100,4 +100,39 @@ class User_input{
 		return car_button;
 	}
 	
+}
+
+class FloorButton {
+	private boolean buttonState;
+	private FloorLamp buttonLamp; 
+
+	public void press() {
+		buttonState = true;
+		buttonLamp.turnOn();
+	}
+
+	public void reset() {
+		buttonState = false;
+		buttonLamp.turnOff();
+	}
+
+	public boolean getButtonState() {
+		return buttonState;
+	}
+}
+
+class FloorLamp {
+	private boolean lampState;
+
+	public void turnOn() {
+		lampState = true;
+	}
+
+	public void turnOff() {
+		lampState = false;
+	}
+
+	public boolean getLampState() {
+		return lampState;
+	}
 }
