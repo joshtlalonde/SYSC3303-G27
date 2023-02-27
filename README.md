@@ -54,4 +54,5 @@ Unit tests are essentially used to test the code. This folder contains two files
 
 # Setup and Test Instructions
 Download the `Elevator.java`, `Floor.java`, and `Scheduler.java` files and open them within a java project on eclipse
-Run Eclipse from the `Scheduler.java` file to start the main program within that class
+Run Eclipse from the `Scheduler.java` file to start the main program within that class.
+Run then for testing the code run Test.java and Button LampTest.java.
