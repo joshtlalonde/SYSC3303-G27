@@ -57,11 +57,11 @@ public class Floor implements Runnable {
 		}
 
 		// Send request to scheduler
-		sendRequest(userInput);
+		sendFloorRequest(userInput);
 	}
 
 	/** Sends request to the Scheduler */
-	private void sendRequest(UserInput userInput) {
+	private void sendFloorRequest(UserInput userInput) {
 		// Puts the user_input into the scheduler
 		scheduler.addFloorRequest(userInput);
 		System.out.println("Floor: Added " + userInput + " into the scheduler");
@@ -96,7 +96,7 @@ public class Floor implements Runnable {
 				System.out.println("Floor: Retreived " + userInput + " from file");
 
 				// Puts the user input into the scheduler
-				sendRequest(userInput);
+				sendFloorRequest(userInput);
 
 				// Waits until the request is being serviced by the elevator
 				elevatorArrival(userInput.getFloor());

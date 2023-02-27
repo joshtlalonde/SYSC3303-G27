@@ -44,7 +44,7 @@ public class Scheduler {
 
 	/** Return all of the users that are waiting on this floor for an elevator in a certain direction*/
 	public synchronized ArrayList<UserInput> serviceFloorRequest(int floor, boolean directionUp) {
-		while (floorRequests.isEmpty() && elevatorRequests.isEmpty()) {
+		while (floorRequests.isEmpty()) {
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -57,28 +57,29 @@ public class Scheduler {
 		ArrayList<UserInput> users = new ArrayList<UserInput>();
 
 		// This means elevator is not moving, no one is on it
-		if (elevatorRequests.isEmpty()) {
-			int lowest = 0;
-			UserInput user = null;
-			// Pick up the user if they are the closest to the elevator
-			for (UserInput floorRequest : floorRequests) {
-				if (floorRequest.getFloor() - floor < lowest) { 
-					user = floorRequest; 
-					floorRequests.remove(floorRequest);
-				}
-			}
-			users.add(user);
-		} else {
+		// if (elevatorRequests.isEmpty()) {
+			// int lowest = 0;
+			// UserInput user = null;
+			// // Pick up the user if they are the closest to the elevator
+			// for (UserInput floorRequest : floorRequests) {
+			// 	if (floorRequest.getFloor() - floor < lowest) { 
+			// 		user = floorRequest; 
+			// 		System.out.println("Scheduler: Picking up a user at floor " + floor);
+			// 		floorRequests.remove(floorRequest);
+			// 	}
+			// }
+			// users.add(user);
+		// } else {
 			for (UserInput floorRequest : floorRequests) {
 				// Pick up the user if they are on the right floor and going in the right direction
 				if (floorRequest.getFloor() == floor && floorRequest.getFloorButtonUp() == directionUp) {
 					users.add(floorRequest);
+					System.out.println("Scheduler: Picking up a user at floor " + floor);
 					floorRequests.remove(floorRequest);
 				}
 			}
-		}
-
-		System.out.println("Scheduler: Picking up a user at floor " + floor);
+		// }
+		
 		servicingFloor = floor;
 		notifyAll();
 
@@ -94,7 +95,7 @@ public class Scheduler {
 
 	/** Return all of the users that are getting off the elevator at this floor */
 	public synchronized ArrayList<UserInput> serviceElevatorRequest(int floor) {
-		while (floorRequests.isEmpty() && elevatorRequests.isEmpty()) {
+		while (elevatorRequests.isEmpty()) {
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -108,10 +109,10 @@ public class Scheduler {
 
 		for (UserInput elevatorRequest : elevatorRequests) {
 			users.add(elevatorRequest);
+			System.out.println("Scheduler: Dropping off a user at floor " + floor);
 			elevatorRequests.remove(elevatorRequest);
 		}
 
-		System.out.println("Scheduler: Dropping off a user at floor " + floor);
 		servicingFloor = floor;
 		notifyAll();
 
