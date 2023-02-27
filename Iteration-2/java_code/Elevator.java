@@ -6,9 +6,9 @@ class Elevator implements Runnable
     private Scheduler scheduler; // Scheduler that the Elevator is associated to
     private int destinationFloor; // Floor the elevator is moving to
     private DirectionLamp directionLamp; // Lamp to indicate direction moving and floor location
-    private ArrivalSensor arrivalSensor; // Sensor to indicate when an elevator is approaching a floor
-    private Motor motor; // The elevators motor, controls motion of elevator
-    private Door door; // Elevators door
+    private ArrivalSensor arrivalSensor = new ArrivalSensor(); // Sensor to indicate when an elevator is approaching a floor
+    private Motor motor = new Motor(); // The elevators motor, controls motion of elevator
+    private Door door = new Door(); // Elevators door
     private ArrayList<ElevatorButton> elevatorButton = new ArrayList<ElevatorButton>(); // Holds the buttons for each of the floors (up and down)
     
     public Elevator(Scheduler scheduler, DirectionLamp directionLamp)
