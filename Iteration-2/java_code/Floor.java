@@ -82,31 +82,72 @@ public class Floor implements Runnable {
 		}
 	}
 
+	// /** Function to be run on Thread.start() */
+	// public void run() {
+	// 	// Open and read file line-by-line
+	// 	BufferedReader reader;
+	// 	try {
+	// 		String line;
+	// 		reader = new BufferedReader(new FileReader("../floor_input.txt"));
+			
+	// 		while((line = reader.readLine()) != null) {
+	// 			// Returns a UserInput object from the next line in the text file
+	// 			UserInput userInput = fileToUser(line);
+	// 			System.out.println("Floor: Retreived " + userInput + " from file");
+
+	// 			// Puts the user input into the scheduler
+	// 			sendFloorRequest(userInput);
+
+	// 			// Waits until the request is being serviced by the elevator
+	// 			elevatorArrival(userInput.getFloor());
+
+	// 			// Sleep for 1 second
+	// 			try {
+	// 				Thread.sleep(1000); 
+	// 			} catch (InterruptedException e) {
+	// 				e.printStackTrace();
+    //      			System.exit(1);
+	// 			}
+	// 		}
+	// 	} catch (FileNotFoundException e) {
+	// 		System.out.println("Failed to open File: " + e);
+	// 		return;
+	// 	} catch (IOException e) {
+	// 		System.out.println("Failed to read File: " + e);
+	// 		return;
+	// 	}
+		
+	// 	// Close reader
+	// 	try {
+	// 		reader.close();
+	// 	} catch (IOException e) {
+	// 		System.out.print("IO Exception: likely:");
+	// 		System.out.println("Failed to close File: " + e);
+    //      		System.exit(1);
+	// 	}
+	// }
 	/** Function to be run on Thread.start() */
 	public void run() {
 		// Open and read file line-by-line
 		BufferedReader reader;
 		try {
 			String line;
-			reader = new BufferedReader(new FileReader("../floor_input.txt"));
+			reader = new BufferedReader(new FileReader("C:\\Users\\Josh's PC\\Documents\\University\\Classes\\SYSC3303\\G27-Project\\Eclipse\\SYSC3303Project\\src\\floor_input.txt"));
 			
 			while((line = reader.readLine()) != null) {
-				// Returns a UserInput object from the next line in the text file
 				UserInput userInput = fileToUser(line);
 				System.out.println("Floor: Retreived " + userInput + " from file");
 
-				// Puts the user input into the scheduler
-				sendFloorRequest(userInput);
-
-				// Waits until the request is being serviced by the elevator
-				elevatorArrival(userInput.getFloor());
+				// Puts the user_input into the scheduler
+				scheduler.put(userInput);
+				System.out.println("Floor: Put " + userInput + " into the scheduler");
 
 				// Sleep for 1 second
 				try {
 					Thread.sleep(1000); 
 				} catch (InterruptedException e) {
 					e.printStackTrace();
-         			System.exit(1);
+         				System.exit(1);
 				}
 			}
 		} catch (FileNotFoundException e) {
