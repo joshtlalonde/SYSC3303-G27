@@ -24,91 +24,113 @@ class Elevator implements Runnable
 
     public void run()
     {
-        while(true){       
-            // TODO: This is only Handling one request at a time for the moment
-            // Elevator has arrived at a floor
-//            System.out.println("Elevator: Ready on floor " + arrivalSensor.getFloor());
-            ArrayList<UserInput> floorRequests = getFloorRequests(arrivalSensor.getFloor(), motor.getDirectionUp());
-            ArrayList<UserInput> elevatorRequests = getElevatorRequests(arrivalSensor.getFloor());
-
-            // No users are waiting to be serviced on this floor
-            boolean isEmpty = true;
-            if (floorRequests.isEmpty() && elevatorRequests.isEmpty()) {
-                for (elevatorButtons button : elevatorButtons) {
-                    // Continue on if a user is in the elevator
-                    if (button.getButtonState() == true) {
-                        isEmpty = false;
-                    }
-                }
-
-                if (isEmpty) {
-                    // Check if anyone wants to go up
-                    for (int i = 0; i < scheduler.getNumberOfFloors(); i++) {
-                        floorRequests = getFloorRequests(i, true);
-                        if (!floorRequests.isEmpty()) {
-                            // Move to user to pick them up 
-                            moveToGetUser(i);
-                            break;
-                        }
-                    }
-
-                    // Check if anyone wants to go down
-                    if (floorRequests.isEmpty()) {
-                        for (int i = scheduler.getNumberOfFloors(); i >= 0; i--) {
-                            floorRequests = getFloorRequests(i, false);
-                            if (!floorRequests.isEmpty()) {
-                                // Move to user to pick them up 
-                                moveToGetUser(i);
-                                break;
-                            }
-                        }
-                    }   
-                }
-            }
-
-            elevatorArrival(arrivalSensor.getFloor(), floorRequests, elevatorRequests);
-
-            // Close the door
-            if (door.getIsOpen()) {
-                door.close();
-                System.out.println("Elevator: Closing door on floor " + arrivalSensor.getFloor());
-            }
-
-            // Sleep for 1 sec
-            try {
-                Thread.sleep(1000); 
-            } catch (InterruptedException ex) {
-                System.exit(1);
-            }
-
+        while(true){
+            System.out.println("Elevator: Ready on floor " + arrivalSensor.getFloor());
+            UserInput userInput = scheduler.get();
             
-            elevatorButtons buttonToService = null;
-            for (elevatorButtons button : elevatorButtons) {
-                // Service the first button that is clicked
-                // TODO: This will need to be changed
-                if (button.getButtonState()) {
-                    buttonToService = button;
-                }
-            }
+            System.out.println("Elevator: Moved to " + userInput.getCarButton() + " floor");
+            
+            // Set the floor elevator is on
+            arrivalSensor.setFloor(userInput.getCarButton());
+            // Set direction elevator is moving
+            motor.startMoving(userInput.getFloorButtonUp());
 
-            if (buttonToService != null) {
-                // Start to move the elevator
-                if (arrivalSensor.getFloor() == scheduler.getNumberOfFloors() - 1 || (arrivalSensor.getFloor() - buttonToService.getButtonFloor()) > 0) {
-                    // Motor start moving down
-                    System.out.println("Elevator: Motor starting to move down");
-                    // Set arrival sensor to next floor
-                    arrivalSensor.setFloor(arrivalSensor.getFloor() - 1);
-                    motor.startMoving(false);
-                } else if (arrivalSensor.getFloor() == 0 || (arrivalSensor.getFloor() - buttonToService.getButtonFloor()) < 0) {
-                    // Motor start moving up
-                    System.out.println("Elevator: Motor starting to move up");
-                    motor.startMoving(true);
-                    // Set arrival sensor to next floor
-                    arrivalSensor.setFloor(arrivalSensor.getFloor() + 1);
-                }
-            }
+            // Sleep for 1 second
+            try {
+	            Thread.sleep(1000); 
+	        } catch (InterruptedException e) {
+			System.exit(1);
+		 }
         }
     }
+
+//     public void run()
+//     {
+//         while(true){       
+//             // TODO: This is only Handling one request at a time for the moment
+//             // Elevator has arrived at a floor
+// //            System.out.println("Elevator: Ready on floor " + arrivalSensor.getFloor());
+//             ArrayList<UserInput> floorRequests = getFloorRequests(arrivalSensor.getFloor(), motor.getDirectionUp());
+//             ArrayList<UserInput> elevatorRequests = getElevatorRequests(arrivalSensor.getFloor());
+
+//             // No users are waiting to be serviced on this floor
+//             boolean isEmpty = true;
+//             if (floorRequests.isEmpty() && elevatorRequests.isEmpty()) {
+//                 for (elevatorButtons button : elevatorButtons) {
+//                     // Continue on if a user is in the elevator
+//                     if (button.getButtonState() == true) {
+//                         isEmpty = false;
+//                     }
+//                 }
+
+//                 if (isEmpty) {
+//                     // Check if anyone wants to go up
+//                     for (int i = 0; i < scheduler.getNumberOfFloors(); i++) {
+//                         floorRequests = getFloorRequests(i, true);
+//                         if (!floorRequests.isEmpty()) {
+//                             // Move to user to pick them up 
+//                             moveToGetUser(i);
+//                             break;
+//                         }
+//                     }
+
+//                     // Check if anyone wants to go down
+//                     if (floorRequests.isEmpty()) {
+//                         for (int i = scheduler.getNumberOfFloors(); i >= 0; i--) {
+//                             floorRequests = getFloorRequests(i, false);
+//                             if (!floorRequests.isEmpty()) {
+//                                 // Move to user to pick them up 
+//                                 moveToGetUser(i);
+//                                 break;
+//                             }
+//                         }
+//                     }   
+//                 }
+//             }
+
+//             elevatorArrival(arrivalSensor.getFloor(), floorRequests, elevatorRequests);
+
+//             // Close the door
+//             if (door.getIsOpen()) {
+//                 door.close();
+//                 System.out.println("Elevator: Closing door on floor " + arrivalSensor.getFloor());
+//             }
+
+//             // Sleep for 1 sec
+//             try {
+//                 Thread.sleep(1000); 
+//             } catch (InterruptedException ex) {
+//                 System.exit(1);
+//             }
+
+            
+//             elevatorButtons buttonToService = null;
+//             for (elevatorButtons button : elevatorButtons) {
+//                 // Service the first button that is clicked
+//                 // TODO: This will need to be changed
+//                 if (button.getButtonState()) {
+//                     buttonToService = button;
+//                 }
+//             }
+
+//             if (buttonToService != null) {
+//                 // Start to move the elevator
+//                 if (arrivalSensor.getFloor() == scheduler.getNumberOfFloors() - 1 || (arrivalSensor.getFloor() - buttonToService.getButtonFloor()) > 0) {
+//                     // Motor start moving down
+//                     System.out.println("Elevator: Motor starting to move down");
+//                     // Set arrival sensor to next floor
+//                     arrivalSensor.setFloor(arrivalSensor.getFloor() - 1);
+//                     motor.startMoving(false);
+//                 } else if (arrivalSensor.getFloor() == 0 || (arrivalSensor.getFloor() - buttonToService.getButtonFloor()) < 0) {
+//                     // Motor start moving up
+//                     System.out.println("Elevator: Motor starting to move up");
+//                     motor.startMoving(true);
+//                     // Set arrival sensor to next floor
+//                     arrivalSensor.setFloor(arrivalSensor.getFloor() + 1);
+//                 }
+//             }
+//         }
+//     }
 
     public ArrayList<UserInput> getFloorRequests(int floor, boolean directionUp) {
         return scheduler.serviceFloorRequest(floor, motor.getDirectionUp());
