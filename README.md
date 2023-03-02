@@ -60,4 +60,4 @@ ButtonLampTest.ajava checks the state of the floor button including whether the 
 
 Download the `Elevator.java`, `Floor.java`, and `Scheduler.java` files and open them within a java project on eclipse
 Run Eclipse from the `Scheduler.java` file to start the main program within that class.
-For testing the code, run Test.java and Button LampTest.java.
+For testing the code, run `Test.java` and Button `buttontLampTest.java`.
