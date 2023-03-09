@@ -1,5 +1,7 @@
 import java.io.*;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,6 +13,7 @@ public class Floor implements Runnable {
 	
 	private DirectionLamp directionLamp; // direction lamp for the floor	
 	private ArrayList<FloorButton> floorButton = new ArrayList<FloorButton>(); // Holds the buttons for each of the floors (up and down)
+	private DatagramSocket sendReceiveSocket;
 	
 	/** Constructor for Floor */
 	public Floor(DirectionLamp directionLamp) {
@@ -19,6 +22,14 @@ public class Floor implements Runnable {
 		// Create as many buttons as there are floors 
 		for (int i = 0; i < NUMBER_OF_FLOORS; i++) {
 			floorButton.add(new FloorButton(i));
+		}
+
+		// Create Datagram Socket on random port
+		try {
+			sendReceiveSocket = new DatagramSocket();
+		} catch (SocketException e) {
+			System.out.println("Failed to create Datagram Socket: " + e);
+			e.printStackTrace();
 		}
 	}
 	
@@ -68,7 +79,7 @@ public class Floor implements Runnable {
 
 		// Send FloorPacket
 		try {
-			floorPacket.send(InetAddress.getLocalHost(), 23);
+			floorPacket.send(InetAddress.getLocalHost(), 23, sendReceiveSocket);
 		} catch (UnknownHostException e) {
 			System.out.println("Failed to send FloorPacket: " + e);
 			e.printStackTrace();

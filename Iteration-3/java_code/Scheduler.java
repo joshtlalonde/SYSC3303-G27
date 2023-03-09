@@ -95,36 +95,12 @@ public class Scheduler {
 	 * 		Or maybe outside of it and just call the addFloorRequest function as a kind of "put"
 	 */
 	public void receiveFloorPacket() {
-		// Construct a DatagramPacket for receiving packets up to 100 bytes long 
-		byte data[] = new byte[100];
-		DatagramPacket receiveFloorPacket = new DatagramPacket(data, data.length);
-
-		// Block until a datagram packet is received from receiveSocket.
-		try {        
-			System.out.println("Scheduler: Waiting for Floor Packet..."); // so we know we're waiting
-			receiveFloorSocket.receive(receiveFloorPacket);
-		} catch (IOException e) {
-			System.out.print("IO Exception: likely:");
-			System.out.println("Receive Socket Timed Out.\n" + e);
-			e.printStackTrace();
-			System.exit(1);
-		}
-
-		// Process the received datagram.
-		System.out.println("Scheduler: Packet received from Floor:");
-		System.out.println("From address: " + receiveFloorPacket.getAddress());
-		System.out.println("Address port: " + receiveFloorPacket.getPort());
-		System.out.println("Length: " + receiveFloorPacket.getLength());
-
 		// Create new FloorPacket object from data
 		FloorPacket floorPacket = new FloorPacket(0,new Date(),false,0);
-		floorPacket.receive(data);
 
-		// Print packet info
-		System.out.print("Containing: ");
-		floorPacket.printPacket();
-		System.out.print("Bytes: ");
-		floorPacket.printPacketBytes(data);
+		// Wait for FloorPacket to arrive
+		System.out.println("Scheduler: Waiting for Floor Packet..."); 
+		floorPacket.receive(receiveFloorSocket);
 	}
 
 	/** Adds a new Floor request to the list of floorRequests */

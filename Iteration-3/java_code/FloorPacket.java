@@ -4,25 +4,14 @@ import java.text.*;
 import java.util.*;
 
 public class FloorPacket {
-	
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.S", Locale.ENGLISH);
 
-	private DatagramSocket sendReceiveSocket;
-    private int floor, destinationFloor;
-    private Date time;
-    private boolean directionUp;
+    private int floor; // Holds the floor info
+    private int destinationFloor; // Holds the destination floor info
+    private Date time; // Holds the time info
+    private boolean directionUp; // Holds the direction info
 
     public FloorPacket(int floor, Date time, boolean directionUp, int destinationFloor) {
-		try {
-			// Construct a datagram socket and bind it to any available 
-			// port on the local host machine. This socket will be used to
-			// send UDP Datagram packets to the Scheduler.
-			sendReceiveSocket = new DatagramSocket();
-		} catch (SocketException se) {
-			se.printStackTrace();
-			System.exit(1);
-		} 
-
         this.floor = floor;
         this.time = time;
         this.directionUp = directionUp;
@@ -30,7 +19,7 @@ public class FloorPacket {
 	}
 
     /** Used to send the packet */
-    public void send(InetAddress address, int port) {
+    public void send(InetAddress address, int port, DatagramSocket sendFloorSocket) {
         DatagramPacket sendPacket;
         byte sendbytes[];
 
@@ -49,10 +38,10 @@ public class FloorPacket {
         // Create datagram packet
 		sendPacket = new DatagramPacket(sendbytes, sendbytes.length, address, port);
 
-        System.out.println("FloorPacket: Sending packet...");
+        // System.out.println("FloorPacket: Sending packet...");
 		System.out.println("To address: " + sendPacket.getAddress());
-		System.out.println("Destination port: " + sendPacket.getPort());
-		System.out.println("Length: " + sendPacket.getLength());
+		System.out.println("on destination port: " + sendPacket.getPort());
+		System.out.println("with length: " + sendPacket.getLength());
 		System.out.print("Containing: ");
 		this.printPacket();
 		System.out.print("Bytes: ");
@@ -60,7 +49,7 @@ public class FloorPacket {
 
 		// Send the datagram packet to the server via the send/receive socket. 
 		try {
-			sendReceiveSocket.send(sendPacket);
+			sendFloorSocket.send(sendPacket);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -70,7 +59,40 @@ public class FloorPacket {
     }
 
     /** Used to wait until a FloorPacket is received */
-    public void receive(byte packet[]) {
+    public void receive(DatagramSocket receiveFloorSocket) {
+        // Construct a DatagramPacket for receiving packets up to 100 bytes long 
+		byte data[] = new byte[100];
+		DatagramPacket receiveFloorPacket = new DatagramPacket(data, data.length);
+
+		// Block until a datagram packet is received from receiveSocket.
+		try {        
+			// System.out.println("FloorPacket: Waiting for Floor Packet..."); // so we know we're waiting
+			receiveFloorSocket.receive(receiveFloorPacket);
+		} catch (IOException e) {
+			System.out.print("IO Exception: likely:");
+			System.out.println("Receive Socket Timed Out.\n" + e);
+			e.printStackTrace();
+			System.exit(1);
+		}
+
+		// Process the received datagram.
+		System.out.println("FloorPacket: Floor Packet received:");
+		System.out.println("From address: " + receiveFloorPacket.getAddress());
+		System.out.println("on port: " + receiveFloorPacket.getPort());
+		System.out.println("with length: " + receiveFloorPacket.getLength());
+
+        // Convert the bytes to assign packet variables
+        this.convertBytesToPacket(data);
+
+		// Print packet info
+		System.out.print("Containing: ");
+		this.printPacket();
+		System.out.print("Bytes: ");
+		this.printPacketBytes(data);
+    }
+
+    private void convertBytesToPacket(byte packet[]) {
+		// Create new FloorPacket object from data
         floor = packet[0];
         destinationFloor = packet[1];
         directionUp = packet[2] == 1 ? true : false;
@@ -109,6 +131,7 @@ public class FloorPacket {
     }
 
     ///////////// PRINTERS /////////////
+
     public void printPacket() {
         System.out.println("Floor number: " + floor + ", destination floor: " + destinationFloor + 
                             ", direction: " + (directionUp ? "Up" : "Down") + ", time: " + dateFormatter.format(time));
