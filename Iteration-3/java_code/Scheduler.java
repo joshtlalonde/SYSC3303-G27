@@ -1,72 +1,47 @@
 import java.io.*;
+import java.net.*;
 import java.util.*;
 
 public class Scheduler {
 	static final int NUMBER_OF_FLOORS = 20; // Number of floors in the building
+
+	private DatagramSocket receiveFloorSocket, receiveElevatorSocket;
 	
     private ArrayList<UserInput> floorRequests = new ArrayList<UserInput>(); // Holds list of requests from Floor
 	private int servicingFloor;
 	private ArrayList<UserInput> elevatorRequests = new ArrayList<UserInput>(); // Holds list of requests from Elevator
-	private UserInput userInput;
-	
-	/** Returns the number of floors that the system has */
-	public int getNumberOfFloors() {
-		return NUMBER_OF_FLOORS;
+
+	public Scheduler() {
+		try {
+			// Construct a datagram socket and bind it to port 69 
+			// on the local host machine. This socket will be used to
+			// receive Elevator's UDP Datagram packets.
+			receiveElevatorSocket = new DatagramSocket(69);
+
+			// Construct a datagram socket and bind it to port 23 
+			// on the local host machine. This socket will be used to
+			// receive Floor's UDP Datagram packets.
+			receiveFloorSocket = new DatagramSocket(23);
+		} catch (SocketException se) {
+			se.printStackTrace();
+			System.exit(1);
+		} 
 	}
 
-	public synchronized void put(UserInput input) {
-		while (userInput != null) {
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				System.out.println("Error waiting: " + e);
-				return;
-			}
-		}
-		
-		// Set the user_input to the one that was read by the floor
-        userInput = input;
-		// Notify elevator that new user has arrived
-		notifyAll();
-	}
-	
-	public synchronized UserInput get() {
-        while (userInput == null) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-            	System.out.println("Error waiting: " + e);
-                return null;
-            }
-		}
+	/** Receives a FloorRequest packet from Floor
+	 * TODO: This should be running as its own thread that way it can always be listening
+	 * 		So this should be its own class, maybe within the scheduler?
+	 * 		Or maybe outside of it and just call the addFloorRequest function as a kind of "put"
+	 */
+	public FloorPacket receiveFloorPacket() {
+		// Create new FloorPacket object from data
+		FloorPacket floorPacket = new FloorPacket(0,new Date(),false,0);
 
-		System.out.println("Scheduler: Elevator is moving to floor " + userInput.getFloor() + " to pick up user");
-		// Sleep for travel time
-		try {
-			Thread.sleep(1000); 
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		
-		System.out.println("Scheduler: Elevator is moving user to floor " + userInput.getCarButton() + " to drop off user");
-		// Sleep for travel time
-		try {
-			Thread.sleep(1000); 
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		
-		// Notify Floor that elevator is available
-		notifyAll();
-		// Copy user_input values
-		UserInput input = userInput;
-		// Reset the user_input
-		userInput = null;
-		
-		// Return 
-		return input;
+		// Wait for FloorPacket to arrive
+		System.out.println("Scheduler: Waiting for Floor Packet..."); 
+		floorPacket.receive(receiveFloorSocket);
+
+		return floorPacket;
 	}
 
 	/** Adds a new Floor request to the list of floorRequests */
@@ -177,18 +152,10 @@ public class Scheduler {
 
 
     public static void main(String[] args) {
-        Thread floor, elevator;
-        
         // Create table that all threads will access
         Scheduler scheduler = new Scheduler();
-		DirectionLamp directionLamp = new DirectionLamp();
-        
-        // Create Agent and Chef threads
-        floor = new Thread(new Floor(scheduler, directionLamp), "Floor");
-        elevator = new Thread(new Elevator(scheduler, directionLamp), "Elevator");
-        
-        // Start Threads
-        floor.start();
-        elevator.start();
+
+		// For testing
+		scheduler.receiveFloorPacket();
     }
 }
