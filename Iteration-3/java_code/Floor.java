@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Floor implements Runnable {
-	 static final int NUMBER_OF_FLOORS = 20; // Number of floors in the building
+	static final int NUMBER_OF_FLOORS = 20; // Number of floors in the building
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.S", Locale.ENGLISH);
 	
 	private DirectionLamp directionLamp; // direction lamp for the floor	
@@ -84,6 +84,7 @@ public class Floor implements Runnable {
 			System.out.println("Failed to send FloorPacket: " + e);
 			e.printStackTrace();
 		}
+		
 		System.out.println("Floor: Sent floor request to the scheduler: " + userInput);
 	}
 

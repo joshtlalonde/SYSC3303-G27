@@ -110,8 +110,6 @@ public class FloorPacket {
         for (; i < packet.length && packet[i] != 0; i++) {}
         String timeString = new String(packet, 3, i - 3);
         
-        System.out.println(timeString);
-        
         try {
             time = dateFormatter.parse(timeString);
         } catch (ParseException e) {
@@ -142,7 +140,7 @@ public class FloorPacket {
 
     public void printPacket() {
         System.out.println("Floor number: " + floor + ", destination floor: " + destinationFloor + 
-                            ", direction: " + (directionUp ? "Up" : "Down") + ", time: " + dateFormatter.format(time));
+                            ", direction: " + (directionUp ? "up" : "down") + ", time: " + dateFormatter.format(time));
     }
 
     public void printPacketBytes(byte packet[]) {
