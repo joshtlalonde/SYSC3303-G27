@@ -94,13 +94,15 @@ public class Scheduler {
 	 * 		So this should be its own class, maybe within the scheduler?
 	 * 		Or maybe outside of it and just call the addFloorRequest function as a kind of "put"
 	 */
-	public void receiveFloorPacket() {
+	public FloorPacket receiveFloorPacket() {
 		// Create new FloorPacket object from data
 		FloorPacket floorPacket = new FloorPacket(0,new Date(),false,0);
 
 		// Wait for FloorPacket to arrive
 		System.out.println("Scheduler: Waiting for Floor Packet..."); 
 		floorPacket.receive(receiveFloorSocket);
+
+		return floorPacket;
 	}
 
 	/** Adds a new Floor request to the list of floorRequests */
