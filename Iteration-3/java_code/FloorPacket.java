@@ -6,6 +6,9 @@ import java.util.*;
 public class FloorPacket {
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.S", Locale.ENGLISH);
 
+    private DatagramPacket sendFloorPacket; // Holds the Sent Datagram Packet
+    private DatagramPacket receiveFloorPacket; // Holds the Received Datagram Packet
+
     private int floor; // Holds the floor info
     private int destinationFloor; // Holds the destination floor info
     private Date time; // Holds the time info
@@ -18,9 +21,14 @@ public class FloorPacket {
         this.destinationFloor = destinationFloor;
 	}
 
-    /** Used to send the packet */
+    /** 
+     * Used to send the packet 
+     * 
+     * @address destination address, 
+     * @port destination port, 
+     * @sendFloorSocket socket to send on
+    */
     public void send(InetAddress address, int port, DatagramSocket sendFloorSocket) {
-        DatagramPacket sendPacket;
         byte sendbytes[];
 
         // Convert the time to a bytes
@@ -36,12 +44,12 @@ public class FloorPacket {
         sendbytes = outputStream.toByteArray();
 
         // Create datagram packet
-		sendPacket = new DatagramPacket(sendbytes, sendbytes.length, address, port);
+		sendFloorPacket = new DatagramPacket(sendbytes, sendbytes.length, address, port);
 
         // System.out.println("FloorPacket: Sending packet...");
-		System.out.println("To address: " + sendPacket.getAddress());
-		System.out.println("on destination port: " + sendPacket.getPort());
-		System.out.println("with length: " + sendPacket.getLength());
+		System.out.println("To address: " + sendFloorPacket.getAddress());
+		System.out.println("on destination port: " + sendFloorPacket.getPort());
+		System.out.println("with length: " + sendFloorPacket.getLength());
 		System.out.print("Containing: ");
 		this.printPacket();
 		System.out.print("Bytes: ");
@@ -49,7 +57,7 @@ public class FloorPacket {
 
 		// Send the datagram packet to the server via the send/receive socket. 
 		try {
-			sendFloorSocket.send(sendPacket);
+			sendFloorSocket.send(sendFloorPacket);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -60,9 +68,9 @@ public class FloorPacket {
 
     /** Used to wait until a FloorPacket is received */
     public void receive(DatagramSocket receiveFloorSocket) {
-        // Construct a DatagramPacket for receiving packets up to 100 bytes long 
-		byte data[] = new byte[100];
-		DatagramPacket receiveFloorPacket = new DatagramPacket(data, data.length);
+        // Construct a DatagramPacket for receiving packets up to 16 bytes long. Will not be longer
+		byte data[] = new byte[16];
+		receiveFloorPacket = new DatagramPacket(data, data.length);
 
 		// Block until a datagram packet is received from receiveSocket.
 		try {        
@@ -82,13 +90,13 @@ public class FloorPacket {
 		System.out.println("with length: " + receiveFloorPacket.getLength());
 
         // Convert the bytes to assign packet variables
-        this.convertBytesToPacket(data);
+        this.convertBytesToPacket(receiveFloorPacket.getData());
 
 		// Print packet info
 		System.out.print("Containing: ");
 		this.printPacket();
 		System.out.print("Bytes: ");
-		this.printPacketBytes(data);
+		this.printPacketBytes(receiveFloorPacket.getData());
     }
 
     private void convertBytesToPacket(byte packet[]) {

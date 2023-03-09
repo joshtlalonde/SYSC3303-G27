@@ -10,7 +10,6 @@ public class Scheduler {
     private ArrayList<UserInput> floorRequests = new ArrayList<UserInput>(); // Holds list of requests from Floor
 	private int servicingFloor;
 	private ArrayList<UserInput> elevatorRequests = new ArrayList<UserInput>(); // Holds list of requests from Elevator
-	private UserInput userInput;
 
 	public Scheduler() {
 		try {
@@ -28,66 +27,6 @@ public class Scheduler {
 			System.exit(1);
 		} 
 	}
-	
-	/** Returns the number of floors that the system has */
-	public int getNumberOfFloors() {
-		return NUMBER_OF_FLOORS;
-	}
-
-	// public synchronized void put(UserInput input) {
-	// 	while (userInput != null) {
-	// 		try {
-	// 			wait();
-	// 		} catch (InterruptedException e) {
-	// 			System.out.println("Error waiting: " + e);
-	// 			return;
-	// 		}
-	// 	}
-		
-	// 	// Set the user_input to the one that was read by the floor
-    //     userInput = input;
-	// 	// Notify elevator that new user has arrived
-	// 	notifyAll();
-	// }
-	
-	// public synchronized UserInput get() {
-    //     while (userInput == null) {
-    //         try {
-    //             wait();
-    //         } catch (InterruptedException e) {
-    //         	System.out.println("Error waiting: " + e);
-    //             return null;
-    //         }
-	// 	}
-
-	// 	System.out.println("Scheduler: Elevator is moving to floor " + userInput.getFloor() + " to pick up user");
-	// 	// Sleep for travel time
-	// 	try {
-	// 		Thread.sleep(1000); 
-	// 	} catch (InterruptedException e) {
-	// 		e.printStackTrace();
-	// 		System.exit(1);
-	// 	}
-		
-	// 	System.out.println("Scheduler: Elevator is moving user to floor " + userInput.getCarButton() + " to drop off user");
-	// 	// Sleep for travel time
-	// 	try {
-	// 		Thread.sleep(1000); 
-	// 	} catch (InterruptedException e) {
-	// 		e.printStackTrace();
-	// 		System.exit(1);
-	// 	}
-		
-	// 	// Notify Floor that elevator is available
-	// 	notifyAll();
-	// 	// Copy user_input values
-	// 	UserInput input = userInput;
-	// 	// Reset the user_input
-	// 	userInput = null;
-		
-	// 	// Return 
-	// 	return input;
-	// }
 
 	/** Receives a FloorRequest packet from Floor
 	 * TODO: This should be running as its own thread that way it can always be listening
@@ -216,6 +155,7 @@ public class Scheduler {
         // Create table that all threads will access
         Scheduler scheduler = new Scheduler();
 
+		// For testing
 		scheduler.receiveFloorPacket();
     }
 }
