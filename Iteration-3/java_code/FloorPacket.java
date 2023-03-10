@@ -97,6 +97,8 @@ public class FloorPacket {
 		this.printPacket();
 		System.out.print("Bytes: ");
 		this.printPacketBytes(receiveFloorPacket.getData());
+
+        System.out.println();
     }
 
     private void convertBytesToPacket(byte packet[]) {
