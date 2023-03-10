@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.*;
 
 public class ElevatorPacket {
 
@@ -11,16 +12,16 @@ public class ElevatorPacket {
     private int currentFloor; // Holds the current floor info
     private int destinationFloor; // Holds the destination floor info
     private boolean directionUp; // Holds the direction info
+    private ArrayList<Integer> passengerDestinations;
 
-    public ElevatorPacket(int elevatorNumber, boolean isMoving, int currentFloor, int destinationFloor, boolean directionUp) {
+    public ElevatorPacket(int elevatorNumber, boolean isMoving, int currentFloor, int destinationFloor, boolean directionUp, ArrayList<Integer> passengerDestinations) {
         this.elevatorNumber = elevatorNumber;
         this.isMoving = isMoving;
         this.currentFloor = currentFloor;
         this.destinationFloor = destinationFloor;
         this.directionUp = directionUp;
+        this.passengerDestinations = passengerDestinations;
 	}
-
-    
 
     /** 
      * Used to send the packet 
@@ -39,6 +40,10 @@ public class ElevatorPacket {
         outputStream.write(currentFloor);
         outputStream.write(destinationFloor);
         outputStream.write(directionUp ? 1 : 0);
+        for (int passenger : passengerDestinations) {
+            outputStream.write(passenger);
+        }
+        outputStream.write(0xFF); // Write an ending character for the passengerDestinations array
         sendbytes = outputStream.toByteArray();
 
         // Create datagram packet
@@ -66,8 +71,8 @@ public class ElevatorPacket {
 
     /** Used to wait until a FloorPacket is received */
     public void receive(DatagramSocket receiveElevatorSocket) {
-        // Construct a DatagramPacket for receiving packets up to 16 bytes long. Will not be longer
-		byte data[] = new byte[16];
+        // Construct a DatagramPacket for receiving packets up to 100 bytes long. Will not be longer
+		byte data[] = new byte[100];
 		receiveElevatorPacket = new DatagramPacket(data, data.length);
 
 		// Block until a datagram packet is received from receiveSocket.
@@ -95,6 +100,8 @@ public class ElevatorPacket {
 		this.printPacket();
 		System.out.print("Bytes: ");
 		this.printPacketBytes(receiveElevatorPacket.getData());
+
+        System.out.println();
     }
 
     private void convertBytesToPacket(byte packet[]) {
@@ -104,6 +111,12 @@ public class ElevatorPacket {
         currentFloor = packet[2];
         destinationFloor = packet[3];
         directionUp = packet[4] == 1 ? true : false;
+
+        // Get each of the destination that the passengers want to go on this elevator
+        for (int i = 5; packet[i] == 0xFF; i++) {
+            // Convert bytes into int array
+            passengerDestinations.add(Integer.parseInt(Byte.toString(packet[i])));
+        }
     }
 
     ///////////// GETTERS AND SETTERS /////////////
@@ -124,8 +137,16 @@ public class ElevatorPacket {
         return destinationFloor;
     }
 
+    public void setDestinationFloor(int destinationFloor) {
+        this.destinationFloor = destinationFloor;
+    }
+
     public boolean getDirectionUp() {
         return directionUp;
+    }
+
+    public ArrayList<Integer> getPassengerDestinations() {
+        return passengerDestinations;
     }
 
     public DatagramPacket getSendElevatorPacket() {
@@ -140,7 +161,8 @@ public class ElevatorPacket {
 
     public void printPacket() {
         System.out.println("Elevator number: " + elevatorNumber + ", is elevator moving: " + (isMoving ? "yes" : "no") + 
-                            ", current floor: " + currentFloor + ", destination floor: " + destinationFloor + ", direction: " + (directionUp ? "up" : "down"));
+                            ", current floor: " + currentFloor + ", destination floor: " + destinationFloor + 
+                            ", direction: " + (directionUp ? "up" : "down") + ", passenger destinations: " + (passengerDestinations.toString()));
     }
 
     public void printPacketBytes(byte packet[]) {
