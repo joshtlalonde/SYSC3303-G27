@@ -18,7 +18,7 @@ class Elevator implements Runnable
     private ArrivalSensor arrivalSensor = new ArrivalSensor(); // Sensor to indicate when an elevator is approaching a floor
     private Motor motor = new Motor(); // The elevators motor, controls motion of elevator
     private Door door = new Door(); // Elevators door
-    private ArrayList<elevatorButtons> elevatorButtons = new ArrayList<elevatorButtons>(); // Holds the buttons for each of the floors (up and down)
+    private ArrayList<ElevatorButton> elevatorButtons = new ArrayList<ElevatorButton>(); // Holds the buttons for each of the floors (up and down)
     
     public Elevator(int elevatorNumber)
     {
@@ -26,7 +26,7 @@ class Elevator implements Runnable
 
         // Create as many buttons as there are floors 
 		for (int i = 0; i < NUMBER_OF_FLOORS; i++) {
-			elevatorButtons.add(new elevatorButtons(i));
+			elevatorButtons.add(new ElevatorButton(i));
 		}
 
         // Create Datagram Socket on random port
@@ -43,29 +43,20 @@ class Elevator implements Runnable
      */
     public void stopped() {
         /** Send ElevatorPacket to tell scheduler we are stopped */ 
-        // Create Elevator Packet
-        ElevatorPacket elevatorPacket = new ElevatorPacket(elevatorNumber, isMoving, currentFloor, destinationFloor, directionUp);
-        // Send Elevator Packet
-        try {
-            elevatorPacket.send(InetAddress.getLocalHost(), 69, sendReceiveSocket);
-        } catch (UnknownHostException e) {
-            System.out.println("Failed to send ElevatorPacket: " + e);
-            e.printStackTrace();
-        }
-        System.out.println("Elevator: Sent request to the scheduler");
+        this.sendElevatorRequest();
 
         /** Wait for response from scheduler to move to new request */ 
-        // Create Floor Packet
-        FloorPacket floorPacket = new FloorPacket(0, null, false, 0);
-        // Receive Floor Packet
-        floorPacket.receive(sendReceiveSocket);
+        this.receiveSchedulerResponse();
 
         // TODO: What to do after receiving new floor service request (start moving, update vars, update externals)
+        // You know you are stopped, so when you receive the elevator packet from the scheduler
+        // You should be changing the destination of the elevator and start moving
+        // Then move to moving state
     }
 
     public void run()
     {
-        while(true){       
+        while(true){     
             // In stopped state
             stopped();
 
@@ -249,7 +240,7 @@ class Elevator implements Runnable
             // Simulate the user pressing the button
             for (UserInput user : floorRequests) {
                 System.out.println("Elevator: Picked up user on floor " + floor);
-                buttonPress(user);
+                buttonPress(user.getCarButton());
             }
         }
 
@@ -258,7 +249,7 @@ class Elevator implements Runnable
             // Simulate the user getting off the elevator
             for (UserInput user : elevatorRequests) {
                 // Reset the button depending on what floor was pressed
-                for (elevatorButtons button : elevatorButtons) {
+                for (ElevatorButton button : elevatorButtons) {
                     if (button.getButtonFloor() == user.getCarButton()) {
                         System.out.println("Elevator: Dropped off user on floor " + floor);
                         button.reset();
@@ -269,31 +260,50 @@ class Elevator implements Runnable
         }
 	}
 
-    /** Sets the button in its clicked state
-     * As well as sending a notification to the scheduler
-     */
-    public void buttonPress(UserInput userInput) {
+    /** Puts the button in its clicked state */
+    public void buttonPress(int carButton) {
         // Activate the correct button depending on which floor was pressed
-        for (elevatorButtons button : elevatorButtons) {
-            if (button.getButtonFloor() == userInput.getCarButton()) {
+        for (ElevatorButton button : elevatorButtons) {
+            if (button.getButtonFloor() == carButton) {
                 // Turn on the button for that floor
-                System.out.println("Elevator: User has pressed button to go to floor " + userInput.getCarButton());
+                System.out.println("Elevator: User has pressed button to go to floor " + carButton);
                 button.press();
                 break;
             }
         }
-
-        // TODO: This should not be done within here
-		// Send request to scheduler
-		sendElevatorRequest(userInput);
     }
 
-    /** Sends request to the Scheduler */
-	private void sendElevatorRequest(UserInput userInput) {
-		// Adds the elevator request to the scheduler
-		// scheduler.addElevatorRequest(userInput);
-		// System.out.println("Elevator: Added " + userInput + " into the scheduler");
+    /** Send a request to the scheduler to let it know the state of the elevator and ask what should be done */
+	private void sendElevatorRequest() {
+        // Get list of passenger destination for the elevator
+        ArrayList<Integer> passengerDestinations = new ArrayList<Integer>();
+        int i = 0;
+        for (ElevatorButton button : elevatorButtons) {
+            if (button.getButtonState() == true) {
+                passengerDestinations.add(i);
+            }
+            i++;
+        }
+
+        // Create Elevator Packet
+        ElevatorPacket elevatorPacket = new ElevatorPacket(elevatorNumber, isMoving, currentFloor, destinationFloor, directionUp, passengerDestinations);
+        // Send Elevator Packet
+        System.out.println("Elevator: Sending request to the scheduler");
+        try {
+            elevatorPacket.send(InetAddress.getLocalHost(), 69, sendReceiveSocket);
+        } catch (UnknownHostException e) {
+            System.out.println("Failed to send ElevatorPacket: " + e);
+            e.printStackTrace();
+        }
 	}
+
+    public void receiveSchedulerResponse() {
+        // Create Default Elevator Packet
+        ElevatorPacket elevatorPacket = new ElevatorPacket(0, false, 0, 0, false, new ArrayList<Integer>());
+        // Receive Elevator Packet
+        System.out.println("Elevator: Waiting for Elevator Packet from Scheduler...");
+        elevatorPacket.receive(sendReceiveSocket);
+    }
 
     public static void main(String[] args) {        
 		// Create Elevator Thread
@@ -372,12 +382,12 @@ class ArrivalSensor {
  *  Each button has a floor number associated to it
  *  Each button has a lamp associated to it
  */
-class elevatorButtons {
+class ElevatorButton {
 	private boolean buttonState = false; // Defines the state of the button, On or Off
 	private ElevatorLamp buttonLamp = new ElevatorLamp(); // Used to hold the associated lamp of the button
 	private int buttonFloor = 0; // Indicates the floor the button is associated to
 
-	public elevatorButtons(int floor) {
+	public ElevatorButton(int floor) {
 		this.buttonFloor = floor;
 	}
 
