@@ -271,14 +271,14 @@ class FloorButton {
 	public void pressUp() {
 		upButtonState = true;
 		upButtonLamp.turnOn();
-		System.out.println("FloorButton: Floor Button pressed on floor " + buttonFloor + " in Up direction");
+		System.out.println("FloorButton: Button pressed on floor " + buttonFloor + " in Up direction");
 	}
 
 	// Sets the down button state On and turns on the down Lamp
 	public void pressDown() {
 		downButtonState = true;
 		downButtonLamp.turnOn();
-		System.out.println("FloorButton: Floor Button pressed on floor " + buttonFloor + " in Down direction");
+		System.out.println("FloorButton: Button pressed on floor " + buttonFloor + " in Down direction");
 	}
 
 	// Sets the buttons state to Off and turns off the Lamps
@@ -311,13 +311,13 @@ class FloorLamp {
 
 	// Sets lamp state to On
 	public void turnOn() {
-		System.out.println("FloorLamp: Floor Lamp turned on");
+		System.out.println("FloorLamp: Turned on");
 		lampState = true;
 	}
 
 	// Sets lamp state to Off
 	public void turnOff() {
-		System.out.println("FloorLamp: Floor Lamp turned off");
+		System.out.println("FloorLamp: Turned off");
 		lampState = false;
 	}
 

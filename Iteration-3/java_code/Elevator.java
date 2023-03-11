@@ -52,20 +52,24 @@ class Elevator implements Runnable
      * 
      */
     public void idle() {
-        /** Send ElevatorPacket to tell scheduler we are stopped */ 
+        /** Send ElevatorPacket to tell scheduler we are in idle state (stopped, curr = dest, no passDests) */ 
         this.sendElevatorRequest();
 
         /** Wait for response from scheduler to move to new request */ 
         ElevatorPacket newFloorRequest = this.receiveSchedulerResponse();
 
-        // TODO: What to do after receiving new floor service request (start moving, update vars, update externals)
-        // You know you are stopped, so when you receive the elevator packet from the scheduler
-        // You should be changing the destination of the elevator and start moving
-        // Then move to moving state
-
+        // TODO: What to do after receiving new floor service request (start moving, update vars, update externals)    
         /** Close Doors */
+        this.doorClose();
 
         /** Start Moving to Pickup Passenger */
+        if (currentFloor < newFloorRequest.getDestinationFloor()) {
+            // Move up
+            this.movingUp(newFloorRequest.getDestinationFloor());
+        } else if (currentFloor > newFloorRequest.getDestinationFloor()) {
+            // Move down
+            this.movingUp(newFloorRequest.getDestinationFloor());
+        }
 
         /** Stop Moving */
 
@@ -79,14 +83,68 @@ class Elevator implements Runnable
     /** 
      * Elevator is in moving up state 
      */
-    public void movingUp() {
+    public void movingUp(int destinationFloor) {
+        // Update the Destination Floor of the elevator
+        this.destinationFloor = destinationFloor;
+        // Update the direction of the elevator
+        this.directionUp = true;
 
+        // Start motor in Up direction
+        motor.startMoving(true);
+        // Set elevator moving state
+        this.isMoving = true;
+
+        // Update currentFloor and arrivalSensor as you are moving
+        while (currentFloor < destinationFloor) {
+            // Sleep for amount of time to move between floors
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e ) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+
+            // Moved a floor up
+            currentFloor++;
+            // TODO: Tell arrival sensor
+
+            // Send updated elevator request to scheduler
+            this.sendElevatorRequest(); // TODO: Should activate serviceElevatorMovingRequest
+
+            // Wait for response, to see if there are new users to service or not
+            ElevatorPacket movingResponsePacket = this.receiveSchedulerResponse();
+            // Check if there are any new passengerDestinations, if there is then stop 
+            // TODO: check if any of the buttons for the passengerDestination floors are new. If yes then people wanna get on at this floor 
+            // Let new people on by stopping, openning doors, then closing doors, then starting again
+            for (int passengerDestination : movingResponsePacket.getPassengerDestinations()) {
+                for (ElevatorButton button : elevatorButtons) {
+                    if (button.getButtonFloor() == passengerDestination) {
+                        if (button.getButtonState() == false) {
+                            // Stop elevator
+                            this.stopped();
+
+                            // Open Doors
+                            this.doorOpen();
+
+                            // Close Doors
+                            this.doorClose();
+
+                            // Start again
+                            motor.startMoving(true);
+                        }
+                    }
+                }
+            }
+
+
+            
+        }
     }
 
     /** 
      * Elevator is in moving down state 
      */
-    public void movingDown() {
+    public void movingDown(int destinationFloor) {
 
     }
 
@@ -94,131 +152,39 @@ class Elevator implements Runnable
      * Elevator is in stopped state 
      */
     public void stopped() {
-
-
+        motor.stopMoving();
     }
 
     /** 
      * Elevator is in door open state 
      * 
      * Opens the doors
-     * Lets people on the elevator
-     * Gets all the passengerDestinations clicks
+     * Lets people on/off the elevator
+     * Resets buttons and passengerDestinations for people getting off
+     * Sets buttons and passengerDestinations for people that got on
      * 
      */
     public void doorOpen() {
-
+        door.open();
     }
 
     /** 
      * Elevator is in door close state 
+     * 
      */
     public void doorClose() {
-
+        door.close();
     }
 
     public void run()
     {
         while(true){     
-            // In stopped state
-            stopped();
+            // Start in Idle State
+            idle();
 
 
-            // TODO: All of this is old, and most likely not functional or effecient in understanding
-            // Elevator has arrived at a floor
-//            System.out.println("Elevator: Ready on floor " + arrivalSensor.getFloor());
-            // ArrayList<UserInput> floorRequests = getFloorRequests(arrivalSensor.getFloor(), motor.getDirectionUp());
-            // ArrayList<UserInput> elevatorRequests = getElevatorRequests(arrivalSensor.getFloor());
-
-            // // No users are waiting to be serviced on this floor
-            // boolean isEmpty = true;
-            // if (floorRequests.isEmpty() && elevatorRequests.isEmpty()) {
-            //     for (elevatorButtons button : elevatorButtons) {
-            //         // Continue on if a user is in the elevator
-            //         if (button.getButtonState() == true) {
-            //             isEmpty = false;
-            //         }
-            //     }
-
-            //     if (isEmpty) {
-            //         // Check if anyone wants to go up
-            //         for (int i = 0; i < scheduler.getNumberOfFloors(); i++) {
-            //             floorRequests = getFloorRequests(i, true);
-            //             if (!floorRequests.isEmpty()) {
-            //                 // Move to user to pick them up 
-            //                 moveToGetUser(i);
-            //                 break;
-            //             }
-            //         }
-
-            //         // Check if anyone wants to go down
-            //         if (floorRequests.isEmpty()) {
-            //             for (int i = scheduler.getNumberOfFloors(); i >= 0; i--) {
-            //                 floorRequests = getFloorRequests(i, false);
-            //                 if (!floorRequests.isEmpty()) {
-            //                     // Move to user to pick them up 
-            //                     moveToGetUser(i);
-            //                     break;
-            //                 }
-            //             }
-            //         }   
-            //     }
-            // }
-
-            // elevatorArrival(arrivalSensor.getFloor(), floorRequests, elevatorRequests);
-
-            // // Close the door
-            // if (door.getIsOpen()) {
-            //     door.close();
-            //     System.out.println("Elevator: Closing door on floor " + arrivalSensor.getFloor());
-            // }
-
-            // // Sleep for 1 sec
-            // try {
-            //     Thread.sleep(1000); 
-            // } catch (InterruptedException ex) {
-            //     System.exit(1);
-            // }
-
-            
-            // elevatorButtons buttonToService = null;
-            // for (elevatorButtons button : elevatorButtons) {
-            //     // Service the first button that is clicked
-            //     // TODO: This will need to be changed
-            //     if (button.getButtonState()) {
-            //         buttonToService = button;
-            //     }
-            // }
-
-            // if (buttonToService != null) {
-            //     // Start to move the elevator
-            //     if (arrivalSensor.getFloor() == scheduler.getNumberOfFloors() - 1 || (arrivalSensor.getFloor() - buttonToService.getButtonFloor()) > 0) {
-            //         // Motor start moving down
-            //         System.out.println("Elevator: Motor starting to move down");
-            //         // Set arrival sensor to next floor
-            //         arrivalSensor.setFloor(arrivalSensor.getFloor() - 1);
-            //         motor.startMoving(false);
-            //     } else if (arrivalSensor.getFloor() == 0 || (arrivalSensor.getFloor() - buttonToService.getButtonFloor()) < 0) {
-            //         // Motor start moving up
-            //         System.out.println("Elevator: Motor starting to move up");
-            //         motor.startMoving(true);
-            //         // Set arrival sensor to next floor
-            //         arrivalSensor.setFloor(arrivalSensor.getFloor() + 1);
-            //     }
-            // }
         }
     }
-
-    /** 
-     * Waits until Scheduler sends a FloorPacket with all requests on that floor
-     */
-    // public ArrayList<UserInput> getFloorRequests(int floor, boolean directionUp) {
-    //     return scheduler.serviceFloorRequest(floor, motor.getDirectionUp());
-    // }
-
-    // public ArrayList<UserInput> getElevatorRequests(int floor) {
-    //     return scheduler.serviceElevatorRequest(floor);
-    // }
 
     /** Old and most likely not useful anymore */
     public void moveToGetUser(int floor) {
@@ -387,8 +353,10 @@ class Motor {
     // Starts the motor, in a specific direction
     public void startMoving(boolean directionUp) { // TODO: Should include decelerating and accelerating
         if (directionUp) {
+            System.out.println("Motor: Starting to move Up");
             this.directionUp = true;
         } else {
+            System.out.println("Motor: Starting to move Up");
             this.directionUp = false;
         }
 
@@ -397,6 +365,7 @@ class Motor {
 
     // Stops the motor
     public void stopMoving() {
+        System.out.println("Motor: Stopping");
         isMoving = false;
     }
 
@@ -417,11 +386,13 @@ class Door {
 
     // Sets isOpen to true
     public void open() { // TODO: Should take time for both
+        System.out.println("Door: Opening");
         isOpen = true;
     }
 
     // Sets isOpen to false
     public void close() {
+        System.out.println("Door: Closing");
         isOpen = false;
     }
 
@@ -458,12 +429,14 @@ class ElevatorButton {
 
 	// Sets the button state On, and turns on the Lamp
 	public void press() {
+        System.out.println("ElevatorButton: Button for floor " + buttonFloor + " has been clicked");
 		buttonState = true;
 		buttonLamp.turnOn();
 	}
 
 	// Sets the button state to Off and turns off the Lamp
 	public void reset() {
+        System.out.println("ElevatorButton: Button for floor " + buttonFloor + " has been reset");
 		buttonState = false;
 		buttonLamp.turnOff();
 	}
@@ -485,11 +458,13 @@ class ElevatorLamp {
 
 	// Sets lamp state to On
 	public void turnOn() {
+        System.out.println("ElevatorLamp: Turned on");
 		lampState = true;
 	}
 
 	// Sets lamp state to Off
 	public void turnOff() {
+        System.out.println("ElevatorLamp: Turned off");
 		lampState = false;
 	}
 
