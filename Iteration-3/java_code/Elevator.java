@@ -38,20 +38,83 @@ class Elevator implements Runnable
 		}
     }
 
-    /** Actions the elevator does when in stopped state
-     * TODO: Needs to change the motor and all other external devices
+    /** 
+     * The elevator is in the Idle State
+     * 
+     * The elevator sends a packet to the scheduler to let it know it is:
+     *      stopped
+     *      currentFloor == destinationFloor
+     *      No passengerDestinations
+     * 
+     * Waits until scheduler tells it to pick a new passenger up, through a packet that states:
+     *      new destinationFloor
+     *      new passengerDestinations
+     * 
      */
-    public void stopped() {
+    public void idle() {
         /** Send ElevatorPacket to tell scheduler we are stopped */ 
         this.sendElevatorRequest();
 
         /** Wait for response from scheduler to move to new request */ 
-        this.receiveSchedulerResponse();
+        ElevatorPacket newFloorRequest = this.receiveSchedulerResponse();
 
         // TODO: What to do after receiving new floor service request (start moving, update vars, update externals)
         // You know you are stopped, so when you receive the elevator packet from the scheduler
         // You should be changing the destination of the elevator and start moving
         // Then move to moving state
+
+        /** Close Doors */
+
+        /** Start Moving to Pickup Passenger */
+
+        /** Stop Moving */
+
+        /** Open Doors */
+
+        /** Activate clicked button */
+
+        /** Start Moving */
+    }
+
+    /** 
+     * Elevator is in moving up state 
+     */
+    public void movingUp() {
+
+    }
+
+    /** 
+     * Elevator is in moving down state 
+     */
+    public void movingDown() {
+
+    }
+
+    /** 
+     * Elevator is in stopped state 
+     */
+    public void stopped() {
+
+
+    }
+
+    /** 
+     * Elevator is in door open state 
+     * 
+     * Opens the doors
+     * Lets people on the elevator
+     * Gets all the passengerDestinations clicks
+     * 
+     */
+    public void doorOpen() {
+
+    }
+
+    /** 
+     * Elevator is in door close state 
+     */
+    public void doorClose() {
+
     }
 
     public void run()
@@ -275,7 +338,7 @@ class Elevator implements Runnable
 
     /** Send a request to the scheduler to let it know the state of the elevator and ask what should be done */
 	private void sendElevatorRequest() {
-        // Get list of passenger destination for the elevator
+        // Get list of passenger destination for the elevator to add as passengerDestinations in the packet
         ArrayList<Integer> passengerDestinations = new ArrayList<Integer>();
         int i = 0;
         for (ElevatorButton button : elevatorButtons) {
@@ -297,12 +360,14 @@ class Elevator implements Runnable
         }
 	}
 
-    public void receiveSchedulerResponse() {
+    public ElevatorPacket receiveSchedulerResponse() {
         // Create Default Elevator Packet
         ElevatorPacket elevatorPacket = new ElevatorPacket(0, false, 0, 0, false, new ArrayList<Integer>());
         // Receive Elevator Packet
         System.out.println("Elevator: Waiting for Elevator Packet from Scheduler...");
         elevatorPacket.receive(sendReceiveSocket);
+
+        return elevatorPacket;
     }
 
     public static void main(String[] args) {        

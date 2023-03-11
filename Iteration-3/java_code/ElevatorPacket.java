@@ -12,7 +12,7 @@ public class ElevatorPacket {
     private int currentFloor; // Holds the current floor info
     private int destinationFloor; // Holds the destination floor info
     private boolean directionUp; // Holds the direction info
-    private ArrayList<Integer> passengerDestinations;
+    private ArrayList<Integer> passengerDestinations; // Holds the array of passenger destination floors
 
     public ElevatorPacket(int elevatorNumber, boolean isMoving, int currentFloor, int destinationFloor, boolean directionUp, ArrayList<Integer> passengerDestinations) {
         this.elevatorNumber = elevatorNumber;
