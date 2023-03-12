@@ -68,7 +68,7 @@ class Elevator implements Runnable
             this.movingUp(newFloorRequest.getDestinationFloor());
         } else if (currentFloor > newFloorRequest.getDestinationFloor()) {
             // Move down
-            this.movingUp(newFloorRequest.getDestinationFloor());
+            this.movingDown(newFloorRequest.getDestinationFloor());
         }
 
         /** Stop Moving */
@@ -182,39 +182,47 @@ class Elevator implements Runnable
      * Closes doors
      * Starts moving to destination again
      * 
-     * If noone wanted to get on then go into idle state
      */
     public void stopped() {
-        // Stop the motor
         motor.stopMoving();
+        
+        // TODO: What to do after receiving new floor service request (start moving, update vars, update externals)    
+        /** Close Doors */
+        this.doorOpen();
+        
+        this.sendElevatorRequest();
 
-        // Send a packet to Scheduler to notify you are stopped
+        /** Wait for response from scheduler to move to new request */ 
+        ElevatorPacket newFloorRequest = this.receiveSchedulerResponse();
+        
+        for (int passengerDestination : newFloorRequest.getPassengerDestinations()) {
+            for (ElevatorButton button : elevatorButtons) {
+                if (button.getButtonFloor() == passengerDestination) {
+                    if (button.getButtonState() == false) {
+                    	this.buttonPress(button.getButtonFloor());
+                    }
+                }
+            }
+        }
+        
+        
+        try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			System.out.print("Stopped State had an issue sleeping");
+			e.printStackTrace();
+		}
+        
+        this.doorClose();
 
-        // Wait for response
-
-
-        // TODO: Below is what should be done with a response
-        // Check if there are any new passengerDestinations, if there is then service them 
-        // Let new people on by stopping, openning doors, then closing doors, then starting again
-        // for (int passengerDestination : movingResponsePacket.getPassengerDestinations()) {
-        //     for (ElevatorButton button : elevatorButtons) {
-        //         if (button.getButtonFloor() == passengerDestination) {
-        //             if (button.getButtonState() == false) {
-        //                 // Stop elevator
-        //                 this.stopped();
-
-        //                 // Open Doors
-        //                 this.doorOpen();
-
-        //                 // Close Doors
-        //                 this.doorClose();
-
-        //                 // Start again
-        //                 motor.startMoving(true);
-        //             }
-        //         }
-        //     }
-        // }
+        /** Start Moving to Pickup Passenger */
+        if (newFloorRequest.getDirectionUp()) {
+            // Move up
+            this.movingUp(newFloorRequest.getDestinationFloor());
+        } else if (!newFloorRequest.getDirectionUp()) {
+            // Move down
+            this.movingDown(newFloorRequest.getDestinationFloor());
+        }
     }
 
     /** 
