@@ -271,11 +271,10 @@ public class Scheduler {
 		}
 	}
 	
-		//Stop State, Not moving plus current floor and destination don't match 
-	//
+	//Stop State
 	public void serviceElevatorStopRequest(ElevatorPacket elevatorPacket, ElevatorInfo elevator) {
-		//Everypassenger on that floor going in the same direction 
-		int i = 0;
+		//Every passenger on that floor going in the same direction
+		int i = 0; // Iteration check variable 
 		boolean directionUp = true;
 		System.out.println("Scheduler: Elevator " + elevatorPacket.getElevatorNumber() + " is in the Stopped state, checking if there is anyone to pickup on floor " + elevatorPacket.getCurrentFloor());
 		synchronized (floorRequests) {
@@ -290,6 +289,7 @@ public class Scheduler {
 		}
 		
 		for(UserInput floorRequest : floorRequests) {
+			//A direction hasn't been set
 			if(floorRequest.getFloor() == elevator.getCurrentFloor() && (i == 0)) {
 				directionUp = floorRequest.getFloorButtonUp();
 				// Add passengerDestination to elevator Packet
@@ -308,6 +308,7 @@ public class Scheduler {
 				floorRequests.notifyAll();
 				i++;
 			}
+			//A direction has been set
 			else if(floorRequest.getFloor() == elevator.getCurrentFloor() && (i != 0) && (floorRequest.getFloorButtonUp() == directionUp)) {
 				directionUp = floorRequest.getFloorButtonUp();
 				// Add passengerDestination to elevator Packet
