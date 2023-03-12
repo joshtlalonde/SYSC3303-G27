@@ -57,6 +57,7 @@ The `java_test_code` folder contains the different Unit Test files that are used
  - Created Sequence Diagram
  - Coded Scheduler to handle requests from Elevator while in Stopped State
  - Made changes to Scheduler's Floor service requests
+ - Created Elevator Stopped State
   
 ## Sanya : 101205395
  
