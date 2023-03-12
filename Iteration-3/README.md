@@ -62,6 +62,8 @@ The `java_test_code` folder contains the different Unit Test files that are used
 ## Sanya : 101205395
  
 ## Partha : 101191302
+- Helped with State diagrams
+- Helped with Elevator.java
   
 
 # Setup and Test Instructions
