@@ -43,7 +43,7 @@ This file is used as a helper class to send and receive packets between the sche
 The `java_test_code` folder contains the different Unit Test files that are used to ensure the proper functionality of all of the methods for each of the classes. Each of the java files are associated to a different class where the JUnit assert functions are used to ensure that the actual results of a method of the testing class is equivalent to the expected results
 
 # Responsibilities 
-## Josh : 101109655 (
+## Josh : 101109655 
 - Coded Communication Classes and how they interact
 - Coded Elevator Idle and Moving State
 - Coded Scheduler to handle Floor and Elevator requests
@@ -51,16 +51,16 @@ The `java_test_code` folder contains the different Unit Test files that are used
 - Coded Unit Tests for Packet Classes
 - Created Class Diagram
 
-## Sanskar : 101189876 (Created Sequence diagram, Aided with code choices)
+## Sanskar : 101189876 
   
 ## Jakob : 101201314 
  - Created Sequence Diagram
  - Coded Scheduler to handle requests from Elevator while in Stopped State
  - Made changes to Scheduler's Floor service requests
   
-## Sanya : 101205395(Wrote the readme file, helped with the state diagram and edited some code)
+## Sanya : 101205395
  
-## Partha : 101191302 (Coded the unit tests)
+## Partha : 101191302
   
 
 # Setup and Test Instructions
