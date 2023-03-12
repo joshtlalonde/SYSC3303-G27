@@ -5,16 +5,18 @@
 ## Files included:
 
 - Floor.java
-- elevator.java
+- FloorPacket.java
+- Elevator.java
+- ElevatorPacket.java
 - Scheduler.java
 - floor_input.text
-- UML-diagrams
+- Diagrams
 - State diagram
 - Unit tests
 
 In-depth description about each file and their roles:
 
-## UML-diagrams 
+## Diagrams 
 Folder containing two UML diagrams (one class and sequence diagram) describing the elevator system and their functions/methods. The class diagram shows the subsystems and their relations to other subsystems in a blue-print/schematic format. The sequence diagram on the other hand shows these subsystems in the context of their lifelines. 
 
 ## State diagram
@@ -24,7 +26,10 @@ State diagram is used to describe the change in state by any kind of input event
 This is the file within which the user input is stored, polled and received from the rest of the subsystems. Its format is primarily in a table with columns for Time, Floor, Floor button and Car button. These provide key information that the rest of the subsystems need to schedule and execute. 
 
 ## Floor.java
-This file represents a floor in the building within which the elevator functions. The primary task for the floor is to retrieve and send data from the floor_input file to provide updates for user input and current status to the scheduler. The floor also has floor buttons which communicates with the scheduler to determine which floor to go to.
+This file represents a floor in the building within which the elevator functions. The primary task for the floor is to retrieve and send data from the floor_input file to provide updates for user input and current status to the scheduler. For every line read from the floor_input file there is a simulated button clicked outside of the elevator. When this occurs the Floor sends a FloorPacket request to the scheduler to notify it that there is a person waiting on that specific floor.
+
+## FloorPacket.java
+This file is used as a helper class to send and receive packets between the scheduler and the floor. The floor needs to communicate with the scheduler that a new user has arrived. Therefore, the information that needs to be sent to the scheduler is the floor, destination floor, time, and direction of the request. The FloorPacket.java class ensures that all of that data is sent and received properly formatted to allow for easy access and manipulation of the data
 
 ## Scheduler.java
 The scheduler is the brain of the program. Its function is to take user inputs that it receives from Floor and create algorithms that the elevators will follow to satisfy the requests of users. A notable method that it uses for communication is get(). get() serves to take modified information based off of the input and algorithm that is being executed to be used by elevator.
@@ -32,9 +37,11 @@ The scheduler is the brain of the program. Its function is to take user inputs t
 ## Elevator.java
 Elevator simply takes information from the scheduler using its get() method. The elevator also has lights and buttons to the elevator. When an elevator button is pressed, it will transition from one floor to another.
 
-## Unit Tests
-Unit tests are essentially used to test the code. This folder contains two files Test.java and ButtonLampTest.java.
-ButtonLampTest.ajava checks the state of the floor button including whether the floor button/lamp is pressed/turned on or not. Test.java on the other hand,  checks if the expected result is same as the actual result in the floor reading.
+## ElevatorPacket.java
+This file is used as a helper class to send and receive packets between the scheduler and the elevator. The elevator needs to communicate with the scheduler that an elevator has stopped or is moving between floors. Therefore, the information that needs to be sent to the scheduler is the elevator number, if the elvator is moving, current floor, destination floor, direction the elevator is moving, and the floors that the passengers wish to stop at. The ElevatorPacket.java class ensures that all of that data is sent and received properly formatted to allow for easy access and manipulation of the data.
+
+## java_test_code
+This folder contains the different Unit Test files that are used to ensure the proper functionality of all of the methods for each of the classes. Each of the java files are associated to a different class where the JUnit assert functions are used to ensure that the actual results of a method of the testing class is equivalent to the expected results
 
 # Responsibilities 
 ## Josh : 101109655 (
