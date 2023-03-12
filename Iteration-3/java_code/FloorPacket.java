@@ -101,7 +101,7 @@ public class FloorPacket {
         System.out.println();
     }
 
-    private void convertBytesToPacket(byte packet[]) {
+    public void convertBytesToPacket(byte packet[]) {
 		// Create new FloorPacket object from data
         floor = packet[0];
         destinationFloor = packet[1];
@@ -136,6 +136,14 @@ public class FloorPacket {
 
     public int getDestinationFloor() {
         return destinationFloor;
+    }
+    
+    public DatagramPacket getSendFloorPacket() {
+        return sendFloorPacket;
+    }
+
+    public DatagramPacket getReceiveFloorPacket() {
+        return receiveFloorPacket;
     }
 
     ///////////// PRINTERS /////////////
