@@ -148,12 +148,12 @@ public class FloorPacket {
 
     ///////////// PRINTERS /////////////
 
-    public void printPacket() {
+    private void printPacket() {
         System.out.println("Floor number: " + floor + ", destination floor: " + destinationFloor + 
                             ", direction: " + (directionUp ? "Up" : "Down") + ", time: " + dateFormatter.format(time));
     }
 
-    public void printPacketBytes(byte packet[]) {
+    private void printPacketBytes(byte packet[]) {
 		for (int i = 0; i < packet.length; i++) {
 			System.out.print(String.format("0x%02X ", packet[i]));
 		}
