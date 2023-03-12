@@ -164,12 +164,6 @@ public class Scheduler {
 		System.out.println("Scheduler: Waiting for Elevator Packet..."); 
 		elevatorPacket.receive(receiveElevatorSocket);
 
-		// synchronized (elevatorRequests) {
-		// 	System.out.println("Scheduler: Adding Elevator Request to list of requests");
-		// 	elevatorRequests.add(elevatorPacket);
-		// 	elevatorRequests.notifyAll();
-		// }
-
 		/** Update ElevatorInfo with the packet */
 		ElevatorInfo elevator = null;
 		for (ElevatorInfo elevatorInfo : elevatorsInfo) {
@@ -234,10 +228,10 @@ public class Scheduler {
 			elevator.setDestinationFloor(floorRequest.getFloor());
 
 			// Add passengerDestination to elevator Packet
-			elevator.getPassengerDestinations().add(floorRequest.getCarButton());
+			// elevator.getPassengerDestinations().add(floorRequest.getCarButton()); The passenger hasn't clicked a button yet
 
 			// Remove Floor Request from list of Requests
-			floorRequests.remove(floorRequest);
+			// floorRequests.remove(floorRequest); // Think it should only be removed once they get on the elevator which is in STOPPED state
 
 			// Send elevatorPacket to the elevator
 			System.out.println("Scheduler: Sending Elevator Packet to elevator: ");
@@ -255,13 +249,19 @@ public class Scheduler {
 			System.out.println("Scheduler: Elevator " + elevatorPacket.getElevatorNumber() + " is in Moving State, checking if there is anyone to pickup");
 
 			// Check if there are any floorRequests on the floor the elevator is on
-
-			// If yes:
-				// Send a packet to the Elevator with the new passengerDestinations
-			// If no:
-				// Send packet back as it was received
+			boolean sendPacket = false;
+			for (UserInput floorRequst : floorRequests) {
+				if (floorRequst.getFloor() == elevator.getCurrentFloor()) {
+					sendPacket = true;
+				}
+			}
+			if (sendPacket) {
+				// Stop the elevator
+				elevator.setIsMoving(false);
+			}
 
 			// Send elevatorPacket to the elevator
+			System.out.println(sendPacket);
 			System.out.println("Scheduler: Sending Elevator Packet to elevator: ");
 			// elevatorPacket.send(elevatorPacket.getReceiveElevatorPacket().getAddress(), elevatorPacket.getReceiveElevatorPacket().getPort(), receiveElevatorSocket);
 			elevator.sendPacket(elevatorPacket.getReceiveElevatorPacket().getAddress(), elevatorPacket.getReceiveElevatorPacket().getPort(), receiveElevatorSocket);

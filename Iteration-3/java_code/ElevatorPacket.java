@@ -132,6 +132,10 @@ public class ElevatorPacket {
         return isMoving;
     }
 
+    public void setIsMoving(boolean isMoving) {
+        this.isMoving = isMoving;
+    }
+
     public int getCurrentFloor() {
         return currentFloor;
     }
@@ -163,9 +167,9 @@ public class ElevatorPacket {
     ///////////// PRINTERS /////////////
 
     private void printPacket() {
-        System.out.println("Elevator number: " + elevatorNumber + ", is elevator moving: " + (isMoving ? "yes" : "no") + 
+        System.out.println("Elevator number: " + elevatorNumber + ", elevator moving: " + (isMoving ? "Yes" : "No") + 
                             ", current floor: " + currentFloor + ", destination floor: " + destinationFloor + 
-                            ", direction: " + (directionUp ? "up" : "down") + ", passenger destinations: " + (passengerDestinations.toString()));
+                            ", direction: " + (directionUp ? "Up" : "Down") + ", passenger destinations: " + (passengerDestinations.toString()));
     }
 
     private void printPacketBytes(byte packet[]) {

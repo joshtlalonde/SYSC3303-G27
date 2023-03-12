@@ -150,7 +150,7 @@ public class FloorPacket {
 
     public void printPacket() {
         System.out.println("Floor number: " + floor + ", destination floor: " + destinationFloor + 
-                            ", direction: " + (directionUp ? "up" : "down") + ", time: " + dateFormatter.format(time));
+                            ", direction: " + (directionUp ? "Up" : "Down") + ", time: " + dateFormatter.format(time));
     }
 
     public void printPacketBytes(byte packet[]) {
