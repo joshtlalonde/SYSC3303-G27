@@ -270,6 +270,44 @@ public class Scheduler {
 			floorRequests.notifyAll();
 		}
 	}
+	
+	//Stop State
+	public void serviceElevatorStopRequest(ElevatorPacket elevatorPacket, ElevatorInfo elevator) {
+		//Every passenger on that floor going in the same direction 
+		System.out.println("Scheduler: Elevator " + elevatorPacket.getElevatorNumber() + " is in the Stopped state, checking if there is anyone to pickup on floor " + elevatorPacket.getCurrentFloor());
+		synchronized (floorRequests) {
+			while (floorRequests.isEmpty()) {
+				try {
+					floorRequests.wait();
+				} catch (InterruptedException e) {
+					System.out.println("Scheduler: Synchronized wait failed on floorRequests: " + e); 
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		for(UserInput floorRequest : floorRequests) {
+			if(floorRequest.getFloor() == elevator.getCurrentFloor() && (floorRequest.getFloorButtonUp() == elevator.getDirectionUp())) {
+				// Add passengerDestination to elevator Packet
+				elevator.getPassengerDestinations().add(floorRequest.getCarButton());
+
+				// Remove Floor Request from list of Requests
+				floorRequests.remove(floorRequest);
+
+				// Send elevatorPacket to the elevator
+				System.out.println("Scheduler: Sending Elevator Packet to elevator: ");
+				
+				// elevatorPacket.send(elevatorPacket.getReceiveElevatorPacket().getAddress(), elevatorPacket.getReceiveElevatorPacket().getPort(), receiveElevatorSocket);
+				elevator.sendPacket(elevatorPacket.getReceiveElevatorPacket().getAddress(), elevatorPacket.getReceiveElevatorPacket().getPort(), receiveElevatorSocket);
+
+				// Notify any thread waiting on floorRequests
+				floorRequests.notifyAll();
+			}
+				
+			}
+			
+			
+		}
 
 	// /** 
 	//  * Service an elevator request from the Queue
