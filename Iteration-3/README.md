@@ -53,7 +53,10 @@ The `java_test_code` folder contains the different Unit Test files that are used
 
 ## Sanskar : 101189876 (Created Sequence diagram, Aided with code choices)
   
-## Jakob : 101201314 (Created Sequence diagram, Aided with code choices)
+## Jakob : 101201314 
+ - Created Sequence Diagram
+ - Coded Scheduler to handle requests from Elevator while in Stopped State
+ - Made changes to Scheduler's Floor service requests
   
 ## Sanya : 101205395(Wrote the readme file, helped with the state diagram and edited some code)
  
