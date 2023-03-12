@@ -94,60 +94,74 @@ public class Scheduler {
 		return null;
 	}
 
-	// /** 
-	//  * Sends an editted elevatorPacket to the elevator to let the elevator know where it is moving and who is on it
-	//  * 
-	//  * @elevatorPacket Takes a Request elevatorPacket as input, this packet is an elevator asking for a response from the scheduler
-	//  */
-	// public void serviceFloorRequest(ElevatorPacket elevatorPacket) {
-	// 	synchronized (floorRequests) {
-	// 		// Wait until a FloorRequest comes in 
-	// 		while (floorRequests.isEmpty()) {
-	// 			try {
-	// 				floorRequests.wait();
-	// 			} catch (InterruptedException e) {
-	// 				System.out.println("Elevator: Synchronized wait failed on floorRequests: " + e); 
-	// 				e.printStackTrace();
-	// 			}
-	// 		}
+// 		/** 
+// 	 * Sends an editted elevatorPacket to the elevator to let the elevator know where it is moving and who is on it
+// 	 * 
+// 	 * @elevatorPacket Takes a Request elevatorPacket as input, this packet is an elevator asking for a response from the scheduler
+// 	 */
+// 	public void serviceFloorRequest(ElevatorPacket elevatorPacket) {
+// 		int minIndex  = 0;
+// 		int elevatorDistance = 1000;
+// 		synchronized (floorRequests) {
+// 	 		// Wait until a FloorRequest comes in 
+// 	 		while (floorRequests.isEmpty()) {
+// 	 			try {
+// 	 				floorRequests.wait();
+// 	 			} catch (InterruptedException e) {
+// 					System.out.println("Elevator: Synchronized wait failed on floorRequests: " + e); 
+// 	 				e.printStackTrace();
+// 				}
+// 			}
 
-	// 		// If it is moving, check if there are any floor requests on the elevators CurrentFloor going in the same direction
-	// 		if (elevatorPacket.getIsMoving()) {
-	// 			System.out.println("Scheduler: Elevator " + elevatorPacket.getElevatorNumber() + " is not moving, checking if there is a request on floor " + 
-	// 								elevatorPacket.getCurrentFloor() + " going " + (elevatorPacket.getDirectionUp() ? "down" : "up"));
-	// 			for (UserInput floorRequest : floorRequests) {
-	// 				if (floorRequest.getFloor() == elevatorPacket.getCurrentFloor() &&
-	// 					floorRequest.getFloorButtonUp() == elevatorPacket.getDirectionUp()) 
-	// 				{
-	// 					// Add passengerDestination to elevator Packet (This is the button that the passenger will be clicking)
-	// 					elevatorPacket.getPassengerDestinations().add(floorRequest.getCarButton());
-	// 					// Remove Floor Request from list of Requests
-	// 					floorRequests.remove(floorRequest);
-	// 				}
-	// 			}
-	// 		} else {
-	// 			// If its not moving, decide which FloorRequest is best to service for the elevator 
-	// 			// TODO: For now we will just be servicing the most recent FloorRequest
-	// 			// TODO: We should be looking through the FloorRequests and deciding who is best to service
-	// 			System.out.println("Scheduler: Elevator " + elevatorPacket.getElevatorNumber() + " is not moving, sending request to pick up user");
-	// 			// Get the first FloorRequest
-	// 			UserInput floorRequest = floorRequests.get(0);
-	// 			// Set the floor the passenger sent the request on to the destination for the elevator
-	// 			elevatorPacket.setDestinationFloor(floorRequest.getFloor());
-	// 			// Add passengerDestination to elevator Packet
-	// 			elevatorPacket.getPassengerDestinations().add(floorRequest.getCarButton());
-	// 			// Remove Floor Request from list of Requests
-	// 			floorRequests.remove(floorRequest);
-	// 		}
+// 	 		// If it is moving, check if there are any floor requests on the elevators CurrentFloor going in the same direction
+// 	 		if (elevatorPacket.getIsMoving()) {
+// 	 			System.out.println("Scheduler: Elevator " + elevatorPacket.getElevatorNumber() + " is not moving, checking if there is a request on floor " + 
+// 	 								elevatorPacket.getCurrentFloor() + " going " + (elevatorPacket.getDirectionUp() ? "down" : "up"));
+// 	 			for (UserInput floorRequest : floorRequests) {
+// 	 				if (floorRequest.getFloor() == elevatorPacket.getCurrentFloor() &&
+// 	 					floorRequest.getFloorButtonUp() == elevatorPacket.getDirectionUp()) 
+// 					{
+// 	 					// Add passengerDestination to elevator Packet (This is the button that the passenger will be clicking)
+// 	 					elevatorPacket.getPassengerDestinations().add(floorRequest.getCarButton());
+// 						// Remove Floor Request from list of Requests
+// 	 					floorRequests.remove(floorRequest);
+// 	 				}
+// 	 			}
+// 	 		} else {
+// 	 			// If its not moving, decide which FloorRequest is best to service for the elevator 
+// 	 			// TODO: To Do for Iteration 4 -> Currently services floors to elevators, this could cause a floor to experience starvation
+// 	 			// TODO: need to find a way to have a floor that is really far away eventually get an elevator 
+// 	 			// TODO: And not starve out. Idly would look through elevators to see which elevator could service floor
+// 	 			// TODO: Another thought is to add a priority to floors that if skipped over enough would activate putting
+// 	 			// TODO: it next in line for an elevator. 
+// 	 			for(int i = 0; i < floorRequests.size(); i++) {
+// 	 				int tempElevatorDistance = Math.abs(elevatorPacket.getCurrentFloor() - floorRequests.get(i).getFloor());
+// 	 				if(tempElevatorDistance < elevatorDistance){
+// 	 					elevatorDistance = tempElevatorDistance;
+// 	 					minIndex = i;
+// 	 				}
+	 				
+// 	 			}
+	 			
+// 	 			System.out.println("Scheduler: Elevator " + elevatorPacket.getElevatorNumber() + " is not moving, sending request to pick up user");
+// 	 			// Get the first FloorRequest
+// 	 			UserInput floorRequest = floorRequests.get(minIndex);
+// 	 			// Set the floor the passenger sent the request on to the destination for the elevator
+// 				elevatorPacket.setDestinationFloor(floorRequest.getFloor());
+// 	 			// Add passengerDestination to elevator Packet
+// 	 			elevatorPacket.getPassengerDestinations().add(floorRequest.getCarButton());
+// 	 			// Remove Floor Request from list of Requests
+// 	 			floorRequests.remove(floorRequest);
+// 			}
 
-	// 		// Send elevatorPacket to the elevator
-	// 		System.out.println("Scheduler: Sending Elevator Packet to elevator: ");
-	// 		elevatorPacket.send(elevatorPacket.getReceiveElevatorPacket().getAddress(), elevatorPacket.getReceiveElevatorPacket().getPort(), receiveElevatorSocket);
+// 	 		// Send elevatorPacket to the elevator
+// 	 		System.out.println("Scheduler: Sending Elevator Packet to elevator: ");
+// 	 		elevatorPacket.send(elevatorPacket.getReceiveElevatorPacket().getAddress(), elevatorPacket.getReceiveElevatorPacket().getPort(), receiveElevatorSocket);
 
-	// 		// Notify any thread waiting on floorRequests
-	// 		floorRequests.notifyAll();
-	// 	}
-	// }
+// 	 		// Notify any thread waiting on floorRequests
+// 	 		floorRequests.notifyAll();
+// 	 		}
+// 	}
 
 	/** 
 	 * TODO: Should this be in its own class thread that way the scheduler can receive multiple packets at a time and act on them concurrently? 
