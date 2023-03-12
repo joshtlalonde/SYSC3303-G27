@@ -56,11 +56,10 @@ ButtonLampTest.ajava checks the state of the floor button including whether the 
 
 # Setup and Test Instructions
 ## Add JUnit Library to exclipse
-- Right click on the `test.java` and `buttonLamptTest.java` 
+- Right click on the `ElevatorPacketTest.java` and `FloorPacketTest.java` 
 - Go to properties
 - Click on library
 - Add the Junit library
 
-Download the `Elevator.java`, `Floor.java`, and `Scheduler.java` files and open them within a java project on eclipse
-Run Eclipse from the `Scheduler.java` file to start the main program within that class.
-For testing the code, run `Test.java` and Button `buttontLampTest.java`.
+Download the `Elevator.java`, `Floor.java`, and `Scheduler.java` files and open them within a the same java project on eclipse as the test files
+For testing the code, run `ElevatorPacketTest.java` and `FloorPacketTest.java` by right-clicking and RunAs JUnit test.
