@@ -104,7 +104,7 @@ public class ElevatorPacket {
         System.out.println();
     }
 
-    private void convertBytesToPacket(byte packet[]) {
+    public void convertBytesToPacket(byte packet[]) {
 		// Create new ElevatorPacket object from data
         elevatorNumber = packet[0];
         isMoving = packet[1] == 1 ? true : false;
@@ -113,9 +113,12 @@ public class ElevatorPacket {
         directionUp = packet[4] == 1 ? true : false;
 
         // Get each of the destination that the passengers want to go on this elevator
-        for (int i = 5; packet[i] == 0xFF; i++) {
+        int i = 5;
+        while (packet[i] != -1) {
             // Convert bytes into int array
             passengerDestinations.add(Integer.parseInt(Byte.toString(packet[i])));
+            System.out.println(i + ": " + packet[i]);
+            i++;
         }
     }
 
@@ -159,13 +162,13 @@ public class ElevatorPacket {
 
     ///////////// PRINTERS /////////////
 
-    public void printPacket() {
+    private void printPacket() {
         System.out.println("Elevator number: " + elevatorNumber + ", is elevator moving: " + (isMoving ? "yes" : "no") + 
                             ", current floor: " + currentFloor + ", destination floor: " + destinationFloor + 
                             ", direction: " + (directionUp ? "up" : "down") + ", passenger destinations: " + (passengerDestinations.toString()));
     }
 
-    public void printPacketBytes(byte packet[]) {
+    private void printPacketBytes(byte packet[]) {
 		for (int i = 0; i < packet.length; i++) {
 			System.out.print(String.format("0x%02X ", packet[i]));
 		}
