@@ -60,6 +60,8 @@ The `java_test_code` folder contains the different Unit Test files that are used
  - Created Elevator Stopped State
   
 ## Sanya : 101205395
+- Helped with UML diagrams
+
  
 ## Partha : 101191302
 - Helped with State diagrams
