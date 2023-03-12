@@ -412,7 +412,7 @@ class ElevatorInfo {
         return passengerDestinations;
     }
 
-	public boolean addPassengerDestinations(int passengerDestination) {
+	public boolean addPassengerDestination(int passengerDestination) {
         return passengerDestinations.add(passengerDestination);
     }
 
