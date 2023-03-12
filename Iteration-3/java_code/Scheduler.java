@@ -273,9 +273,7 @@ public class Scheduler {
 	
 	//Stop State
 	public void serviceElevatorStopRequest(ElevatorPacket elevatorPacket, ElevatorInfo elevator) {
-		//Every passenger on that floor going in the same direction
-		int i = 0; // Iteration check variable 
-		boolean directionUp = true;
+		//Every passenger on that floor going in the same direction 
 		System.out.println("Scheduler: Elevator " + elevatorPacket.getElevatorNumber() + " is in the Stopped state, checking if there is anyone to pickup on floor " + elevatorPacket.getCurrentFloor());
 		synchronized (floorRequests) {
 			while (floorRequests.isEmpty()) {
@@ -289,9 +287,7 @@ public class Scheduler {
 		}
 		
 		for(UserInput floorRequest : floorRequests) {
-			//A direction hasn't been set
-			if(floorRequest.getFloor() == elevator.getCurrentFloor() && (i == 0)) {
-				directionUp = floorRequest.getFloorButtonUp();
+			if(floorRequest.getFloor() == elevator.getCurrentFloor() && (floorRequest.getFloorButtonUp() == elevator.getDirectionUp())) {
 				// Add passengerDestination to elevator Packet
 				elevator.getPassengerDestinations().add(floorRequest.getCarButton());
 
@@ -306,31 +302,12 @@ public class Scheduler {
 
 				// Notify any thread waiting on floorRequests
 				floorRequests.notifyAll();
-				i++;
 			}
-			//A direction has been set
-			else if(floorRequest.getFloor() == elevator.getCurrentFloor() && (i != 0) && (floorRequest.getFloorButtonUp() == directionUp)) {
-				directionUp = floorRequest.getFloorButtonUp();
-				// Add passengerDestination to elevator Packet
-				elevator.getPassengerDestinations().add(floorRequest.getCarButton());
-
-				// Remove Floor Request from list of Requests
-				floorRequests.remove(floorRequest);
-
-				// Send elevatorPacket to the elevator
-				System.out.println("Scheduler: Sending Elevator Packet to elevator: ");
-				
-				// elevatorPacket.send(elevatorPacket.getReceiveElevatorPacket().getAddress(), elevatorPacket.getReceiveElevatorPacket().getPort(), receiveElevatorSocket);
-				elevator.sendPacket(elevatorPacket.getReceiveElevatorPacket().getAddress(), elevatorPacket.getReceiveElevatorPacket().getPort(), receiveElevatorSocket);
-
-				// Notify any thread waiting on floorRequests
-				floorRequests.notifyAll();
 				
 			}
 			
 			
 		}
-	}
 
 	// /** 
 	//  * Service an elevator request from the Queue
