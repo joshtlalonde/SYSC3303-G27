@@ -52,6 +52,8 @@ The `java_test_code` folder contains the different Unit Test files that are used
 - Created Class Diagram
 
 ## Sanskar : 101189876 
+- Created Elevator State Machine
+- Created Scheduler State Machine
   
 ## Jakob : 101201314 
  - Created Sequence Diagram
