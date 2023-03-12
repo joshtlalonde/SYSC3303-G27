@@ -1,6 +1,6 @@
 # SYSC3303-G27
 
-# ======= ITERATION 2 =======
+# ======= ITERATION 3 =======
 
 ## Files included:
 
@@ -31,7 +31,7 @@ This file represents a floor in the building within which the elevator functions
 This file is used as a helper class to send and receive packets between the scheduler and the floor. The floor needs to communicate with the scheduler that a new user has arrived. Therefore, the information that needs to be sent to the scheduler is the floor, destination floor, time, and direction of the request. The FloorPacket.java class ensures that all of that data is sent and received properly formatted to allow for easy access and manipulation of the data
 
 ## Scheduler.java
-The scheduler is the brain of the program. Its function is to take user inputs that it receives from Floor and create algorithms that the elevators will follow to satisfy the requests of users. A notable method that it uses for communication is get(). get() serves to take modified information based off of the input and algorithm that is being executed to be used by elevator.
+The scheduler is the brain of the program. The scheduler manages the elevators assigning them to the various floor requests that comes form the users. Firstly, the Floor sends a UserInput packet to the scheduler whenever a button is pressed requesting for an elevator. It then uses the input given to it and with the aid of some elevator algorithms assigns the appropriate elevator to the users request. Some changes made from last iteration include the introduction of a new helper class 'ElevatorInfo' as well as adjusting many methods to work with specific elevator states like 'serviceElevatorStopRequest', 'serviceElevatorMovingRequest' and 'serviceElevatorIdleRequest'.
 
 ## Elevator.java
 Elevator simply takes information from the scheduler using its get() method. The elevator also has lights and buttons to the elevator. When an elevator button is pressed, it will transition from one floor to another.
