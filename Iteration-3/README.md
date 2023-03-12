@@ -11,7 +11,6 @@
 - Scheduler.java
 - floor_input.text
 - Diagrams
-- State diagram
 - Unit tests
 
 In-depth description about each file and their roles:
@@ -40,8 +39,8 @@ Elevator simply takes information from the scheduler using its get() method. The
 ## ElevatorPacket.java
 This file is used as a helper class to send and receive packets between the scheduler and the elevator. The elevator needs to communicate with the scheduler that an elevator has stopped or is moving between floors. Therefore, the information that needs to be sent to the scheduler is the elevator number, if the elvator is moving, current floor, destination floor, direction the elevator is moving, and the floors that the passengers wish to stop at. The ElevatorPacket.java class ensures that all of that data is sent and received properly formatted to allow for easy access and manipulation of the data.
 
-## java_test_code
-This folder contains the different Unit Test files that are used to ensure the proper functionality of all of the methods for each of the classes. Each of the java files are associated to a different class where the JUnit assert functions are used to ensure that the actual results of a method of the testing class is equivalent to the expected results
+## Unit Tests
+The `java_test_code` folder contains the different Unit Test files that are used to ensure the proper functionality of all of the methods for each of the classes. Each of the java files are associated to a different class where the JUnit assert functions are used to ensure that the actual results of a method of the testing class is equivalent to the expected results
 
 # Responsibilities 
 ## Josh : 101109655 (
