@@ -3,6 +3,15 @@ import java.net.*;
 import java.util.*;
 
 public class ElevatorPacket {
+    static final int NUMBER_OF_FLOORS = 20; // Number of floors in the building
+    static final int IDLE = 0; // Value of IDLE state 
+    static final int MOVING_UP = 1; // Value of MOVING_UP state 
+    static final int MOVING_DOWN = 2; // Value of MOVING_DOWN state 
+    static final int STOPPED = 3; // Value of STOPPED state 
+    static final int DOOR_OPEN = 4; // Value of DOOR_OPEN state 
+    static final int DOOR_CLOSE = 5; // Value of DOOR_CLOSE state 
+
+    private int currentState = IDLE; // Holds the current State of the elevator
 
     private DatagramPacket sendElevatorPacket; // Holds the Sent Datagram Packet
     private DatagramPacket receiveElevatorPacket; // Holds the Received Datagram Packet
@@ -40,6 +49,7 @@ public class ElevatorPacket {
         outputStream.write(currentFloor);
         outputStream.write(destinationFloor);
         outputStream.write(directionUp ? 1 : 0);
+        outputStream.write(currentState);
         for (int passenger : passengerDestinations) {
             outputStream.write(passenger);
         }
@@ -111,9 +121,10 @@ public class ElevatorPacket {
         currentFloor = packet[2];
         destinationFloor = packet[3];
         directionUp = packet[4] == 1 ? true : false;
+        currentState = packet[5];
 
         // Get each of the destination that the passengers want to go on this elevator
-        int i = 5;
+        int i = 6;
         while (packet[i] != -1) {
             // Convert bytes into int array
             passengerDestinations.add(Integer.parseInt(Byte.toString(packet[i])));
@@ -152,6 +163,10 @@ public class ElevatorPacket {
         return directionUp;
     }
 
+    public int getCurrentState() {
+        return currentState;
+    }
+
     public ArrayList<Integer> getPassengerDestinations() {
         return passengerDestinations;
     }
@@ -169,7 +184,8 @@ public class ElevatorPacket {
     private void printPacket() {
         System.out.println("Elevator number: " + elevatorNumber + ", elevator moving: " + (isMoving ? "Yes" : "No") + 
                             ", current floor: " + currentFloor + ", destination floor: " + destinationFloor + 
-                            ", direction: " + (directionUp ? "Up" : "Down") + ", passenger destinations: " + (passengerDestinations.toString()));
+                            ", direction: " + (directionUp ? "Up" : "Down") + ", currentState: " + stateToString(currentState) +
+                            ", passenger destinations: " + (passengerDestinations.toString()));
     }
 
     private void printPacketBytes(byte packet[]) {
@@ -179,4 +195,27 @@ public class ElevatorPacket {
 		// Print new line
 		System.out.println();
 	}
+
+    public String stateToString(int state) {
+        if (state == IDLE) {
+            return "IDLE";
+        } 
+        else if (state == MOVING_UP) {
+            return "MOVING_UP";
+        } 
+        else if (state == MOVING_DOWN) {
+            return "MOVING_DOWN";
+        } 
+        else if (state == STOPPED) {
+            return "STOPPED";
+        } 
+        else if (state == DOOR_OPEN) {
+            return "DOOR_OPEN";
+        } 
+        else if (state == DOOR_CLOSE) {
+            return "DOOR_CLOSE";
+        } else {
+            return "UNKNOWN STATE";
+        }
+    }
 }
