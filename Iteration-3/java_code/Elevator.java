@@ -5,7 +5,14 @@ import java.util.*;
 class Elevator implements Runnable
 {
     static final int NUMBER_OF_FLOORS = 20; // Number of floors in the building
+    static final int IDLE = 0; // Value of IDLE state 
+    static final int MOVING_UP = 1; // Value of MOVING_UP state 
+    static final int MOVING_DOWN = 2; // Value of MOVING_DOWN state 
+    static final int STOPPED = 3; // Value of STOPPED state 
+    static final int DOOR_OPEN = 4; // Value of DOOR_OPEN state 
+    static final int DOOR_CLOSE = 5; // Value of DOOR_CLOSE state 
 
+    private int currentState = IDLE; // Holds the current State of the elevator
     private DatagramSocket sendReceiveSocket; // Socket that Elevator sends and receives packets from
 
     private int elevatorNumber; // Number of the elevator
@@ -58,26 +65,14 @@ class Elevator implements Runnable
         /** Wait for response from scheduler to move to new request */ 
         ElevatorPacket newFloorRequest = this.receiveSchedulerResponse();
 
-        // TODO: What to do after receiving new floor service request (start moving, update vars, update externals)    
-        /** Close Doors */
-        this.doorClose();
-
         /** Start Moving to Pickup Passenger */
         if (currentFloor < newFloorRequest.getDestinationFloor()) {
             // Move up
-            this.movingUp(newFloorRequest.getDestinationFloor());
+            currentState = MOVING_UP;
         } else if (currentFloor > newFloorRequest.getDestinationFloor()) {
             // Move down
-            this.movingDown(newFloorRequest.getDestinationFloor());
+            currentState = MOVING_DOWN;
         }
-
-        /** Stop Moving */
-
-        /** Open Doors */
-
-        /** Activate clicked button */
-
-        /** Start Moving */
     }
 
     /** 
@@ -121,7 +116,7 @@ class Elevator implements Runnable
             // Check if scheduler wants us to stop
             if (movingResponsePacket.getIsMoving()) {
                 // Move to stopped state
-                this.stopped();
+                currentState = STOPPED;
             }
         }
     }
@@ -248,11 +243,26 @@ class Elevator implements Runnable
 
     public void run()
     {
-        // while(true){     
-            // Start in Idle State
-            idle();
-
-        // }
+        while(true){   
+            if (currentState == IDLE) {
+                idle();
+            } 
+            else if (currentState == MOVING_UP) {
+                // movingUp();
+            } 
+            else if (currentState == MOVING_DOWN) {
+                // movingDown();
+            } 
+            else if (currentState == STOPPED) {
+                // stopped();
+            } 
+            else if (currentState == DOOR_OPEN) {
+                // doorOpen();
+            } 
+            else if (currentState == DOOR_CLOSE) {
+                // doorClose();
+            } 
+        }
     }
 
     /** Puts the button in its clicked state */
