@@ -319,18 +319,8 @@ class Elevator implements Runnable
 
     /** Send a request to the scheduler to let it know the state of the elevator and ask what should be done */
 	private void sendElevatorRequest() {
-        // Get list of passenger destination for the elevator to add as passengerDestinations in the packet
-        // ArrayList<Integer> passengerDestinations = new ArrayList<Integer>();
-        // int i = 0;
-        // for (ElevatorButton button : elevatorButtons) {
-        //     if (button.getButtonState() == true) {
-        //         passengerDestinations.add(i);
-        //     }
-        //     i++;
-        // }
-
         // Create Elevator Packet
-        ElevatorPacket elevatorPacket = new ElevatorPacket(elevatorNumber, isMoving, currentFloor, destinationFloor, directionUp, this.passengerDestinations);
+        ElevatorPacket elevatorPacket = new ElevatorPacket(elevatorNumber, isMoving, currentFloor, destinationFloor, directionUp, this.passengerDestinations, this.currentState);
         // Send Elevator Packet
         System.out.println("Elevator: Sending request to the scheduler");
         try {
@@ -343,7 +333,7 @@ class Elevator implements Runnable
 
     public ElevatorPacket receiveSchedulerResponse() {
         // Create Default Elevator Packet
-        ElevatorPacket elevatorPacket = new ElevatorPacket(0, false, 0, 0, false, new ArrayList<Integer>());
+        ElevatorPacket elevatorPacket = new ElevatorPacket();
         // Receive Elevator Packet
         System.out.println("Elevator: Waiting for Elevator Packet from Scheduler...");
         elevatorPacket.receive(sendReceiveSocket);
