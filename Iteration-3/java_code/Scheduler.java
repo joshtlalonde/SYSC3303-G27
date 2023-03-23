@@ -8,8 +8,7 @@ public class Scheduler {
 	static final int NUMBER_OF_ELEVATORS = 1; // Number of elevators in the building
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.S", Locale.ENGLISH);
 
-	private DatagramSocket receiveFloorSocket; // Socket for receiving packets from Floor
-	private DatagramSocket receiveElevatorSocket; // Array of sockets for each of the elevators
+	private DatagramSocket receiveSocket; // Socket for receiving packets from Floor and Elevator
 
 	// TODO: Should have an attribute that holds the currentState of the scheduler
 	private Scheduler_State currentState;
