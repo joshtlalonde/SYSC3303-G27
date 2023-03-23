@@ -30,22 +30,9 @@ public class Scheduler {
 		} 
 	}
 
-	/** Sends floor request to specific elevator */
-	private void sendFloorRequest(UserInput userInput, DatagramPacket elevatorPacket) {
-		// Create FloorPacket
-		FloorPacket floorPacket = new FloorPacket(userInput.getFloor(), userInput.getTime(), userInput.getFloorButtonUp(), userInput.getCarButton());
-
-		// Send FloorPacket
-		try {
-			floorPacket.send(InetAddress.getLocalHost(), elevatorPacket.getPort(), receiveElevatorSocket);
-		} catch (UnknownHostException e) {
-			System.out.println("Failed to send FloorPacket: " + e);
-			e.printStackTrace();
-		}
-		
-		System.out.println("Scheduler: Sent floor request to elevator: " + userInput);
-	}
-	
+	/**
+	 * Waits until a packet is received and determines if it is an Elevator or Floor packet
+	 */
 	public void receive() {
 		byte data[] = new byte[1];
 		DatagramPacket receivePacket = new DatagramPacket(data, data.length);
@@ -60,17 +47,39 @@ public class Scheduler {
 		byte receiveID = data[0];
 		if(receiveID == 0){
 			System.out.println("Floor Packet Received");
-			currentState = PROCESS_FLOOR;
-			
+			currentState = Scheduler_State.PROCESS_FLOOR;
 		}
 		else if(receiveID == 1){
 			System.out.println("Elevator Packet Received");	
-			currentState = PROCESS_ELEVATOR;
-			
+			currentState = Scheduler_State.PROCESS_ELEVATOR;
 		}
 		else{
-			System.out.println("wHaT tHe FuCk....");
+			System.out.println("Unknown Packet Received");
 		}
+	}
+
+	public void processFloor() {
+
+	}
+
+	public void processElevator() {
+		
+	}
+
+	/** Sends floor request to specific elevator */
+	private void sendFloorRequest(UserInput userInput, DatagramPacket elevatorPacket) {
+		// Create FloorPacket
+		FloorPacket floorPacket = new FloorPacket(userInput.getFloor(), userInput.getTime(), userInput.getFloorButtonUp(), userInput.getCarButton());
+
+		// Send FloorPacket
+		try {
+			floorPacket.send(InetAddress.getLocalHost(), elevatorPacket.getPort(), receiveElevatorSocket);
+		} catch (UnknownHostException e) {
+			System.out.println("Failed to send FloorPacket: " + e);
+			e.printStackTrace();
+		}
+		
+		System.out.println("Scheduler: Sent floor request to elevator: " + userInput);
 	}
 
 	/** Receives a FloorRequest packet from Floor
@@ -283,9 +292,18 @@ public class Scheduler {
 
 		// For testing
 		while (true) {
-			scheduler.receiveFloorPacket(); //TODO: Will need a timeout on this
-			scheduler.receiveElevatorPacket();
-			// scheduler.serviceElevatorRequest();
+			switch(scheduler.currentState) {
+				case RECEIVE:
+					scheduler.receive();
+					break;
+				case PROCESS_FLOOR:
+					scheduler.processFloor();
+					break;
+				case PROCESS_ELEVATOR:
+					scheduler.processElevator();
+					break;
+			}
+
 		}
     }
 }
