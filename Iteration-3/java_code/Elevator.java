@@ -212,11 +212,11 @@ class Elevator implements Runnable
      * 
      */
     public void doorOpen() {
-        /** Open the door */
-        door.open();
-
         /** Reset button for floor */
         this.buttonReset(currentFloor);
+        
+        /** Open the door */
+        door.open();
 
         /** Tell scheduler that elevator is in door open state */
         this.sendElevatorRequest();
@@ -233,10 +233,12 @@ class Elevator implements Runnable
 
     /** 
      * Elevator is in door close state 
+     * 
      * Elevator closes door 
      * Sends packet to update state
      * Updates passengerDestinations for people getting on 
      * Sets buttons to on for those destinations
+     * 
      */
     public void doorClose() {
         /** Close the door */
