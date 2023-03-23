@@ -20,6 +20,7 @@ class Elevator implements Runnable
     private int currentFloor; // Current Floor the elevator is on
     private int destinationFloor; // Floor the elevator is moving to
     private boolean directionUp; // Direction elevator is moving in
+    private ArrayList<Integer> passengerDestinations = new ArrayList<Integer>(); // Holds an array of all of the passenger destinations. This can also be used to determine how many people are on the elevator
 
     private DirectionLamp directionLamp = new DirectionLamp(); // Lamp to indicate direction moving and floor location
     private ArrivalSensor arrivalSensor = new ArrivalSensor(); // Sensor to indicate when an elevator is approaching a floor
@@ -29,6 +30,9 @@ class Elevator implements Runnable
     
     public Elevator(int elevatorNumber)
     {
+        /** Start in IDLE state */
+        this.currentState = IDLE;
+
         this.elevatorNumber = elevatorNumber;
 
         // Create as many buttons as there are floors 
@@ -65,11 +69,14 @@ class Elevator implements Runnable
         /** Wait for response from scheduler to move to new request */ 
         ElevatorPacket newFloorRequest = this.receiveSchedulerResponse();
 
+        /** Set the destination floor to go to */
+        destinationFloor = newFloorRequest.getDestinationFloor();
+
         /** Start Moving to Pickup Passenger */
-        if (currentFloor < newFloorRequest.getDestinationFloor()) {
+        if (currentFloor < destinationFloor) {
             // Move up
             currentState = MOVING_UP;
-        } else if (currentFloor > newFloorRequest.getDestinationFloor()) {
+        } else if (currentFloor > destinationFloor) {
             // Move down
             currentState = MOVING_DOWN;
         }
@@ -82,16 +89,14 @@ class Elevator implements Runnable
      * Between every floor it sends a packet to the scheduler to ask if there are any users to pick up
      * If there are users it stops, if not then continue
      */
-    public void movingUp(int destinationFloor) {
-        // Update the Destination Floor of the elevator
-        this.destinationFloor = destinationFloor;
+    public void movingUp() {
         // Update the direction of the elevator
-        this.directionUp = true;
+        directionUp = true;
 
         // Start motor in Up direction
         motor.startMoving(true);
         // Set elevator moving state
-        this.isMoving = true;
+        isMoving = true;
 
         // Update currentFloor and arrivalSensor as you are moving
         while (currentFloor < destinationFloor) {
@@ -114,7 +119,7 @@ class Elevator implements Runnable
             ElevatorPacket movingResponsePacket = this.receiveSchedulerResponse();
 
             // Check if scheduler wants us to stop
-            if (movingResponsePacket.getIsMoving()) {
+            if (!movingResponsePacket.getIsMoving()) {
                 // Move to stopped state
                 currentState = STOPPED;
             }
@@ -128,22 +133,20 @@ class Elevator implements Runnable
      * Between every floor it sends a packet to the scheduler to ask if there are any users to pick up
      * If there are users it stops, if not then continue
      */
-    public void movingDown(int destinationFloor) {
-        // Update the Destination Floor of the elevator
-        this.destinationFloor = destinationFloor;
+    public void movingDown() {
         // Update the direction of the elevator
-        this.directionUp = false;
+        directionUp = false;
 
         // Start motor in Up direction
         motor.startMoving(false);
         // Set elevator moving state
-        this.isMoving = true;
+        isMoving = true;
 
         // Update currentFloor and arrivalSensor as you are moving
         while (currentFloor > destinationFloor) {
             // Sleep for amount of time to move between floors
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(2000); // TODO: Must be the times we determined
 			} catch (InterruptedException e ) {
 				e.printStackTrace();
 				System.exit(1);
@@ -160,9 +163,9 @@ class Elevator implements Runnable
             ElevatorPacket movingResponsePacket = this.receiveSchedulerResponse();
 
             // Check if scheduler wants us to stop
-            if (movingResponsePacket.getIsMoving()) {
+            if (!movingResponsePacket.getIsMoving()) {
                 // Move to stopped state
-                this.stopped();
+                currentState = STOPPED;
             }
         }
     }
@@ -180,44 +183,23 @@ class Elevator implements Runnable
      */
     public void stopped() {
         motor.stopMoving();
+
+        /** Sleep for deceleration time */
+        try {
+            Thread.sleep(2000); // TODO: Must be the times we determined
+        } catch (InterruptedException e ) { // TODO: Should this be in motor.stopMoving
+            e.printStackTrace();
+            System.exit(1);
+        }
         
-        // TODO: What to do after receiving new floor service request (start moving, update vars, update externals)    
-        /** Close Doors */
-        this.doorOpen();
-        
+        /** Tell scheduler that elevator is in stopped state */
         this.sendElevatorRequest();
 
-        /** Wait for response from scheduler to move to new request */ 
-        ElevatorPacket newFloorRequest = this.receiveSchedulerResponse();
+        /** Wait for response from scheduler */ 
+        this.receiveSchedulerResponse();
         
-        for (int passengerDestination : newFloorRequest.getPassengerDestinations()) {
-            for (ElevatorButton button : elevatorButtons) {
-                if (button.getButtonFloor() == passengerDestination) {
-                    if (button.getButtonState() == false) {
-                    	this.buttonPress(button.getButtonFloor());
-                    }
-                }
-            }
-        }
-        
-        
-        try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			System.out.print("Stopped State had an issue sleeping");
-			e.printStackTrace();
-		}
-        
-        this.doorClose();
-
-        /** Start Moving to Pickup Passenger */
-        if (newFloorRequest.getDirectionUp()) {
-            // Move up
-            this.movingUp(newFloorRequest.getDestinationFloor());
-        } else if (!newFloorRequest.getDirectionUp()) {
-            // Move down
-            this.movingDown(newFloorRequest.getDestinationFloor());
-        }
+        /** Move to Door open State */
+        currentState = DOOR_OPEN;
     }
 
     /** 
@@ -231,6 +213,38 @@ class Elevator implements Runnable
      */
     public void doorOpen() {
         door.open();
+
+        /** Reset button for floor */
+        for (ElevatorButton button : elevatorButtons) {
+            if (button.getButtonFloor() == passengerDestination) {
+                if (button.getButtonState() == false) {
+                    this.buttonPress(button.getButtonFloor());
+                }
+            }
+        }
+
+        /** Remove the PassengeDestination of people getting off */
+
+        /** Tell scheduler that elevator is in stopped state */
+        this.sendElevatorRequest();
+
+        /** Wait for response from scheduler saying who wants to get on */ 
+        ElevatorPacket newFloorRequest = this.receiveSchedulerResponse();
+        
+        /** Walk through the passenger destinations updated from the scheduler */
+        for (int passengerDestination : newFloorRequest.getPassengerDestinations()) {
+            /** Add Passenger Destinations to array */
+            this.passengerDestinations.add(passengerDestination);
+
+            /** Update buttons clicked for anyone that got on the elevator */
+            for (ElevatorButton button : elevatorButtons) {
+                if (button.getButtonFloor() == passengerDestination) {
+                    if (button.getButtonState() == false) {
+                        this.buttonPress(button.getButtonFloor());
+                    }
+                }
+            }
+        }
     }
 
     /** 
@@ -281,17 +295,17 @@ class Elevator implements Runnable
     /** Send a request to the scheduler to let it know the state of the elevator and ask what should be done */
 	private void sendElevatorRequest() {
         // Get list of passenger destination for the elevator to add as passengerDestinations in the packet
-        ArrayList<Integer> passengerDestinations = new ArrayList<Integer>();
-        int i = 0;
-        for (ElevatorButton button : elevatorButtons) {
-            if (button.getButtonState() == true) {
-                passengerDestinations.add(i);
-            }
-            i++;
-        }
+        // ArrayList<Integer> passengerDestinations = new ArrayList<Integer>();
+        // int i = 0;
+        // for (ElevatorButton button : elevatorButtons) {
+        //     if (button.getButtonState() == true) {
+        //         passengerDestinations.add(i);
+        //     }
+        //     i++;
+        // }
 
         // Create Elevator Packet
-        ElevatorPacket elevatorPacket = new ElevatorPacket(elevatorNumber, isMoving, currentFloor, destinationFloor, directionUp, passengerDestinations);
+        ElevatorPacket elevatorPacket = new ElevatorPacket(elevatorNumber, isMoving, currentFloor, destinationFloor, directionUp, this.passengerDestinations);
         // Send Elevator Packet
         System.out.println("Elevator: Sending request to the scheduler");
         try {

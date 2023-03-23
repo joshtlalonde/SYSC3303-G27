@@ -10,6 +10,8 @@ public class Scheduler {
 
 	private DatagramSocket receiveFloorSocket; // Socket for receiving packets from Floor
 	private DatagramSocket receiveElevatorSocket; // Array of sockets for each of the elevators
+
+	// TODO: Should have an attribute that holds the currentState of the scheduler
 	
     private ArrayList<UserInput> floorRequests = new ArrayList<UserInput>(); // Holds list of requests from Floor
 	// TODO: elevatorRequests should be a Priority based QUEUE (elevators moving have higher priorty, then FIFO)
@@ -201,7 +203,7 @@ public class Scheduler {
 		}
 		else {
 			System.out.println("Scheduler: Elevator is in an unknown state"); 
-		}
+		} 
 	}
 
 	/** Elevator is in Idle state, give it a new FloorRequest to service */
