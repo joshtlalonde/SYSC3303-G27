@@ -9,8 +9,6 @@ public class Scheduler {
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.S", Locale.ENGLISH);
 
 	private DatagramSocket receiveSocket; // Socket for receiving packets from Floor and Elevator
-
-	// TODO: Should have an attribute that holds the currentState of the scheduler
 	private Scheduler_State currentState;
 	
     private ArrayList<UserInput> floorRequests = new ArrayList<UserInput>(); // Holds list of requests from Floor
@@ -80,50 +78,51 @@ public class Scheduler {
 		//Update ArrayList elevatorinfo with "current received state"
 		//Determine which state method to proceed with
 			//Nah nvm... **JOSH LOOK LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK** Add send method to elevatorInfo 
+		// Send the newly editted elevatorInfo that is returned from the function	
 		
 	}
 	
 	
-	public void serviceElevatorIdle(ElevatorInfo elevator) {
+	public ElevatorInfo serviceElevatorIdle(ElevatorInfo elevator) {
 		//Find request that can be serviced with Idle elevator instead of moving
 		//Update elevatorInfo accordingly.
-		//send packet back to elevator if it can move or if its a useless shit.
-		
+
+		return elevator;
 	}
 	
-	public void serviceElevatorMovingUp(ElevatorInfo elevator) {
+	public ElevatorInfo serviceElevatorMovingUp(ElevatorInfo elevator) {
 		//Find request that can be serviced with Moving Up elevator within floors serviced
 		//Update elevatorInfo accordingly.
 		//send packet back to elevator if it can move or if its a useless shit.
 		
 	}
 	
-	public void serviceElevatorMovingDown(ElevatorInfo elevator) {
+	public ElevatorInfo serviceElevatorMovingDown(ElevatorInfo elevator) {
 		//Find request that can be serviced with Moving Down elevator within floors serviced
 		//Update elevatorInfo accordingly.
-		//send packet back to elevator if it can move or if its a useless shit.
 		
+		return elevator;
 	}
 	
-	public void serviceElevatorStopped(ElevatorInfo elevator) {
+	public ElevatorInfo serviceElevatorStopped(ElevatorInfo elevator) {
 		//Tells Elev to go stop state. 
 		//Update elevatorInfo accordingly.
-		//send packet back to elevator if it can move or if its a useless shit.
 		
+		return elevator;
 	}
-	public void serviceElevatorDoorOpen(ElevatorInfo elevator) {
+	public ElevatorInfo serviceElevatorDoorOpen(ElevatorInfo elevator) {
 		//Destinations cleared, people with same floor destination removed.
 		//Update elevatorInfo accordingly.
-		//send packet back to elevator if it can move or if its a useless shit.
 		
+		return elevator;
 	}
 	
 	
-	public void serviceElevatorDoorClose(ElevatorInfo elevator) {
+	public ElevatorInfo serviceElevatorDoorClose(ElevatorInfo elevator) {
 		//Destinations added, people that got on updated.
 		//Update elevatorInfo accordingly.
-		//send packet back to elevator if it can move or if its a useless shit.
-		
+
+		return elevator;
 	}
 
 	/** Sends floor request to specific elevator */
