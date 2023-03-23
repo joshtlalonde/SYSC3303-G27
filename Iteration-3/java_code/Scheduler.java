@@ -12,6 +12,7 @@ public class Scheduler {
 	private DatagramSocket receiveElevatorSocket; // Array of sockets for each of the elevators
 
 	// TODO: Should have an attribute that holds the currentState of the scheduler
+	private Scheduler_State currentState;
 	
     private ArrayList<UserInput> floorRequests = new ArrayList<UserInput>(); // Holds list of requests from Floor
 	// TODO: elevatorRequests should be a Priority based QUEUE (elevators moving have higher priorty, then FIFO)
