@@ -113,7 +113,8 @@ public class Scheduler {
 	public ElevatorInfo serviceElevatorDoorOpen(ElevatorInfo elevator) {
 		//Destinations cleared, people with same floor destination removed.
 		//Send message to floor stating who got off the elevator
-		//Update elevatorInfo accordingly.
+		//Update Floor Buttons/lights in floor.java
+		//Update elevatorInfo accordingly
 		
 		return elevator;
 	}
@@ -121,6 +122,7 @@ public class Scheduler {
 	
 	public ElevatorInfo serviceElevatorDoorClose(ElevatorInfo elevator) {
 		//Destinations added, people that got on updated.
+	        //Update Floor Buttons/lights in floor.java
 		//Update elevatorInfo accordingly.
 
 		return elevator;
