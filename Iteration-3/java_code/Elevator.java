@@ -215,13 +215,6 @@ class Elevator implements Runnable
         door.open();
 
         /** Reset button for floor */
-        for (ElevatorButton button : elevatorButtons) {
-            if (button.getButtonFloor() == passengerDestination) {
-                if (button.getButtonState() == false) {
-                    this.buttonPress(button.getButtonFloor());
-                }
-            }
-        }
 
         /** Remove the PassengeDestination of people getting off */
 
