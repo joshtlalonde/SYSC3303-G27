@@ -23,14 +23,26 @@ public class ElevatorPacket {
     private boolean directionUp; // Holds the direction info
     private ArrayList<Integer> passengerDestinations;
 
-    public ElevatorPacket(int elevatorNumber, boolean isMoving, int currentFloor, int destinationFloor, boolean directionUp, ArrayList<Integer> passengerDestinations) {
+    public ElevatorPacket(int elevatorNumber, boolean isMoving, int currentFloor, int destinationFloor, boolean directionUp, ArrayList<Integer> passengerDestinations, int currentState) {
         this.elevatorNumber = elevatorNumber;
         this.isMoving = isMoving;
         this.currentFloor = currentFloor;
         this.destinationFloor = destinationFloor;
         this.directionUp = directionUp;
         this.passengerDestinations = passengerDestinations;
+        this.currentState = currentState;
 	}
+
+    /** Default Constructor */
+    public ElevatorPacket() {
+        this.elevatorNumber = 0;
+        this.isMoving = false;
+        this.currentFloor = 0;
+        this.destinationFloor = 0;
+        this.directionUp = false;
+        this.passengerDestinations = new ArrayList<Integer>();
+        this.currentState = 0;
+    }
 
     /** 
      * Used to send the packet 
