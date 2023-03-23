@@ -97,8 +97,7 @@ public class Scheduler {
 	}
 
 	/** 
-	 * TODO: Should this be in its own class thread that way the scheduler can receive multiple packets at a time and act on them concurrently? 
-	 * Yes and add each of the elevator reqeusts to a Queue to be serviced
+	 * TODO: Find out which elevator packet came from, state, and port.
 	 * 
 	 * Get a Packet from an elevator, then add it to the Queue
 	 * 
@@ -277,13 +276,13 @@ class ElevatorInfo {
     private boolean directionUp; // Holds the direction info
     private ArrayList<Integer> passengerDestinations; // Holds the array of passenger destination floors
 
-    public ElevatorInfo(int elevatorNumber, boolean isMoving, int currentFloor, int destinationFloor, boolean directionUp, ArrayList<Integer> passengerDestinations) {
+    public ElevatorInfo(int elevatorNumber, State elev_State, int currentFloor, int destinationFloor, boolean directionUp, ArrayList<Integer> passengerDestinations) {
         this.elevatorNumber = elevatorNumber;
-        this.isMoving = isMoving;
         this.currentFloor = currentFloor;
         this.destinationFloor = destinationFloor;
         this.directionUp = directionUp;
         this.passengerDestinations = passengerDestinations;
+	this.elev_State = elev_State;
 	}
 
 	public void convertPacket(ElevatorPacket elevatorPacket) {
