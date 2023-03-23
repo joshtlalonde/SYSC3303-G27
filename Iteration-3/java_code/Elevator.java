@@ -215,8 +215,21 @@ class Elevator implements Runnable
         door.open();
 
         /** Reset button for floor */
+        for (ElevatorButton button : elevatorButtons) {
+            if (button.getButtonFloor() == passengerDestination) {
+                if (button.getButtonState() == false) {
+                    this.buttonPress(button.getButtonFloor());
+                }
+                button.reset();
+            }
+        }
 
         /** Remove the PassengeDestination of people getting off */
+        for (ElevatorButton button : elevatorButtons) {
+            if (button.getButtonFloor() == passengerDestination) {
+            	passengerDestination.removeAll(button.getButtonFloor());
+            }
+        }
 
         /** Tell scheduler that elevator is in stopped state */
         this.sendElevatorRequest();
@@ -246,8 +259,9 @@ class Elevator implements Runnable
      */
     public void doorClose() {
         door.close();
+        this.idle();
     }
-
+    
     public void run()
     {
         while(true){   
