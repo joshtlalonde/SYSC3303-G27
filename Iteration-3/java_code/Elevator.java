@@ -259,6 +259,8 @@ class Elevator implements Runnable
      */
     public void doorClose() {
         door.close();
+        this.sendElevatorRequest(); // lets Scheduler know we are in door closed state
+        ElevatorPacket newFloorRequest = this.receiveSchedulerResponse();
         this.idle();
     }
     
