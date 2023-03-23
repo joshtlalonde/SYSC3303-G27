@@ -58,11 +58,71 @@ public class Scheduler {
 		}
 	}
 
+	/** 
+	* We follow good programming procedures by making comments like this :)
+	*
+	*/
+	
 	public void processFloor() {
-
+		//Receive a gigantic FLOOR packet
+		// add to ArrayList FloorRequest
+		
 	}
 
+	
+	/**
+	* This is the fucky wucky one ~ Jakob2023
+	*
+	*/
 	public void processElevator() {
+		//receive a ginormous ELE PACKET
+		//Determine state 
+		//Update ArrayList elevatorinfo with "current received state"
+		//Determine which state method to proceed with
+			//Nah nvm... **JOSH LOOK LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK** Add send method to elevatorInfo 
+		
+	}
+	
+	
+	public void serviceElevatorIdle(ElevatorInfo elevator) {
+		//Find request that can be serviced with Idle elevator instead of moving
+		//Update elevatorInfo accordingly.
+		//send packet back to elevator if it can move or if its a useless shit.
+		
+	}
+	
+	public void serviceElevatorMovingUp(ElevatorInfo elevator) {
+		//Find request that can be serviced with Moving Up elevator within floors serviced
+		//Update elevatorInfo accordingly.
+		//send packet back to elevator if it can move or if its a useless shit.
+		
+	}
+	
+	public void serviceElevatorMovingDown(ElevatorInfo elevator) {
+		//Find request that can be serviced with Moving Down elevator within floors serviced
+		//Update elevatorInfo accordingly.
+		//send packet back to elevator if it can move or if its a useless shit.
+		
+	}
+	
+	public void serviceElevatorStopped(ElevatorInfo elevator) {
+		//Tells Elev to go stop state. 
+		//Update elevatorInfo accordingly.
+		//send packet back to elevator if it can move or if its a useless shit.
+		
+	}
+	public void serviceElevatorDoorOpen(ElevatorInfo elevator) {
+		//Destinations cleared, people with same floor destination removed.
+		//Update elevatorInfo accordingly.
+		//send packet back to elevator if it can move or if its a useless shit.
+		
+	}
+	
+	
+	public void serviceElevatorDoorClose(ElevatorInfo elevator) {
+		//Destinations added, people that got on updated.
+		//Update elevatorInfo accordingly.
+		//send packet back to elevator if it can move or if its a useless shit.
 		
 	}
 
@@ -181,11 +241,11 @@ public class Scheduler {
 		} 
 	}
 
-	/** Elevator is in Idle state, give it a new FloorRequest to service */
-	public void serviceElevatorIdleRequest(ElevatorPacket elevatorPacket, ElevatorInfo elevator) {
+	/** Elevator is in Idle state, give it a new FloorRequest to service */ 
+	public void serviceElevatorIdle(ElevatorPacket elevatorPacket, ElevatorInfo elevator) {
 		synchronized (floorRequests) {
 			// Wait until a FloorRequest comes in 
-			while (floorRequests.isEmpty()) {
+			while (floorRequests.isEmpty()) { //tbh why???
 				try {
 					floorRequests.wait();
 				} catch (InterruptedException e) {
