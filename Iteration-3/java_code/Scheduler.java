@@ -93,8 +93,8 @@ public class Scheduler {
 	public ElevatorInfo serviceElevatorMovingUp(ElevatorInfo elevator) {
 		//Find request that can be serviced with Moving Up elevator within floors serviced
 		//Update elevatorInfo accordingly.
-		//send packet back to elevator if it can move or if its a useless shit.
-		
+
+		return elevator;
 	}
 	
 	public ElevatorInfo serviceElevatorMovingDown(ElevatorInfo elevator) {
@@ -112,6 +112,7 @@ public class Scheduler {
 	}
 	public ElevatorInfo serviceElevatorDoorOpen(ElevatorInfo elevator) {
 		//Destinations cleared, people with same floor destination removed.
+		//Send message to floor stating who got off the elevator
 		//Update elevatorInfo accordingly.
 		
 		return elevator;
