@@ -52,14 +52,9 @@ class Elevator implements Runnable
     /** 
      * The elevator is in the Idle State
      * 
-     * The elevator sends a packet to the scheduler to let it know it is:
-     *      stopped
-     *      currentFloor == destinationFloor
-     *      No passengerDestinations
-     * 
-     * Waits until scheduler tells it to pick a new passenger up, through a packet that states:
-     *      new destinationFloor
-     *      new passengerDestinations
+     * The elevator sends a packet to the scheduler to let it know it is idle
+     * Waits until scheduler tells it to pick a new passenger up
+     * Moves to MOVING state, either up or down
      * 
      */
     public void idle() {
@@ -88,6 +83,8 @@ class Elevator implements Runnable
      * Moves to destinationFloor
      * Between every floor it sends a packet to the scheduler to ask if there are any users to pick up
      * If there are users it stops, if not then continue
+     * When reaching destination it moves to stopped state
+     * 
      */
     public void movingUp() {
         // Update the direction of the elevator
@@ -124,6 +121,9 @@ class Elevator implements Runnable
                 currentState = STOPPED;
             }
         }
+
+        /** Move to stopped state */
+        currentState = STOPPED;
     }
 
     /** 
@@ -131,7 +131,9 @@ class Elevator implements Runnable
      * 
      * Moves to destinationFloor
      * Between every floor it sends a packet to the scheduler to ask if there are any users to pick up
-     * If there are users it stops, if not then continue
+     * If there are users it moves to stopped state, if not it continues
+     * When reaching destination it moves to stopped state
+     * 
      */
     public void movingDown() {
         // Update the direction of the elevator
@@ -168,17 +170,16 @@ class Elevator implements Runnable
                 currentState = STOPPED;
             }
         }
+
+        /** Move to stopped state */
+        currentState = STOPPED;
     }
 
     /** 
      * Elevator is in stopped state 
      * 
      * Stops the motor
-     * Opens the doors to let people on
-     * Sends message to scheduler to ask who is getting on and where do they want to go
-     * Simulates button clicks for the users getting on (Should send packet saying what the new buttons are just because that is what the project outline says)
-     * Closes doors
-     * Starts moving to destination again
+     * Sends message to scheduler update state
      * 
      */
     public void stopped() {
@@ -208,83 +209,96 @@ class Elevator implements Runnable
      * Opens the doors
      * Lets people on/off the elevator
      * Resets buttons and passengerDestinations for people getting off
-     * Sets buttons and passengerDestinations for people that got on
      * 
      */
     public void doorOpen() {
+        /** Open the door */
         door.open();
 
         /** Reset button for floor */
-        for (ElevatorButton button : elevatorButtons) {
-            if (button.getButtonFloor() == passengerDestination) {
-                if (button.getButtonState() == false) {
-                    this.buttonPress(button.getButtonFloor());
-                }
-                button.reset();
-            }
-        }
+        this.buttonReset(currentFloor);
 
-        /** Remove the PassengeDestination of people getting off */
-        for (ElevatorButton button : elevatorButtons) {
-            if (button.getButtonFloor() == passengerDestination) {
-            	passengerDestination.removeAll(button.getButtonFloor());
-            }
-        }
-
-        /** Tell scheduler that elevator is in stopped state */
+        /** Tell scheduler that elevator is in door open state */
         this.sendElevatorRequest();
 
-        /** Wait for response from scheduler saying who wants to get on */ 
-        ElevatorPacket newFloorRequest = this.receiveSchedulerResponse();
+        /** Wait for response from scheduler saying who got off the elevator */ 
+        ElevatorPacket doorOpenResponse = this.receiveSchedulerResponse();
+
+        /** Update the passengerDestinations based on the changes made in the scheduler of who got off */
+        passengerDestinations = doorOpenResponse.getPassengerDestinations();
+
+        /** Move to DOOR_CLOSE State */
+        currentState = DOOR_CLOSE;
+    }
+
+    /** 
+     * Elevator is in door close state 
+     * Elevator closes door 
+     * Sends packet to update state
+     * Updates passengerDestinations for people getting on 
+     * Sets buttons to on for those destinations
+     */
+    public void doorClose() {
+        /** Close the door */
+        door.close();
+
+        /** Tell scheduler that elevator is in door close state */
+        this.sendElevatorRequest();
+
+        /** Wait for scheulder to say who got on the elevator */
+        ElevatorPacket doorCloseResponse = this.receiveSchedulerResponse();
         
         /** Walk through the passenger destinations updated from the scheduler */
-        for (int passengerDestination : newFloorRequest.getPassengerDestinations()) {
+        for (int passengerDestination : doorCloseResponse.getPassengerDestinations()) {
             /** Add Passenger Destinations to array */
             this.passengerDestinations.add(passengerDestination);
 
             /** Update buttons clicked for anyone that got on the elevator */
             for (ElevatorButton button : elevatorButtons) {
                 if (button.getButtonFloor() == passengerDestination) {
-                    if (button.getButtonState() == false) {
-                        this.buttonPress(button.getButtonFloor());
-                    }
+                    this.buttonPress(button.getButtonFloor());
                 }
             }
         }
-    }
 
-    /** 
-     * Elevator is in door close state 
-     * 
-     */
-    public void doorClose() {
-        door.close();
-        this.sendElevatorRequest(); // lets Scheduler know we are in door closed state
-        ElevatorPacket newFloorRequest = this.receiveSchedulerResponse();
-        this.idle();
+        /** Change current State to IDLE */
+        currentState = IDLE;
     }
     
     public void run()
     {
         while(true){   
             if (currentState == IDLE) {
-                idle();
+                this.idle();
             } 
             else if (currentState == MOVING_UP) {
-                // movingUp();
+                this.movingUp();
             } 
             else if (currentState == MOVING_DOWN) {
-                // movingDown();
+                this.movingDown();
             } 
             else if (currentState == STOPPED) {
-                // stopped();
+                this.stopped();
             } 
             else if (currentState == DOOR_OPEN) {
-                // doorOpen();
+                this.doorOpen();
             } 
             else if (currentState == DOOR_CLOSE) {
-                // doorClose();
+                this.doorClose();
             } 
+        }
+    }
+
+    /** Puts the button in its unclicked state */
+    public void buttonReset(int carButton) {
+        // Deactivate the correct button depending on which floor was pressed
+        for (ElevatorButton button : elevatorButtons) {
+            if (button.getButtonFloor() == carButton) {
+                // Turn off the button for that floor
+                System.out.println("Elevator: Resetting the button for floor " + carButton);
+                button.reset();
+                break;
+            }
         }
     }
 
@@ -429,16 +443,20 @@ class ElevatorButton {
 
 	// Sets the button state On, and turns on the Lamp
 	public void press() {
-        System.out.println("ElevatorButton: Button for floor " + buttonFloor + " has been clicked");
-		buttonState = true;
-		buttonLamp.turnOn();
+        if (!buttonState) {
+            System.out.println("ElevatorButton: Button for floor " + buttonFloor + " has been clicked");
+            buttonState = true;
+            buttonLamp.turnOn();
+        }
 	}
 
 	// Sets the button state to Off and turns off the Lamp
 	public void reset() {
-        System.out.println("ElevatorButton: Button for floor " + buttonFloor + " has been reset");
-		buttonState = false;
-		buttonLamp.turnOff();
+        if (buttonState) {
+            System.out.println("ElevatorButton: Button for floor " + buttonFloor + " has been reset");
+            buttonState = false;
+            buttonLamp.turnOff();
+        }
 	}
 
 	// Returns the current state of the Button
