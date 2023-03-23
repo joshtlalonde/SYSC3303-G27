@@ -23,12 +23,8 @@ public class Scheduler {
 	public Scheduler() {
 		try {
 			// Construct a datagram socket and bind it to port 69 
-			// This socket will be used to receive Elevators's packets.
-			receiveElevatorSocket = new DatagramSocket(69);
-
-			// Construct a datagram socket and bind it to port 23 
-			// This socket will be used to receive Floor's packets.
-			receiveFloorSocket = new DatagramSocket(23);
+			receiveSocket = new DatagramSocket(69);
+			
 		} catch (SocketException se) {
 			se.printStackTrace();
 			System.exit(1);
@@ -50,11 +46,37 @@ public class Scheduler {
 		
 		System.out.println("Scheduler: Sent floor request to elevator: " + userInput);
 	}
+	
+	public void receive() {
+		byte data[] = new byte[1];
+		DatagramPacket receivePacket = new DatagramPacket(data, data.length);
+		try{
+			receiveSocket.receive(receivePacket);
+		} catch(IOException e){
+			System.out.println("IO Exception: Likely: ");
+			System.out.println("Receive Socket Timed Out. \n" + e);
+			e.printStackTrace();
+			System.exit(1);
+		}
+		byte receiveID = data[0];
+		if(receiveID == 0){
+			System.out.println("Floor Packet Received");
+			currentState = PROCESS_FLOOR;
+			
+		}
+		else if(receiveID == 1){
+			System.out.println("Elevator Packet Received");	
+			currentState = PROCESS_ELEVATOR;
+			
+		}
+		else{
+			System.out.println("wHaT tHe FuCk....");
+		}
+	}
 
 	/** Receives a FloorRequest packet from Floor
-	 * TODO: Should this be running as its own thread that way it can always be listening?
-	 * 		So this should be its own class, maybe within the scheduler?
-	 * 		Or maybe outside of it and just call the addFloorRequest function as a kind of "put"
+	 * TODO: 
+	 * 		
 	 */
 	public void receiveFloorPacket() {
 		// Create new FloorPacket object from data
