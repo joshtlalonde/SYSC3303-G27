@@ -1,4 +1,7 @@
 public enum Scheduler_State {
-    Process_Request,
-    Process_Destination;
+    RECEIVE,
+    PROCESS_FLOOR,
+    PROCESS_ELEVATOR,
+    Send,
+    ;
 }
