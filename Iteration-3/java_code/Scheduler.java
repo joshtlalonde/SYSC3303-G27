@@ -9,14 +9,13 @@ public class Scheduler {
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.S", Locale.ENGLISH);
 
 	private DatagramSocket receiveSocket; // Socket for receiving packets from Floor and Elevator
-	private DatagramPacket receivePacket;
+	private DatagramPacket receivePacket; // Holds the most recently received packet.
 	private Scheduler_State currentState = Scheduler_State.RECEIVE;
 	
-    private ArrayList<UserInput> floorRequests = new ArrayList<UserInput>(); // Holds list of requests from Floor
-	// TODO: elevatorRequests should be a Priority based QUEUE (elevators moving have higher priorty, then FIFO)
-	private ArrayList<ElevatorPacket> elevatorRequests = new ArrayList<ElevatorPacket>(); // Holds the list of request packets from the elevators
-	private ArrayList<ElevatorInfo> elevatorsInfo = new ArrayList<ElevatorInfo>(); // Holds the list of elevators and their associated information
-	private int servicingFloor;
+	/** NOTE: Technically don't need syncs but never hurts? For now at least */
+    private List<UserInput> floorRequests = Collections.synchronizedList(new ArrayList<UserInput>()); // Holds list of requests from Floor
+	// private ArrayList<ElevatorPacket> elevatorRequests = new ArrayList<ElevatorPacket>(); // Holds the list of request packets from the elevators
+	private List<ElevatorInfo> elevatorsInfo = Collections.synchronizedList(new ArrayList<ElevatorInfo>()); // Holds the list of elevators and their associated information
 
 	public Scheduler() {
 		try {
@@ -33,7 +32,7 @@ public class Scheduler {
 	 * Waits until a packet is received and determines if it is an Elevator or Floor packet
 	 */
 	public void receive() {
-		System.out.println("Scheduler: Entering RECEIVE state");
+		System.out.println("\nScheduler: Entering RECEIVE state");
 
 		/** Wait to receive a packet */
 		byte data[] = new byte[100];
@@ -68,14 +67,19 @@ public class Scheduler {
 	 * Adds the UserInput to the Queue of UserInputs
 	 */
 	public void processFloor() {
-		System.out.println("Scheduler: Entering PROCESS_FLOOR state");
+		System.out.println("\nScheduler: Entering PROCESS_FLOOR state");
 
+		/** Receives the Floor Packet and converts it to UserInput */
 		UserInput userInput = this.receiveFloorPacket();
-		System.out.println(userInput.getFloor()); 
 
-		//Receive a gigantic FLOOR packet
-		// add to ArrayList FloorRequest
+		/** Adds the userInput to the List of User's waiting */
+		floorRequests.add(userInput);
 		
+		/** Send ACK back to Floor */
+		this.sendFloorPacket(userInput, receivePacket.getAddress(), receivePacket.getPort());
+
+		/** Move to RECEIVE state */
+		currentState = Scheduler_State.RECEIVE;
 	}
 
 	
@@ -84,7 +88,7 @@ public class Scheduler {
 	*
 	*/
 	public void processElevator() {
-		System.out.println("Scheduler: Entering PROCESS_ELEVATOR state");
+		System.out.println("\nScheduler: Entering PROCESS_ELEVATOR state");
 
 		ElevatorInfo elevatorInfo = receiveElevatorPacket();
 		System.out.println(elevatorInfo.getElevatorNumber());
@@ -164,6 +168,22 @@ public class Scheduler {
 		UserInput userInput = new UserInput(floorPacket.getTime(), floorPacket.getFloor(), floorPacket.getDirectionUp(), floorPacket.getDestinationFloor());
 
 		return userInput;
+	}
+
+	/**
+	 * Sends a floorPacket to the Floor based on the userInput inputted
+	 * 
+	 * @param userInput userInput information that is to be sent to Floor
+	 * @param address IP Address that the Floor exists on
+	 * @param port Port number that Floor exists on
+	 */
+	private void sendFloorPacket(UserInput userInput, InetAddress address, int port) {
+        // Create Floor Packet
+        FloorPacket floorPacket = new FloorPacket(userInput.getFloor(), userInput.getTime(), userInput.getFloorButtonUp(), userInput.getCarButton());
+
+        // Send Elevator Packet
+        System.out.println("Scheduler: Sending response to the floor");
+		floorPacket.send(address, port, receiveSocket, false);
 	}
 
 	/** 

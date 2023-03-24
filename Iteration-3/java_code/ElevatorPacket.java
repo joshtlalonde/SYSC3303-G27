@@ -94,7 +94,7 @@ public class ElevatorPacket {
 		System.out.println("ElevatorPacket: Packet sent.\n");
     }
 
-    /** Used to wait until a FloorPacket is received */
+    /** Used to wait until a ElevatorPacket is received */
     public void receive(DatagramSocket receiveElevatorSocket) {
         // Construct a DatagramPacket for receiving packets up to 100 bytes long. Will not be longer
 		byte data[] = new byte[100];
@@ -102,7 +102,7 @@ public class ElevatorPacket {
 
 		// Block until a datagram packet is received from receiveSocket.
 		try {        
-			// System.out.println("FloorPacket: Waiting for Floor Packet..."); // so we know we're waiting
+			// System.out.println("ElevatorPacket: Waiting for Elevator Packet..."); // so we know we're waiting
 			receiveElevatorSocket.receive(receiveElevatorPacket);
 		} catch (IOException e) {
 			System.out.print("IO Exception: likely:");
