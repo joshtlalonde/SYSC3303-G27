@@ -58,6 +58,8 @@ class Elevator implements Runnable
      * 
      */
     public void idle() {
+        System.out.println("Elevator: Entering IDLE state");
+
         /** Send ElevatorPacket to tell scheduler we are in idle state (stopped, curr = dest, no passDests) */ 
         this.sendElevatorRequest();
 
@@ -87,6 +89,8 @@ class Elevator implements Runnable
      * 
      */
     public void movingUp() {
+        System.out.println("Elevator: Entering MOVING_UP state");
+
         // Update the direction of the elevator
         directionUp = true;
 
@@ -136,6 +140,8 @@ class Elevator implements Runnable
      * 
      */
     public void movingDown() {
+        System.out.println("Elevator: Entering MOVING_DOWN state");
+
         // Update the direction of the elevator
         directionUp = false;
 
@@ -183,6 +189,8 @@ class Elevator implements Runnable
      * 
      */
     public void stopped() {
+        System.out.println("Elevator: Entering STOPPED state");
+
         motor.stopMoving();
 
         /** Sleep for deceleration time */
@@ -212,6 +220,8 @@ class Elevator implements Runnable
      * 
      */
     public void doorOpen() {
+        System.out.println("Elevator: Entering DOOR_OPEN state");
+
         /** Reset button for floor */
         this.buttonReset(currentFloor);
         
@@ -241,6 +251,8 @@ class Elevator implements Runnable
      * 
      */
     public void doorClose() {
+        System.out.println("Elevator: Entering DOOR_CLOSE state");
+
         /** Close the door */
         door.close();
 

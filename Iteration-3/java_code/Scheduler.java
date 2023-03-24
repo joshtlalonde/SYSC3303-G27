@@ -9,7 +9,7 @@ public class Scheduler {
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.S", Locale.ENGLISH);
 
 	private DatagramSocket receiveSocket; // Socket for receiving packets from Floor and Elevator
-	private Scheduler_State currentState;
+	private Scheduler_State currentState = Scheduler_State.RECEIVE;
 	
     private ArrayList<UserInput> floorRequests = new ArrayList<UserInput>(); // Holds list of requests from Floor
 	// TODO: elevatorRequests should be a Priority based QUEUE (elevators moving have higher priorty, then FIFO)
@@ -32,6 +32,8 @@ public class Scheduler {
 	 * Waits until a packet is received and determines if it is an Elevator or Floor packet
 	 */
 	public void receive() {
+		System.out.println("Scheduler: Entering RECEIVE state");
+
 		byte data[] = new byte[1];
 		DatagramPacket receivePacket = new DatagramPacket(data, data.length);
 		try{
@@ -62,6 +64,8 @@ public class Scheduler {
 	*/
 	
 	public void processFloor() {
+		System.out.println("Scheduler: Entering PROCESS_FLOOR state");
+
 		//Receive a gigantic FLOOR packet
 		// add to ArrayList FloorRequest
 		
@@ -73,6 +77,8 @@ public class Scheduler {
 	*
 	*/
 	public void processElevator() {
+		System.out.println("Scheduler: Entering PROCESS_ELEVATOR state");
+
 		//receive a ginormous ELE PACKET
 		//Determine state 
 		//Update ArrayList elevatorinfo with "current received state"
