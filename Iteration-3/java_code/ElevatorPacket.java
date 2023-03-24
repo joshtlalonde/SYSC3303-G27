@@ -51,11 +51,14 @@ public class ElevatorPacket {
      * @port destination port, 
      * @sendElevatorSocket socket to send on
     */
-    public void send(InetAddress address, int port, DatagramSocket sendElevatorSocket) {
+    public void send(InetAddress address, int port, DatagramSocket sendElevatorSocket, boolean sendToScheduler) {
         byte sendbytes[];
         
         // Combine the different attributes of the packet into one array of bytes packet
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        if (sendToScheduler) {
+            outputStream.write(1); // Add first byte to let scheduler know it is an elevator packet
+        }
 		outputStream.write(elevatorNumber);
         outputStream.write(isMoving ? 1 : 0);
         outputStream.write(currentFloor);

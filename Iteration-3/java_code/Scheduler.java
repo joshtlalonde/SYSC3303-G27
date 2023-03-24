@@ -9,6 +9,7 @@ public class Scheduler {
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.S", Locale.ENGLISH);
 
 	private DatagramSocket receiveSocket; // Socket for receiving packets from Floor and Elevator
+	private DatagramPacket receivePacket;
 	private Scheduler_State currentState = Scheduler_State.RECEIVE;
 	
     private ArrayList<UserInput> floorRequests = new ArrayList<UserInput>(); // Holds list of requests from Floor
@@ -34,8 +35,9 @@ public class Scheduler {
 	public void receive() {
 		System.out.println("Scheduler: Entering RECEIVE state");
 
-		byte data[] = new byte[1];
-		DatagramPacket receivePacket = new DatagramPacket(data, data.length);
+		/** Wait to receive a packet */
+		byte data[] = new byte[100];
+		receivePacket = new DatagramPacket(data, data.length);
 		try{
 			receiveSocket.receive(receivePacket);
 		} catch(IOException e){
@@ -44,17 +46,19 @@ public class Scheduler {
 			e.printStackTrace();
 			System.exit(1);
 		}
+
+		/** See if packet is a FloorPacket or an ElevatorPacket */
 		byte receiveID = data[0];
 		if(receiveID == 0){
-			System.out.println("Floor Packet Received");
+			System.out.println("Scheduler: Floor Packet Received");
 			currentState = Scheduler_State.PROCESS_FLOOR;
 		}
 		else if(receiveID == 1){
-			System.out.println("Elevator Packet Received");	
+			System.out.println("Scheduler: Elevator Packet Received");	
 			currentState = Scheduler_State.PROCESS_ELEVATOR;
 		}
 		else{
-			System.out.println("Unknown Packet Received");
+			System.out.println("Scheduler: Unknown Packet Received");
 		}
 	}
 
@@ -78,6 +82,9 @@ public class Scheduler {
 	*/
 	public void processElevator() {
 		System.out.println("Scheduler: Entering PROCESS_ELEVATOR state");
+
+		ElevatorInfo elevatorInfo = receiveElevatorPacket();
+		System.out.println(elevatorInfo.getElevatorNumber());
 
 		//receive a ginormous ELE PACKET
 		//Determine state 
@@ -163,25 +170,32 @@ public class Scheduler {
 	 */
 	public ElevatorInfo receiveElevatorPacket() {
 		// Create Default ElevatorPacket
-		ElevatorPacket elevatorPacket = new ElevatorPacket(0, false, 0, 0, false, new ArrayList<Integer>(), 0);
+		// ElevatorPacket elevatorPacket = new ElevatorPacket(0, false, 0, 0, false, new ArrayList<Integer>(), 0);
 
 		// Wait for ElevatorPacket to arrive
-		System.out.println("Scheduler: Waiting for Elevator Packet..."); 
-		elevatorPacket.receive(receiveSocket);
+		// System.out.println("Scheduler: Waiting for Elevator Packet..."); 
+		// elevatorPacket.receive(receiveSocket);
+
+		// Create Default ElevatorPacket
+		ElevatorPacket elevatorPacket = new ElevatorPacket();
+		// Skip the byte first in the array
+		byte[] byteArr = Arrays.copyOfRange(this.receivePacket.getData(), 1, this.receivePacket.getData().length);
+		// Convert the bytes to an elevatorPacket
+		elevatorPacket.convertBytesToPacket(byteArr);
 
 		/** Update ElevatorInfo with the packet */
 		ElevatorInfo elevatorInfo = null;
 		for (ElevatorInfo elevator : elevatorsInfo) {
 			if (elevator.getElevatorNumber() == elevatorPacket.getElevatorNumber()) {
 				// Update the elevator info
-				elevator.convertPacket(elevatorPacket);
+				elevator.convertPacket(elevatorPacket, receivePacket.getPort(), receivePacket.getAddress());
 				elevatorInfo = elevator;
 			} 
 		}
 		if (elevatorInfo == null) {
 			// Create new elevator info
 			elevatorInfo = new ElevatorInfo();
-			elevatorInfo.convertPacket(elevatorPacket);
+			elevatorInfo.convertPacket(elevatorPacket, receivePacket.getPort(), receivePacket.getAddress());
 			elevatorsInfo.add(elevatorInfo);
 		}
 
@@ -205,7 +219,6 @@ public class Scheduler {
 					scheduler.processElevator();
 					break;
 			}
-
 		}
     }
 }
@@ -222,13 +235,15 @@ class ElevatorInfo {
 	private int port; // Holds port that the Elevator exists on
 	private InetAddress address; // Holds the address that the Elevator exists on
 
-    public ElevatorInfo(int elevatorNumber, int currentFloor, int destinationFloor, boolean directionUp, ArrayList<Integer> passengerDestinations, int currentState) {
+    public ElevatorInfo(int elevatorNumber, int currentFloor, int destinationFloor, boolean directionUp, ArrayList<Integer> passengerDestinations, int currentState, int port, InetAddress address) {
         this.elevatorNumber = elevatorNumber;
         this.currentFloor = currentFloor;
         this.destinationFloor = destinationFloor;
         this.directionUp = directionUp;
         this.passengerDestinations = passengerDestinations;
 		this.currentState = currentState;
+		this.port = port;
+		this.address = address;
 	}
 
 	/** Default Constructor */
@@ -241,7 +256,7 @@ class ElevatorInfo {
 		this.currentState = 0;
 	}
 
-	public void convertPacket(ElevatorPacket elevatorPacket) {
+	public void convertPacket(ElevatorPacket elevatorPacket, int port, InetAddress address) {
 		this.elevatorNumber = elevatorPacket.getElevatorNumber();
         this.isMoving = elevatorPacket.getIsMoving();
         this.currentFloor = elevatorPacket.getCurrentFloor();
@@ -249,13 +264,13 @@ class ElevatorInfo {
         this.directionUp = elevatorPacket.getDirectionUp();
         this.passengerDestinations = elevatorPacket.getPassengerDestinations();
 		this.currentState = elevatorPacket.getCurrentState();
-		this.port = elevatorPacket.getReceiveElevatorPacket().getPort(); /* TODO: Needs to be tested still */
-		this.address = elevatorPacket.getReceiveElevatorPacket().getAddress();
+		this.port = port; /* TODO: Needs to be tested still */
+		this.address = address;
 	}
 
 	public void sendPacket(DatagramSocket socket) {
 		ElevatorPacket elevatorPacket = new ElevatorPacket(elevatorNumber, isMoving, currentFloor, destinationFloor, directionUp, passengerDestinations, currentState);
-		elevatorPacket.send(address, port, socket);
+		elevatorPacket.send(address, port, socket, false);
 	}
 
     ///////////// GETTERS AND SETTERS /////////////

@@ -332,11 +332,12 @@ class Elevator implements Runnable
     /** Send a request to the scheduler to let it know the state of the elevator and ask what should be done */
 	private void sendElevatorRequest() {
         // Create Elevator Packet
-        ElevatorPacket elevatorPacket = new ElevatorPacket(elevatorNumber, isMoving, currentFloor, destinationFloor, directionUp, this.passengerDestinations, this.currentState);
+        // ElevatorPacket elevatorPacket = new ElevatorPacket(elevatorNumber, isMoving, currentFloor, destinationFloor, directionUp, this.passengerDestinations, this.currentState);
+        ElevatorPacket elevatorPacket = new ElevatorPacket(9, isMoving, currentFloor, destinationFloor, directionUp, this.passengerDestinations, this.currentState);
         // Send Elevator Packet
         System.out.println("Elevator: Sending request to the scheduler");
         try {
-            elevatorPacket.send(InetAddress.getLocalHost(), 69, sendReceiveSocket);
+            elevatorPacket.send(InetAddress.getLocalHost(), 69, sendReceiveSocket, true);
         } catch (UnknownHostException e) {
             System.out.println("Failed to send ElevatorPacket: " + e);
             e.printStackTrace();
