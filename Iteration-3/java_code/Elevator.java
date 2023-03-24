@@ -58,7 +58,7 @@ class Elevator implements Runnable
      * 
      */
     public void idle() {
-        System.out.println("Elevator: Entering IDLE state");
+        System.out.println("Elevator: Entering IDLE state"); //probably shouldn't say this as it could be in Idle from the beginning.
 
         /** Send ElevatorPacket to tell scheduler we are in idle state (stopped, curr = dest, no passDests) */ 
         this.sendElevatorRequest();
@@ -76,7 +76,7 @@ class Elevator implements Runnable
         } else if (currentFloor > destinationFloor) {
             // Move down
             currentState = MOVING_DOWN;
-        }
+        } // Add another else-if to account for destination of request being at same floor
     }
 
     /** 
