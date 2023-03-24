@@ -73,17 +73,12 @@ public class Floor implements Runnable {
 	}
 
 	/** Sends request to the Scheduler */
-	private void sendFloorRequest(UserInput userInput) {
+	private void sendFloorRequest(InetAddress address, int port, UserInput userInput) {
 		// Create FloorPacket
 		FloorPacket floorPacket = new FloorPacket(userInput.getFloor(), userInput.getTime(), userInput.getFloorButtonUp(), userInput.getCarButton());
 
-		// Send FloorPacket
-		try {
-			floorPacket.send(InetAddress.getLocalHost(), 23, sendReceiveSocket);
-		} catch (UnknownHostException e) {
-			System.out.println("Failed to send FloorPacket: " + e);
-			e.printStackTrace();
-		}
+		// Send FloorPacket to scheduler
+		floorPacket.send(address, port, sendReceiveSocket, true);
 		
 		System.out.println("Floor: Sent floor request to the scheduler: " + userInput);
 	}
@@ -127,7 +122,7 @@ public class Floor implements Runnable {
 				buttonPress(userInput.getFloorButtonUp(), userInput.getFloor());
 
 				// Send message to the Scheduler
-				sendFloorRequest(userInput);
+				sendFloorRequest(InetAddress.getLocalHost(), 69, userInput);
 
 				/** TODO: Should wait until an elevator ack comes in, or a 5 second timeout occurs */
 				// Waits until the request is being serviced by the elevator

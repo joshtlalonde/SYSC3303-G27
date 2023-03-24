@@ -39,6 +39,7 @@ public class Scheduler {
 		byte data[] = new byte[100];
 		receivePacket = new DatagramPacket(data, data.length);
 		try{
+			System.out.println("Scheduler: Waiting for Packet..."); 
 			receiveSocket.receive(receivePacket);
 		} catch(IOException e){
 			System.out.println("IO Exception: Likely: ");
@@ -62,13 +63,15 @@ public class Scheduler {
 		}
 	}
 
-	/** 
-	* We follow good programming procedures by making comments like this :)
-	*
-	*/
-	
+	/**
+	 * Process the Floor Packet by converting to user input
+	 * Adds the UserInput to the Queue of UserInputs
+	 */
 	public void processFloor() {
 		System.out.println("Scheduler: Entering PROCESS_FLOOR state");
+
+		UserInput userInput = this.receiveFloorPacket();
+		System.out.println(userInput.getFloor()); 
 
 		//Receive a gigantic FLOOR packet
 		// add to ArrayList FloorRequest
@@ -90,7 +93,6 @@ public class Scheduler {
 		//Determine state 
 		//Update ArrayList elevatorinfo with "current received state"
 		//Determine which state method to proceed with
-			//**JOSH LOOK LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK** Add send method to elevatorInfo 
 		// Send the newly editted elevatorInfo that is returned from the function	
 		
 	}
@@ -147,12 +149,16 @@ public class Scheduler {
 	 * 		
 	 */
 	public UserInput receiveFloorPacket() {
-		// Create new FloorPacket object from data
-		FloorPacket floorPacket = new FloorPacket(0,new Date(),false,0);
+		// Create Default FloorPacket
+		FloorPacket floorPacket = new FloorPacket();
+		// Skip the byte first in the array
+		byte[] byteArr = Arrays.copyOfRange(this.receivePacket.getData(), 1, this.receivePacket.getData().length);
+		// Convert the bytes to an elevatorPacket
+		floorPacket.convertBytesToPacket(byteArr);
 
 		// Wait for FloorPacket to arrive
-		System.out.println("Scheduler: Waiting for Floor Packet..."); 
-		floorPacket.receive(receiveSocket);
+		// System.out.println("Scheduler: Waiting for Floor Packet..."); 
+		// floorPacket.receive(receiveSocket);
 
 		// Convert Floor Packet to UserInput
 		UserInput userInput = new UserInput(floorPacket.getTime(), floorPacket.getFloor(), floorPacket.getDirectionUp(), floorPacket.getDestinationFloor());
@@ -169,13 +175,6 @@ public class Scheduler {
 	 * 
 	 */
 	public ElevatorInfo receiveElevatorPacket() {
-		// Create Default ElevatorPacket
-		// ElevatorPacket elevatorPacket = new ElevatorPacket(0, false, 0, 0, false, new ArrayList<Integer>(), 0);
-
-		// Wait for ElevatorPacket to arrive
-		// System.out.println("Scheduler: Waiting for Elevator Packet..."); 
-		// elevatorPacket.receive(receiveSocket);
-
 		// Create Default ElevatorPacket
 		ElevatorPacket elevatorPacket = new ElevatorPacket();
 		// Skip the byte first in the array
