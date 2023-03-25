@@ -15,7 +15,7 @@ public class Scheduler {
 	/** NOTE: Technically don't need syncs but never hurts? For now at least */
     private List<UserInput> floorRequests = Collections.synchronizedList(new ArrayList<UserInput>()); // Holds list of requests from Floor
 	// private ArrayList<ElevatorPacket> elevatorRequests = new ArrayList<ElevatorPacket>(); // Holds the list of request packets from the elevators
-	private List<ElevatorInfo> elevatorInfos = Collections.synchronizedList(new ArrayList<ElevatorInfo>()); // Holds the list of elevators and their associated information
+	private List<ElevatorInfo> elevatorsInfo = Collections.synchronizedList(new ArrayList<ElevatorInfo>()); // Holds the list of elevators and their associated information
 
 	public Scheduler() {
 		try {
@@ -84,32 +84,14 @@ public class Scheduler {
 
 	
 	/**
-	 * Receive and Process an Elevator Packet
-	 * Converts Elevator Packet to ElevatorInfo
-	 * Updates the ElevatorInfo for Scheduler to keep track of elevators
-	 */
+	* This is the fucky wucky one ~ Jakob2023
+	*
+	*/
 	public void processElevator() {
 		System.out.println("\nScheduler: Entering PROCESS_ELEVATOR state");
 
-		/** Receive an Elevator Packet and Convert to ElevatorInfo */
 		ElevatorInfo elevatorInfo = receiveElevatorPacket();
-		
-		/** Add/Update ElevatorInfo Array */
-		boolean updated = false;
-		for (ElevatorInfo elevator : elevatorInfos) {
-			if (elevator.getElevatorNumber() == elevatorInfo.getElevatorNumber()) {
-				elevator = elevatorInfo;
-				updated = true;
-			}
-		}
-
-		// Must not exist in list, adding now 
-		if (!updated) {
-			elevatorInfos.add(elevatorInfo);
-		}
-
-		/** Act upon elevator request depending on currentState */
-		
+		System.out.println(elevatorInfo.getElevatorNumber());
 
 		//receive a ginormous ELE PACKET
 		//Determine state 
@@ -117,8 +99,6 @@ public class Scheduler {
 		//Determine which state method to proceed with
 		// Send the newly editted elevatorInfo that is returned from the function	
 		
-		/** Move to RECEIVE State */
-		currentState = Scheduler_State.RECEIVE;
 	}
 	
 	
@@ -228,7 +208,7 @@ public class Scheduler {
 
 		/** Update ElevatorInfo with the packet */
 		ElevatorInfo elevatorInfo = null;
-		for (ElevatorInfo elevator : elevatorInfos) {
+		for (ElevatorInfo elevator : elevatorsInfo) {
 			if (elevator.getElevatorNumber() == elevatorPacket.getElevatorNumber()) {
 				// Update the elevator info
 				elevator.convertPacket(elevatorPacket, receivePacket.getPort(), receivePacket.getAddress());
@@ -239,7 +219,7 @@ public class Scheduler {
 			// Create new elevator info
 			elevatorInfo = new ElevatorInfo();
 			elevatorInfo.convertPacket(elevatorPacket, receivePacket.getPort(), receivePacket.getAddress());
-			elevatorInfos.add(elevatorInfo);
+			elevatorsInfo.add(elevatorInfo);
 		}
 
 		return elevatorInfo;
@@ -273,7 +253,7 @@ class ElevatorInfo {
     private int destinationFloor; // Holds the destination floor info
     private boolean directionUp; // Holds the direction info
     private ArrayList<Integer> passengerDestinations; // Holds the array of passenger destination floors
-	private int currentState; // Holds the current state of the elevator
+	private Elevator_State currentState; // Holds the current state of the elevator
 
 	private int port; // Holds port that the Elevator exists on
 	private InetAddress address; // Holds the address that the Elevator exists on
@@ -358,11 +338,11 @@ class ElevatorInfo {
         this.directionUp = directionUp;
     }
 
-	public int getCurrentState() {
+	public Elevator_State getCurrentState() {
         return currentState;
     }
 
-	public void setCurrentState(int currentState) {
+	public void setCurrentState(Elevator_State currentState) {
         this.currentState = currentState;
     }
 
