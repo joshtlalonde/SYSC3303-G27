@@ -15,7 +15,7 @@ public class Scheduler {
 	/** NOTE: Technically don't need syncs but never hurts? For now at least */
     private List<UserInput> floorRequests = Collections.synchronizedList(new ArrayList<UserInput>()); // Holds list of requests from Floor
 	// private ArrayList<ElevatorPacket> elevatorRequests = new ArrayList<ElevatorPacket>(); // Holds the list of request packets from the elevators
-	private List<ElevatorInfo> elevatorsInfo = Collections.synchronizedList(new ArrayList<ElevatorInfo>()); // Holds the list of elevators and their associated information
+	private List<ElevatorInfo> elevatorInfos = Collections.synchronizedList(new ArrayList<ElevatorInfo>()); // Holds the list of elevators and their associated information
 
 	public Scheduler() {
 		try {
@@ -274,7 +274,7 @@ class ElevatorInfo {
 	private int port; // Holds port that the Elevator exists on
 	private InetAddress address; // Holds the address that the Elevator exists on
 
-    public ElevatorInfo(int elevatorNumber, int currentFloor, int destinationFloor, boolean directionUp, ArrayList<Integer> passengerDestinations, int currentState, int port, InetAddress address) {
+    public ElevatorInfo(int elevatorNumber, int currentFloor, int destinationFloor, boolean directionUp, ArrayList<Integer> passengerDestinations, Elevator_State currentState, int port, InetAddress address) {
         this.elevatorNumber = elevatorNumber;
         this.currentFloor = currentFloor;
         this.destinationFloor = destinationFloor;
@@ -292,7 +292,7 @@ class ElevatorInfo {
         this.destinationFloor = 0;
         this.directionUp = false;
         this.passengerDestinations = new ArrayList<Integer>();
-		this.currentState = 0;
+		this.currentState = Elevator_State.IDLE;
 	}
 
 	public void convertPacket(ElevatorPacket elevatorPacket, int port, InetAddress address) {
