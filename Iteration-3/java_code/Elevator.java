@@ -64,13 +64,15 @@ class Elevator implements Runnable
         destinationFloor = newFloorRequest.getDestinationFloor();
 
         /** Start Moving to Pickup Passenger */
-        if (currentFloor < destinationFloor) {
-            // Move up
-            currentState = Elevator_State.MOVING_UP;
-        } else if (currentFloor > destinationFloor) {
-            // Move down
-            currentState = Elevator_State.MOVING_DOWN;
-        } // Add another else-if to account for destination of request being at same floor
+        currentState = newFloorRequest.getCurrentState();
+        
+        // if (currentFloor < destinationFloor) {
+        //     // Move up
+        //     currentState = Elevator_State.MOVING_UP;
+        // } else if (currentFloor > destinationFloor) {
+        //     // Move down
+        //     currentState = Elevator_State.MOVING_DOWN;
+        // } // Add another else-if to account for destination of request being at same floor
     }
 
     /** 
