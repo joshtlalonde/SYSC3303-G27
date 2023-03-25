@@ -11,7 +11,7 @@ public class ElevatorPacket {
     static final int DOOR_OPEN = 4; // Value of DOOR_OPEN state 
     static final int DOOR_CLOSE = 5; // Value of DOOR_CLOSE state 
 
-    private int currentState = IDLE; // Holds the current State of the elevator
+    private Elevator_State currentState = Elevator_State.IDLE; // Holds the current State of the elevator
 
     private DatagramPacket sendElevatorPacket; // Holds the Sent Datagram Packet
     private DatagramPacket receiveElevatorPacket; // Holds the Received Datagram Packet
@@ -23,7 +23,7 @@ public class ElevatorPacket {
     private boolean directionUp; // Holds the direction info
     private ArrayList<Integer> passengerDestinations;
 
-    public ElevatorPacket(int elevatorNumber, boolean isMoving, int currentFloor, int destinationFloor, boolean directionUp, ArrayList<Integer> passengerDestinations, int currentState) {
+    public ElevatorPacket(int elevatorNumber, boolean isMoving, int currentFloor, int destinationFloor, boolean directionUp, ArrayList<Integer> passengerDestinations, Elevator_State currentState) {
         this.elevatorNumber = elevatorNumber;
         this.isMoving = isMoving;
         this.currentFloor = currentFloor;
@@ -41,7 +41,7 @@ public class ElevatorPacket {
         this.destinationFloor = 0;
         this.directionUp = false;
         this.passengerDestinations = new ArrayList<Integer>();
-        this.currentState = 0;
+        this.currentState = Elevator_State.IDLE;
     }
 
     /** 
@@ -178,7 +178,7 @@ public class ElevatorPacket {
         return directionUp;
     }
 
-    public int getCurrentState() {
+    public Elevator_State getCurrentState() {
         return currentState;
     }
 
