@@ -191,8 +191,17 @@ public class Scheduler {
 			}
 		}
 		
-		elevatorInfo.addPassengerDestination(least_time.getFloor());
-
+		elevatorInfo.setDestinationFloor(least_time.getFloor());
+		
+		if(least_time.getFloor() < elevatorInfo.getCurrentFloor()) {
+			elevatorInfo.setCurrentState(Elevator_State.MOVING_DOWN);
+		}
+		else if(least_time.getFloor() > elevatorInfo.getCurrentFloor()) {
+			elevatorInfo.setCurrentState(Elevator_State.MOVING_UP);
+		}
+		else {
+			elevatorInfo.setCurrentState(Elevator_State.STOPPED);
+		}
 		return elevatorInfo;
 	}
 	
