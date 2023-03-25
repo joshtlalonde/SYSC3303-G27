@@ -135,7 +135,7 @@ public class Scheduler {
 
 				/** Send the elevator its updated values */
 				elevator.sendPacket(receiveSocket);
-				
+
 				break;
 			}
 		}		
@@ -143,6 +143,8 @@ public class Scheduler {
 	
 	
 	public ElevatorInfo serviceElevatorIdle(ElevatorInfo elevator) {
+		System.out.println("\nScheduler: Servicing Elevator in IDLE State");
+
 		//Find request that can be serviced with Idle elevator instead of moving
 		//Update elevatorInfo accordingly.
 		
@@ -154,23 +156,35 @@ public class Scheduler {
 	}
 	
 	public ElevatorInfo serviceElevatorMovingUp(ElevatorInfo elevator) {
+		System.out.println("\nScheduler: Servicing Elevator in MOVING_UP State");
+
 		//Find request that can be serviced with Moving Up elevator within floors serviced
+			// If there is one set the elevator state to stopped
+			// If there isn't one increment the currentFloor
 
 		return elevator;
 	}
 	
 	public ElevatorInfo serviceElevatorMovingDown(ElevatorInfo elevator) {
+		System.out.println("\nScheduler: Servicing Elevator in MOVING_DOWN State");
+
 		//Find request that can be serviced with Moving Down elevator within floors serviced
+			// If there is one set the elevator state to stopped
+			// If there isn't one decrement the currentFloor
 		
 		return elevator;
 	}
 	
 	public ElevatorInfo serviceElevatorStopped(ElevatorInfo elevator) {
-		//Tells Elev to go stop state. 
+		System.out.println("\nScheduler: Servicing Elevator in STOPPED State");
+
+		// 
 		
 		return elevator;
 	}
 	public ElevatorInfo serviceElevatorDoorOpen(ElevatorInfo elevator) {
+		System.out.println("\nScheduler: Servicing Elevator in DOOR_OPEN State");
+
 		//Destinations cleared, people with same floor destination removed.
 		//Send message to floor stating who got off the elevator
 		//Update Floor Buttons/lights in floor.java
@@ -180,6 +194,8 @@ public class Scheduler {
 	
 	
 	public ElevatorInfo serviceElevatorDoorClose(ElevatorInfo elevator) {
+		System.out.println("\nScheduler: Servicing Elevator in DOOR_CLOSE State");
+
 		//Destinations added, people that got on updated.
 	        //Update Floor Buttons/lights in floor.java
 
