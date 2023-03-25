@@ -224,7 +224,7 @@ public class Scheduler {
 
 		/** Update ElevatorInfo with the packet */
 		ElevatorInfo elevatorInfo = null;
-		for (ElevatorInfo elevator : elevatorsInfo) {
+		for (ElevatorInfo elevator : elevatorInfos) {
 			if (elevator.getElevatorNumber() == elevatorPacket.getElevatorNumber()) {
 				// Update the elevator info
 				elevator.convertPacket(elevatorPacket, receivePacket.getPort(), receivePacket.getAddress());
@@ -235,7 +235,7 @@ public class Scheduler {
 			// Create new elevator info
 			elevatorInfo = new ElevatorInfo();
 			elevatorInfo.convertPacket(elevatorPacket, receivePacket.getPort(), receivePacket.getAddress());
-			elevatorsInfo.add(elevatorInfo);
+			elevatorInfos.add(elevatorInfo);
 		}
 
 		return elevatorInfo;
