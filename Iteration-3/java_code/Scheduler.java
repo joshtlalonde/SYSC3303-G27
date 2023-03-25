@@ -105,6 +105,10 @@ public class Scheduler {
 	public ElevatorInfo serviceElevatorIdle(ElevatorInfo elevator) {
 		//Find request that can be serviced with Idle elevator instead of moving
 		//Update elevatorInfo accordingly.
+		
+		// Receive Packet
+		ElevatorInfo elevatorInfo = receiveElevatorPacket();
+		
 
 		return elevator;
 	}
@@ -254,7 +258,7 @@ class ElevatorInfo {
 	private int port; // Holds port that the Elevator exists on
 	private InetAddress address; // Holds the address that the Elevator exists on
 
-    public ElevatorInfo(int elevatorNumber, int currentFloor, int destinationFloor, boolean directionUp, ArrayList<Integer> passengerDestinations, int currentState, int port, InetAddress address) {
+    public ElevatorInfo(int elevatorNumber, int currentFloor, int destinationFloor, boolean directionUp, ArrayList<Integer> passengerDestinations, Elevator_State currentState, int port, InetAddress address) {
         this.elevatorNumber = elevatorNumber;
         this.currentFloor = currentFloor;
         this.destinationFloor = destinationFloor;
@@ -272,7 +276,7 @@ class ElevatorInfo {
         this.destinationFloor = 0;
         this.directionUp = false;
         this.passengerDestinations = new ArrayList<Integer>();
-		this.currentState = 0;
+	this.currentState = Elevator_State.IDLE;
 	}
 
 	public void convertPacket(ElevatorPacket elevatorPacket, int port, InetAddress address) {
