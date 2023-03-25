@@ -107,14 +107,38 @@ public class Scheduler {
 		}
 
 		/** Act upon elevator request depending on currentState */
+		switch (elevatorInfo.getCurrentState()) {
+			case IDLE:
+				elevatorInfo = this.serviceElevatorIdle(elevatorInfo);
+				break;
+			case MOVING_UP:
+				elevatorInfo = this.serviceElevatorMovingUp(elevatorInfo);
+				break;
+			case MOVING_DOWN:
+				elevatorInfo = this.serviceElevatorMovingDown(elevatorInfo);
+				break;
+			case STOPPED:
+				elevatorInfo = this.serviceElevatorStopped(elevatorInfo);
+				break;
+			case DOOR_OPEN:
+				elevatorInfo = this.serviceElevatorDoorOpen(elevatorInfo);
+				break;
+			case DOOR_CLOSE:
+				elevatorInfo = this.serviceElevatorDoorClose(elevatorInfo);
+				break;
+		}
 
+		/** Update the elevatorInfo returned from the method */
+		for (ElevatorInfo elevator : elevatorInfos) {
+			if (elevator.getElevatorNumber() == elevatorInfo.getElevatorNumber()) {
+				elevator = elevatorInfo;
 
-		//receive a ginormous ELE PACKET
-		//Determine state 
-		//Update ArrayList elevatorinfo with "current received state"
-		//Determine which state method to proceed with
-		// Send the newly editted elevatorInfo that is returned from the function	
-		
+				/** Send the elevator its updated values */
+				elevator.sendPacket(receiveSocket);
+				
+				break;
+			}
+		}		
 	}
 	
 	
@@ -131,21 +155,18 @@ public class Scheduler {
 	
 	public ElevatorInfo serviceElevatorMovingUp(ElevatorInfo elevator) {
 		//Find request that can be serviced with Moving Up elevator within floors serviced
-		//Update elevatorInfo accordingly.
 
 		return elevator;
 	}
 	
 	public ElevatorInfo serviceElevatorMovingDown(ElevatorInfo elevator) {
 		//Find request that can be serviced with Moving Down elevator within floors serviced
-		//Update elevatorInfo accordingly.
 		
 		return elevator;
 	}
 	
 	public ElevatorInfo serviceElevatorStopped(ElevatorInfo elevator) {
 		//Tells Elev to go stop state. 
-		//Update elevatorInfo accordingly.
 		
 		return elevator;
 	}
@@ -153,7 +174,6 @@ public class Scheduler {
 		//Destinations cleared, people with same floor destination removed.
 		//Send message to floor stating who got off the elevator
 		//Update Floor Buttons/lights in floor.java
-		//Update elevatorInfo accordingly
 		
 		return elevator;
 	}
@@ -162,7 +182,6 @@ public class Scheduler {
 	public ElevatorInfo serviceElevatorDoorClose(ElevatorInfo elevator) {
 		//Destinations added, people that got on updated.
 	        //Update Floor Buttons/lights in floor.java
-		//Update elevatorInfo accordingly.
 
 		return elevator;
 	}

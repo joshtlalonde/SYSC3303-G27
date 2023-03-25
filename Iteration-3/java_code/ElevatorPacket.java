@@ -4,12 +4,6 @@ import java.util.*;
 
 public class ElevatorPacket {
     static final int NUMBER_OF_FLOORS = 20; // Number of floors in the building
-    static final int IDLE = 0; // Value of IDLE state 
-    static final int MOVING_UP = 1; // Value of MOVING_UP state 
-    static final int MOVING_DOWN = 2; // Value of MOVING_DOWN state 
-    static final int STOPPED = 3; // Value of STOPPED state 
-    static final int DOOR_OPEN = 4; // Value of DOOR_OPEN state 
-    static final int DOOR_CLOSE = 5; // Value of DOOR_CLOSE state 
 
     private Elevator_State currentState = Elevator_State.IDLE; // Holds the current State of the elevator
 
