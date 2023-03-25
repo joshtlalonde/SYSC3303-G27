@@ -160,7 +160,7 @@ public class Scheduler {
 			doService.add(i);
 		}
 		
-		for(ElevatorInfo x : elevatorsInfo) {
+		for(ElevatorInfo x : elevatorInfos) {
 			if(x.getIsMoving()) {
 				ele_cf = x.getCurrentFloor();
 				ele_df = x.getDestinationFloor();
