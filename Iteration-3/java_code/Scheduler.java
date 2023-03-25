@@ -91,7 +91,23 @@ public class Scheduler {
 		System.out.println("\nScheduler: Entering PROCESS_ELEVATOR state");
 
 		ElevatorInfo elevatorInfo = receiveElevatorPacket();
-		System.out.println(elevatorInfo.getElevatorNumber());
+		
+		/** Add/Update ElevatorInfo Array */
+		boolean updated = false;
+		for (ElevatorInfo elevator : elevatorInfos) {
+			if (elevator.getElevatorNumber() == elevatorInfo.getElevatorNumber()) {
+				elevator = elevatorInfo;
+				updated = true;
+			}
+		}
+
+		// Must not exist in list, adding now 
+		if (!updated) {
+			elevatorInfos.add(elevatorInfo);
+		}
+
+		/** Act upon elevator request depending on currentState */
+
 
 		//receive a ginormous ELE PACKET
 		//Determine state 
@@ -258,7 +274,7 @@ class ElevatorInfo {
 	private int port; // Holds port that the Elevator exists on
 	private InetAddress address; // Holds the address that the Elevator exists on
 
-    public ElevatorInfo(int elevatorNumber, int currentFloor, int destinationFloor, boolean directionUp, ArrayList<Integer> passengerDestinations, Elevator_State currentState, int port, InetAddress address) {
+    public ElevatorInfo(int elevatorNumber, int currentFloor, int destinationFloor, boolean directionUp, ArrayList<Integer> passengerDestinations, int currentState, int port, InetAddress address) {
         this.elevatorNumber = elevatorNumber;
         this.currentFloor = currentFloor;
         this.destinationFloor = destinationFloor;
@@ -276,7 +292,7 @@ class ElevatorInfo {
         this.destinationFloor = 0;
         this.directionUp = false;
         this.passengerDestinations = new ArrayList<Integer>();
-	this.currentState = Elevator_State.IDLE;
+		this.currentState = 0;
 	}
 
 	public void convertPacket(ElevatorPacket elevatorPacket, int port, InetAddress address) {
