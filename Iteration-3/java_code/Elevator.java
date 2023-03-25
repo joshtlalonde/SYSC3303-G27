@@ -5,14 +5,8 @@ import java.util.*;
 class Elevator implements Runnable
 {
     static final int NUMBER_OF_FLOORS = 20; // Number of floors in the building
-    static final int IDLE = 0; // Value of IDLE state 
-    static final int MOVING_UP = 1; // Value of MOVING_UP state 
-    static final int MOVING_DOWN = 2; // Value of MOVING_DOWN state 
-    static final int STOPPED = 3; // Value of STOPPED state 
-    static final int DOOR_OPEN = 4; // Value of DOOR_OPEN state 
-    static final int DOOR_CLOSE = 5; // Value of DOOR_CLOSE state 
 
-    private int currentState = IDLE; // Holds the current State of the elevator
+    private Elevator_State currentState = Elevator_State.IDLE; // Holds the current State of the elevator
     private DatagramSocket sendReceiveSocket; // Socket that Elevator sends and receives packets from
 
     private int elevatorNumber; // Number of the elevator
@@ -31,7 +25,7 @@ class Elevator implements Runnable
     public Elevator(int elevatorNumber)
     {
         /** Start in IDLE state */
-        this.currentState = IDLE;
+        this.currentState = Elevator_State.IDLE;
 
         this.elevatorNumber = elevatorNumber;
 
@@ -72,10 +66,10 @@ class Elevator implements Runnable
         /** Start Moving to Pickup Passenger */
         if (currentFloor < destinationFloor) {
             // Move up
-            currentState = MOVING_UP;
+            currentState = Elevator_State.MOVING_UP;
         } else if (currentFloor > destinationFloor) {
             // Move down
-            currentState = MOVING_DOWN;
+            currentState = Elevator_State.MOVING_DOWN;
         } // Add another else-if to account for destination of request being at same floor
     }
 
@@ -122,12 +116,12 @@ class Elevator implements Runnable
             // Check if scheduler wants us to stop
             if (!movingResponsePacket.getIsMoving()) {
                 // Move to stopped state
-                currentState = STOPPED;
+                currentState = Elevator_State.STOPPED;
             }
         }
 
         /** Move to stopped state */
-        currentState = STOPPED;
+        currentState = Elevator_State.STOPPED;
     }
 
     /** 
@@ -173,12 +167,12 @@ class Elevator implements Runnable
             // Check if scheduler wants us to stop
             if (!movingResponsePacket.getIsMoving()) {
                 // Move to stopped state
-                currentState = STOPPED;
+                currentState = Elevator_State.STOPPED;
             }
         }
 
         /** Move to stopped state */
-        currentState = STOPPED;
+        currentState = Elevator_State.STOPPED;
     }
 
     /** 
@@ -208,7 +202,7 @@ class Elevator implements Runnable
         this.receiveSchedulerResponse();
         
         /** Move to Door open State */
-        currentState = DOOR_OPEN;
+        currentState = Elevator_State.DOOR_OPEN;
     }
 
     /** 
@@ -238,7 +232,7 @@ class Elevator implements Runnable
         passengerDestinations = doorOpenResponse.getPassengerDestinations();
 
         /** Move to DOOR_CLOSE State */
-        currentState = DOOR_CLOSE;
+        currentState = Elevator_State.DOOR_CLOSE;
     }
 
     /** 
@@ -276,30 +270,32 @@ class Elevator implements Runnable
         }
 
         /** Change current State to IDLE */
-        currentState = IDLE;
+        currentState = Elevator_State.IDLE;
     }
     
     public void run()
     {
-        while(true){   
-            if (currentState == IDLE) {
-                this.idle();
-            } 
-            else if (currentState == MOVING_UP) {
-                this.movingUp();
-            } 
-            else if (currentState == MOVING_DOWN) {
-                this.movingDown();
-            } 
-            else if (currentState == STOPPED) {
-                this.stopped();
-            } 
-            else if (currentState == DOOR_OPEN) {
-                this.doorOpen();
-            } 
-            else if (currentState == DOOR_CLOSE) {
-                this.doorClose();
-            } 
+        while(true){ 
+            switch(currentState) {
+				case IDLE:
+                    this.idle();
+					break;
+				case MOVING_UP:
+                    this.idle();
+					break;
+				case MOVING_DOWN:
+                    this.idle();
+					break;
+				case STOPPED:
+                    this.idle();
+					break;
+				case DOOR_OPEN:
+                    this.idle();
+					break;
+				case DOOR_CLOSE:
+                    this.idle();
+					break;
+			}
         }
     }
 
