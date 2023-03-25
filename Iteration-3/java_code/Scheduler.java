@@ -15,7 +15,7 @@ public class Scheduler {
 	/** NOTE: Technically don't need syncs but never hurts? For now at least */
     private List<UserInput> floorRequests = Collections.synchronizedList(new ArrayList<UserInput>()); // Holds list of requests from Floor
 	// private ArrayList<ElevatorPacket> elevatorRequests = new ArrayList<ElevatorPacket>(); // Holds the list of request packets from the elevators
-	private List<ElevatorInfo> elevatorsInfo = Collections.synchronizedList(new ArrayList<ElevatorInfo>()); // Holds the list of elevators and their associated information
+	private List<ElevatorInfo> elevatorInfos = Collections.synchronizedList(new ArrayList<ElevatorInfo>()); // Holds the list of elevators and their associated information
 
 	public Scheduler() {
 		try {
@@ -84,14 +84,32 @@ public class Scheduler {
 
 	
 	/**
-	* This is the fucky wucky one ~ Jakob2023
-	*
-	*/
+	 * Receive and Process an Elevator Packet
+	 * Converts Elevator Packet to ElevatorInfo
+	 * Updates the ElevatorInfo for Scheduler to keep track of elevators
+	 */
 	public void processElevator() {
 		System.out.println("\nScheduler: Entering PROCESS_ELEVATOR state");
 
+		/** Receive an Elevator Packet and Convert to ElevatorInfo */
 		ElevatorInfo elevatorInfo = receiveElevatorPacket();
-		System.out.println(elevatorInfo.getElevatorNumber());
+		
+		/** Add/Update ElevatorInfo Array */
+		boolean updated = false;
+		for (ElevatorInfo elevator : elevatorInfos) {
+			if (elevator.getElevatorNumber() == elevatorInfo.getElevatorNumber()) {
+				elevator = elevatorInfo;
+				updated = true;
+			}
+		}
+
+		// Must not exist in list, adding now 
+		if (!updated) {
+			elevatorInfos.add(elevatorInfo);
+		}
+
+		/** Act upon elevator request depending on currentState */
+		
 
 		//receive a ginormous ELE PACKET
 		//Determine state 
@@ -99,6 +117,8 @@ public class Scheduler {
 		//Determine which state method to proceed with
 		// Send the newly editted elevatorInfo that is returned from the function	
 		
+		/** Move to RECEIVE State */
+		currentState = Scheduler_State.RECEIVE;
 	}
 	
 	
@@ -204,7 +224,7 @@ public class Scheduler {
 
 		/** Update ElevatorInfo with the packet */
 		ElevatorInfo elevatorInfo = null;
-		for (ElevatorInfo elevator : elevatorsInfo) {
+		for (ElevatorInfo elevator : elevatorInfos) {
 			if (elevator.getElevatorNumber() == elevatorPacket.getElevatorNumber()) {
 				// Update the elevator info
 				elevator.convertPacket(elevatorPacket, receivePacket.getPort(), receivePacket.getAddress());
@@ -215,7 +235,7 @@ public class Scheduler {
 			// Create new elevator info
 			elevatorInfo = new ElevatorInfo();
 			elevatorInfo.convertPacket(elevatorPacket, receivePacket.getPort(), receivePacket.getAddress());
-			elevatorsInfo.add(elevatorInfo);
+			elevatorInfos.add(elevatorInfo);
 		}
 
 		return elevatorInfo;
