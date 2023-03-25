@@ -84,9 +84,12 @@ public class Scheduler {
 
 	
 	/**
-	* This is the fucky wucky one ~ Jakob2023
-	*
-	*/
+	 * Process the Elevator Packet then convert to elevatorInfo
+	 * Updates/adds to the elevatorInfos array
+	 * Depending on the currentState of the elevator a corresponding method is called
+	 * The elevatorInfo is then updated with whatever the method returns
+	 * Then a response packet is sent to the Elevator
+	 */
 	public void processElevator() {
 		System.out.println("\nScheduler: Entering PROCESS_ELEVATOR state");
 
@@ -139,31 +142,33 @@ public class Scheduler {
 				break;
 			}
 		}		
+
+		/** Update State of scheduler */
+		currentState = Scheduler_State.RECEIVE;
 	}
 	
-	
+	/** 
+	 * Determines which floorRequest the Elevator should service
+	 * 
+	 * @param elevator The elevator that scheduler is updating
+	 * @return Returns the updated elevatorInfo to be sent in processElevator
+	 */
 	public ElevatorInfo serviceElevatorIdle(ElevatorInfo elevator) {
 		System.out.println("\nScheduler: Servicing Elevator in IDLE State");
 
-		//Find request that can be serviced with Idle elevator instead of moving
-		//Update elevatorInfo accordingly.
-		
-		
-		// Receive Packet
-		ElevatorInfo elevatorInfo = receiveElevatorPacket();
 		ArrayList<Integer> noService = new ArrayList<Integer>();
 		ArrayList<Integer> doService = new ArrayList<Integer>();
-		int ele_cf;
-		int ele_df;
 		
+		/** Creates an array of all of the possible floors that can be serviced */
 		for(int i = 0; i < NUMBER_OF_FLOORS;i++){
 			doService.add(i);
 		}
 		
+		/** Determines if a person is about to be serviced by a moving elevator */
 		for(ElevatorInfo x : elevatorInfos) {
 			if(x.getIsMoving()) {
-				ele_cf = x.getCurrentFloor();
-				ele_df = x.getDestinationFloor();
+				int ele_cf = x.getCurrentFloor();
+				int ele_df = x.getDestinationFloor();
 				for(UserInput y : floorRequests) {
 					if(x.getDirectionUp() && (ele_cf < y.getFloor()) && (ele_df > y.getFloor())) {
 						noService.add(y.getFloor());
@@ -175,15 +180,16 @@ public class Scheduler {
 			}
 		}
 		
-		
+		/** Removes all of the floors to not service since there is already an elevator about to service them */
 		doService.removeAll(noService);
 		
+		/** Gets the longest waiting request out of the floors that the elevator should service */
+		boolean noFloorRequests = true;
 		UserInput least_time = floorRequests.get(0);
-		
-		
 		for(Integer f : doService) {
 			for(UserInput y : floorRequests) {
 				if(y.getFloor() == f) {
+					noFloorRequests = false;
 					if(y.getTime().getTime() < least_time.getTime().getTime()) {
 						least_time = y;
 					}
@@ -191,26 +197,31 @@ public class Scheduler {
 			}
 		}
 		
-		elevatorInfo.setDestinationFloor(least_time.getFloor());
+		/** If noone was on a floor to be serviced then we should move to the longest waiting request */
+		if (noFloorRequests) {
+			for(Integer f : noService) {
+				for(UserInput y : floorRequests) {
+					if(y.getFloor() == f) {
+						if(y.getTime().getTime() < least_time.getTime().getTime()) {
+							least_time = y;
+						}
+					}
+				}
+			}
+		}
+
+		/** Updates the destination floor that the elevator needs to go to pick up the floorRequest */
+		elevator.setDestinationFloor(least_time.getFloor());
 		
-		if(least_time.getFloor() < elevatorInfo.getCurrentFloor()) {
-			elevatorInfo.setCurrentState(Elevator_State.MOVING_DOWN);
-		}
-		else if(least_time.getFloor() > elevatorInfo.getCurrentFloor()) {
-			elevatorInfo.setCurrentState(Elevator_State.MOVING_UP);
-		}
-		else {
-			elevatorInfo.setCurrentState(Elevator_State.STOPPED);
-		}
-		return elevatorInfo;
+		return elevator;
 	}
 	
 	public ElevatorInfo serviceElevatorMovingUp(ElevatorInfo elevator) {
 		System.out.println("\nScheduler: Servicing Elevator in MOVING_UP State");
 
 		//Find request that can be serviced with Moving Up elevator within floors serviced
-			// If there is one set the elevator state to stopped
-			// If there isn't one increment the currentFloor
+			// If there is one tell elevator to stop by setting isMoving to false
+		// Refer to Elevator.java as to what information the elevator needs to updated on 'elevatorInfo'
 
 		return elevator;
 	}
@@ -219,8 +230,8 @@ public class Scheduler {
 		System.out.println("\nScheduler: Servicing Elevator in MOVING_DOWN State");
 
 		//Find request that can be serviced with Moving Down elevator within floors serviced
-			// If there is one set the elevator state to stopped
-			// If there isn't one decrement the currentFloor
+			// If there is one tell elevator to stop by setting isMoving to false
+		// Refer to Elevator.java as to what information the elevator needs to updated on 'elevatorInfo'
 		
 		return elevator;
 	}
@@ -228,16 +239,18 @@ public class Scheduler {
 	public ElevatorInfo serviceElevatorStopped(ElevatorInfo elevator) {
 		System.out.println("\nScheduler: Servicing Elevator in STOPPED State");
 
-		// 
+		// Send same shit back, no updates needed here
+		// Refer to Elevator.java as to what information the elevator needs to updated on 'elevatorInfo'
 		
 		return elevator;
 	}
 	public ElevatorInfo serviceElevatorDoorOpen(ElevatorInfo elevator) {
 		System.out.println("\nScheduler: Servicing Elevator in DOOR_OPEN State");
 
-		//Destinations cleared, people with same floor destination removed.
-		//Send message to floor stating who got off the elevator
-		//Update Floor Buttons/lights in floor.java
+		//Destinations cleared, people with same floor destination as elevator currentFloor removed.
+		//Send message to floor stating who got off the elevator (remove them from passengerDestinations)
+		//Update Floor Buttons/lights in floor.java (Send a packet back to floor (this needs to be implemented still))
+		// Refer to Elevator.java as to what information the elevator needs to updated on 'elevatorInfo'
 		
 		return elevator;
 	}
@@ -247,7 +260,8 @@ public class Scheduler {
 		System.out.println("\nScheduler: Servicing Elevator in DOOR_CLOSE State");
 
 		//Destinations added, people that got on updated.
-	        //Update Floor Buttons/lights in floor.java
+	    // Add people to the passengerDestinations 
+		// Refer to Elevator.java as to what information the elevator needs to updated on 'elevatorInfo'
 
 		return elevator;
 	}
@@ -342,6 +356,14 @@ public class Scheduler {
 				case PROCESS_ELEVATOR:
 					scheduler.processElevator();
 					break;
+			}
+
+			// Sleep for 1 second
+			try {
+				Thread.sleep(1000); 
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+					System.exit(1);
 			}
 		}
     }

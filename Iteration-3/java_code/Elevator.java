@@ -63,16 +63,14 @@ class Elevator implements Runnable
         /** Set the destination floor to go to */
         destinationFloor = newFloorRequest.getDestinationFloor();
 
-        /** Start Moving to Pickup Passenger */
-        currentState = newFloorRequest.getCurrentState();
-        
-        // if (currentFloor < destinationFloor) {
-        //     // Move up
-        //     currentState = Elevator_State.MOVING_UP;
-        // } else if (currentFloor > destinationFloor) {
-        //     // Move down
-        //     currentState = Elevator_State.MOVING_DOWN;
-        // } // Add another else-if to account for destination of request being at same floor
+        // /** Start Moving to Pickup Passenger */
+        if (currentFloor < destinationFloor) {
+            // Move up
+            currentState = Elevator_State.MOVING_UP;
+        } else if (currentFloor > destinationFloor) {
+            // Move down
+            currentState = Elevator_State.MOVING_DOWN;
+        } // Add another else-if to account for destination of request being at same floor
     }
 
     /** 
@@ -187,7 +185,10 @@ class Elevator implements Runnable
     public void stopped() {
         System.out.println("Elevator: Entering STOPPED state");
 
+        // Stop the elevator motor
         motor.stopMoving();
+        // Set elevator moving state
+        isMoving = false;
 
         /** Sleep for deceleration time */
         try {
@@ -283,21 +284,29 @@ class Elevator implements Runnable
                     this.idle();
 					break;
 				case MOVING_UP:
-                    this.idle();
+                    this.movingUp();
 					break;
 				case MOVING_DOWN:
-                    this.idle();
+                    this.movingDown();
 					break;
 				case STOPPED:
-                    this.idle();
+                    this.stopped();
 					break;
 				case DOOR_OPEN:
-                    this.idle();
+                    this.doorOpen();
 					break;
 				case DOOR_CLOSE:
-                    this.idle();
+                    this.doorClose();
 					break;
 			}
+
+            // Sleep for 1 second
+            try {
+                Thread.sleep(1000); 
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
         }
     }
 
