@@ -148,11 +148,52 @@ public class Scheduler {
 		//Find request that can be serviced with Idle elevator instead of moving
 		//Update elevatorInfo accordingly.
 		
+		
 		// Receive Packet
 		ElevatorInfo elevatorInfo = receiveElevatorPacket();
+		ArrayList<Integer> noService = new ArrayList<Integer>();
+		ArrayList<Integer> doService = new ArrayList<Integer>();
+		int ele_cf;
+		int ele_df;
 		
+		for(int i = 0; i < NUMBER_OF_FLOORS;i++){
+			doService.add(i);
+		}
+		
+		for(ElevatorInfo x : elevatorsInfo) {
+			if(x.getIsMoving()) {
+				ele_cf = x.getCurrentFloor();
+				ele_df = x.getDestinationFloor();
+				for(UserInput y : floorRequests) {
+					if(x.getDirectionUp() && (ele_cf < y.getFloor()) && (ele_df > y.getFloor())) {
+						noService.add(y.getFloor());
+					}
+					else if((!x.getDirectionUp() && (ele_cf > y.getFloor()) && (ele_df < y.getFloor()))) {
+						noService.add(y.getFloor());
+					}
+				}
+			}
+		}
+		
+		
+		doService.removeAll(noService);
+		
+		UserInput least_time = floorRequests.get(0);
+		
+		
+		for(Integer f : doService) {
+			for(UserInput y : floorRequests) {
+				if(y.getFloor() == f) {
+					if(y.getTime().getTime() < least_time.getTime().getTime()) {
+						least_time = y;
+					}
+				}
+			}
+		}
+		
+		elevatorInfo.addPassengerDestination(least_time.getFloor());
 
-		return elevator;
+		return elevatorInfo;
 	}
 	
 	public ElevatorInfo serviceElevatorMovingUp(ElevatorInfo elevator) {
