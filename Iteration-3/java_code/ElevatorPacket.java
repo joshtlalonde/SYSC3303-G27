@@ -11,7 +11,7 @@ public class ElevatorPacket {
     static final int DOOR_OPEN = 4; // Value of DOOR_OPEN state 
     static final int DOOR_CLOSE = 5; // Value of DOOR_CLOSE state 
 
-    private int currentState = IDLE; // Holds the current State of the elevator
+    private Elevator_State currentState = Elevator_State.IDLE; // Holds the current State of the elevator
 
     private DatagramPacket sendElevatorPacket; // Holds the Sent Datagram Packet
     private DatagramPacket receiveElevatorPacket; // Holds the Received Datagram Packet
@@ -23,7 +23,7 @@ public class ElevatorPacket {
     private boolean directionUp; // Holds the direction info
     private ArrayList<Integer> passengerDestinations;
 
-    public ElevatorPacket(int elevatorNumber, boolean isMoving, int currentFloor, int destinationFloor, boolean directionUp, ArrayList<Integer> passengerDestinations, int currentState) {
+    public ElevatorPacket(int elevatorNumber, boolean isMoving, int currentFloor, int destinationFloor, boolean directionUp, ArrayList<Integer> passengerDestinations, Elevator_State currentState) {
         this.elevatorNumber = elevatorNumber;
         this.isMoving = isMoving;
         this.currentFloor = currentFloor;
@@ -41,7 +41,7 @@ public class ElevatorPacket {
         this.destinationFloor = 0;
         this.directionUp = false;
         this.passengerDestinations = new ArrayList<Integer>();
-        this.currentState = 0;
+        this.currentState = Elevator_State.IDLE;
     }
 
     /** 
@@ -64,7 +64,7 @@ public class ElevatorPacket {
         outputStream.write(currentFloor);
         outputStream.write(destinationFloor);
         outputStream.write(directionUp ? 1 : 0);
-        outputStream.write(currentState);
+        outputStream.write(this.convertStateToInt(currentState));
         for (int passenger : passengerDestinations) {
             outputStream.write(passenger);
         }
@@ -136,7 +136,7 @@ public class ElevatorPacket {
         currentFloor = packet[2];
         destinationFloor = packet[3];
         directionUp = packet[4] == 1 ? true : false;
-        currentState = packet[5];
+        currentState = this.convertIntToState(packet[5]);
 
         // Get each of the destination that the passengers want to go on this elevator
         int i = 6;
@@ -178,7 +178,7 @@ public class ElevatorPacket {
         return directionUp;
     }
 
-    public int getCurrentState() {
+    public Elevator_State getCurrentState() {
         return currentState;
     }
 
@@ -192,6 +192,52 @@ public class ElevatorPacket {
 
     public DatagramPacket getReceiveElevatorPacket() {
         return receiveElevatorPacket;
+    }
+
+    ///////////// HELPERS /////////////
+
+    /** Converts the State (Ex: IDLE) to an Integer (Ex: 1) */
+    public int convertStateToInt(Elevator_State state) {
+        switch(state) {
+            case IDLE:
+                return 1;
+            case MOVING_UP:
+                return 2;
+            case MOVING_DOWN:
+                return 3;        
+            case STOPPED:
+                return 4;
+            case DOOR_OPEN:
+                return 5;
+            case DOOR_CLOSE:
+                return 6;
+        }
+
+        /** Error occured */
+        System.out.print("Elevator_State Failed to convert state to int");
+        return -1;
+    }
+
+    /** Converts an Integer (Ex: 1) to the associated State (Ex: IDLE) */
+    public Elevator_State convertIntToState(int state) {
+        switch(state) {
+            case 1:
+                return Elevator_State.IDLE;
+            case 2:
+                return Elevator_State.MOVING_UP;
+            case 3:
+                return Elevator_State.MOVING_DOWN;     
+            case 4:
+                return Elevator_State.STOPPED;
+            case 5:
+                return Elevator_State.DOOR_OPEN;
+            case 6:
+                return Elevator_State.DOOR_CLOSE;
+        }
+
+        /** Error occured */
+        System.out.print("Elevator_State Failed to convert int to state");
+        return null;
     }
 
     ///////////// PRINTERS /////////////
@@ -211,26 +257,23 @@ public class ElevatorPacket {
 		System.out.println();
 	}
 
-    public String stateToString(int state) {
-        if (state == IDLE) {
-            return "IDLE";
-        } 
-        else if (state == MOVING_UP) {
-            return "MOVING_UP";
-        } 
-        else if (state == MOVING_DOWN) {
-            return "MOVING_DOWN";
-        } 
-        else if (state == STOPPED) {
-            return "STOPPED";
-        } 
-        else if (state == DOOR_OPEN) {
-            return "DOOR_OPEN";
-        } 
-        else if (state == DOOR_CLOSE) {
-            return "DOOR_CLOSE";
-        } else {
-            return "UNKNOWN STATE";
+    public String stateToString(Elevator_State state) {
+        switch(state) {
+            case IDLE:
+                return "IDLE";
+            case MOVING_UP:
+                return "MOVING_UP";
+            case MOVING_DOWN:
+                return "MOVING_DOWN";       
+            case STOPPED:
+                return "STOPPED";
+            case DOOR_OPEN:
+                return "DOOR_OPEN";
+            case DOOR_CLOSE:
+                return "DOOR_CLOSE";
         }
+
+        /** Error occured */
+        return "UNKNOWN STATE";
     }
 }
