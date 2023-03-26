@@ -218,7 +218,13 @@ public class Scheduler {
 	
 	public ElevatorInfo serviceElevatorMovingUp(ElevatorInfo elevator) {
 		System.out.println("\nScheduler: Servicing Elevator in MOVING_UP State");
-
+		
+		for(UserInput y : floorRequests) {
+			if(y.getFloor() == elevator.getCurrentFloor() && y.getFloorButtonUp() == elevator.getDirectionUp()){
+				serviceElevatorStopped(elevator);
+			}
+	
+		}
 		//Find request that can be serviced with Moving Up elevator within floors serviced
 			// If there is one tell elevator to stop by setting isMoving to false
 		// Refer to Elevator.java as to what information the elevator needs to updated on 'elevatorInfo'
@@ -228,6 +234,13 @@ public class Scheduler {
 	
 	public ElevatorInfo serviceElevatorMovingDown(ElevatorInfo elevator) {
 		System.out.println("\nScheduler: Servicing Elevator in MOVING_DOWN State");
+		
+		for(UserInput y : floorRequests) {
+			if(y.getFloor() == elevator.getCurrentFloor() && y.getFloorButtonUp() == elevator.getDirectionUp()){
+				serviceElevatorStopped(elevator);
+			}
+	
+		}
 
 		//Find request that can be serviced with Moving Down elevator within floors serviced
 			// If there is one tell elevator to stop by setting isMoving to false
@@ -238,7 +251,9 @@ public class Scheduler {
 	
 	public ElevatorInfo serviceElevatorStopped(ElevatorInfo elevator) {
 		System.out.println("\nScheduler: Servicing Elevator in STOPPED State");
-
+		elevator.setIsMoving(false);
+		elevator.setCurrentState(Elevator_State.STOPPED);
+		serviceElevatorDoorOpen(elevator);
 		// Send same shit back, no updates needed here
 		// Refer to Elevator.java as to what information the elevator needs to updated on 'elevatorInfo'
 		
@@ -246,8 +261,17 @@ public class Scheduler {
 	}
 	public ElevatorInfo serviceElevatorDoorOpen(ElevatorInfo elevator) {
 		System.out.println("\nScheduler: Servicing Elevator in DOOR_OPEN State");
+		int k = 0;
+		for(Integer i : elevator.getPassengerDestinations()) {
+			if(elevator.getCurrentFloor() == i) {
+				elevator.getPassengerDestinations().remove(k);
+			}
+			k++;
+		}
+		
+		
 
-		//Destinations cleared, people with same floor destination as elevator currentFloor removed.
+		//Destinations cleared, people with same floor destination as elevator currentFloor removed. Done
 		//Send message to floor stating who got off the elevator (remove them from passengerDestinations)
 		//Update Floor Buttons/lights in floor.java (Send a packet back to floor (this needs to be implemented still))
 		// Refer to Elevator.java as to what information the elevator needs to updated on 'elevatorInfo'
@@ -258,6 +282,17 @@ public class Scheduler {
 	
 	public ElevatorInfo serviceElevatorDoorClose(ElevatorInfo elevator) {
 		System.out.println("\nScheduler: Servicing Elevator in DOOR_CLOSE State");
+		ArrayList<Integer> Service = new ArrayList<Integer>();
+		
+		for(UserInput y : floorRequests) {
+			if(y.getFloor() == elevator.getCurrentFloor() && y.getFloorButtonUp() == elevator.getDirectionUp()){
+				Service.add(y.getCarButton());
+			}
+	
+		}
+		for(Integer i : Service) {
+			elevator.addPassengerDestination(Service.get(i));
+		}
 
 		//Destinations added, people that got on updated.
 	    // Add people to the passengerDestinations 
@@ -265,7 +300,8 @@ public class Scheduler {
 
 		return elevator;
 	}
-
+	
+	
 	/** 
 	 * Receives a FloorRequest packet from Floor
 	 * Returns the UserInput of the request
