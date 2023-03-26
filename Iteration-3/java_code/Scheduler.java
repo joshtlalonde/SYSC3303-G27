@@ -216,7 +216,7 @@ public class Scheduler {
 		return elevator;
 	}
 	
-	public ElevatorInfo serviceElevatorMovingUp(ElevatorInfo elevator) {
+		public ElevatorInfo serviceElevatorMovingUp(ElevatorInfo elevator) {
 		System.out.println("\nScheduler: Servicing Elevator in MOVING_UP State");
 		
 		for(UserInput y : floorRequests) {
@@ -252,8 +252,6 @@ public class Scheduler {
 	public ElevatorInfo serviceElevatorStopped(ElevatorInfo elevator) {
 		System.out.println("\nScheduler: Servicing Elevator in STOPPED State");
 		elevator.setIsMoving(false);
-		elevator.setCurrentState(Elevator_State.STOPPED);
-		serviceElevatorDoorOpen(elevator);
 		// Send same shit back, no updates needed here
 		// Refer to Elevator.java as to what information the elevator needs to updated on 'elevatorInfo'
 		
@@ -268,8 +266,6 @@ public class Scheduler {
 			}
 			k++;
 		}
-		
-		
 
 		//Destinations cleared, people with same floor destination as elevator currentFloor removed. Done
 		//Send message to floor stating who got off the elevator (remove them from passengerDestinations)
@@ -281,6 +277,7 @@ public class Scheduler {
 	
 	
 	public ElevatorInfo serviceElevatorDoorClose(ElevatorInfo elevator) {
+		elevator.setCurrentState(Elevator_State.DOOR_CLOSE);
 		System.out.println("\nScheduler: Servicing Elevator in DOOR_CLOSE State");
 		ArrayList<Integer> Service = new ArrayList<Integer>();
 		
