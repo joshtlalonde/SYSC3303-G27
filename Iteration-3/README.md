@@ -56,10 +56,8 @@ The `java_test_code` folder contains the different Unit Test files that are used
 - Created Scheduler State Machine
   
 ## Jakob : 101201314 
- - Created Sequence Diagram
- - Coded Scheduler to handle requests from Elevator while in Stopped State
- - Made changes to Scheduler's Floor service requests
- - Created Elevator Stopped State
+ - Coded ELevator Handler States execpt Idle
+ - Aided with Diagrams 
   
 ## Sanya : 101205395
 - Helped with UML diagrams
