@@ -277,18 +277,14 @@ public class Scheduler {
 	
 	
 	public ElevatorInfo serviceElevatorDoorClose(ElevatorInfo elevator) {
-		elevator.setCurrentState(Elevator_State.DOOR_CLOSE);
 		System.out.println("\nScheduler: Servicing Elevator in DOOR_CLOSE State");
 		ArrayList<Integer> Service = new ArrayList<Integer>();
 		
 		for(UserInput y : floorRequests) {
 			if(y.getFloor() == elevator.getCurrentFloor() && y.getFloorButtonUp() == elevator.getDirectionUp()){
-				Service.add(y.getCarButton());
+				elevator.addPassengerDestination(y.getCarButton());
 			}
 	
-		}
-		for(Integer i : Service) {
-			elevator.addPassengerDestination(Service.get(i));
 		}
 
 		//Destinations added, people that got on updated.
