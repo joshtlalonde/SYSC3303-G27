@@ -221,7 +221,7 @@ public class Scheduler {
 		
 		for(UserInput y : floorRequests) {
 			if(y.getFloor() == elevator.getCurrentFloor() && y.getFloorButtonUp() == elevator.getDirectionUp()){
-				serviceElevatorStopped(elevator);
+				elevator.setIsMoving(false);
 			}
 	
 		}
@@ -237,7 +237,7 @@ public class Scheduler {
 		
 		for(UserInput y : floorRequests) {
 			if(y.getFloor() == elevator.getCurrentFloor() && y.getFloorButtonUp() == elevator.getDirectionUp()){
-				serviceElevatorStopped(elevator);
+				elevator.setIsMoving(false);
 			}
 	
 		}
@@ -251,7 +251,6 @@ public class Scheduler {
 	
 	public ElevatorInfo serviceElevatorStopped(ElevatorInfo elevator) {
 		System.out.println("\nScheduler: Servicing Elevator in STOPPED State");
-		elevator.setIsMoving(false);
 		// Send same shit back, no updates needed here
 		// Refer to Elevator.java as to what information the elevator needs to updated on 'elevatorInfo'
 		
