@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Floor implements Runnable {
+	static final String FILENAME = "C:\\Users\\jtbub\\Documents\\University\\Classes\\SYSC 3303\\SYSC3303-G27\\Eclipse\\SYSC3303Project\\src\\floor_input.txt";
 	static final int NUMBER_OF_FLOORS = 20; // Number of floors in the building
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.S", Locale.ENGLISH);
 	
@@ -75,7 +76,7 @@ public class Floor implements Runnable {
 	/** Sends request to the Scheduler */
 	private void sendFloorRequest(InetAddress address, int port, UserInput userInput) {
 		// Create FloorPacket
-		FloorPacket floorPacket = new FloorPacket(userInput.getFloor(), userInput.getTime(), userInput.getFloorButtonUp(), userInput.getCarButton());
+		FloorPacket floorPacket = new FloorPacket(userInput.getCurrentFloor(), userInput.getTime(), userInput.getFloorButtonUp(), userInput.getDestinationFloor());
 
 		// Send FloorPacket to scheduler
 		floorPacket.send(address, port, sendReceiveSocket, true);
@@ -102,19 +103,10 @@ public class Floor implements Runnable {
 		System.out.println("Floor: Received response from Scheduler: " + userInput);
 	}
 
-	/** Waits until Elevator has arrived, let users on, then reset buttons */
-	public void elevatorArrival(int floor) {
-		// Waits until the request is being serviced by the elevator
-//		UserInput userInput = scheduler.respondFloorRequest(floor);
-//		System.out.println("Floor: " + userInput + " is being serviced by the elevator");
-//
-//		// Reset the button depending on what floor it was pressed on
-//		for (FloorButton button : floorButton) {
-//			if (button.getButtonFloor() == userInput.getFloor()) {
-//				button.reset();
-//				break;
-//			}
-//		}
+	/** Scheduler sent a message saying that an elevator arraived at this floor */
+	public void elevatorArrival( boolean elevatorDirection, int floor) {
+		// Turn off button for direction
+		// Should be similar to buttonPress()
 	}
 
 	/** Function to be run on Thread.start() */
@@ -123,7 +115,7 @@ public class Floor implements Runnable {
 		BufferedReader reader;
 		try {
 			String line;
-			reader = new BufferedReader(new FileReader("C:\\Users\\Josh's PC\\Documents\\University\\Classes\\SYSC3303\\G27-Project\\Eclipse\\SYSC3303Project\\src\\floor_input.txt"));
+			reader = new BufferedReader(new FileReader(FILENAME));
 			
 			while((line = reader.readLine()) != null) {
 				// Returns a UserInput object from the next line in the text file
@@ -138,7 +130,7 @@ public class Floor implements Runnable {
 				System.out.println("Floor: Retreived " + userInput + " from file");
 
 				/** Simulate a button press */
-				this.buttonPress(userInput.getFloorButtonUp(), userInput.getFloor());
+				this.buttonPress(userInput.getFloorButtonUp(), userInput.getCurrentFloor()); // TODO: Change FloorButtonUp to FloorButtonDirection and change carButton to floorDestination
 
 				/** Send message to the Scheduler */
 				this.sendFloorRequest(InetAddress.getLocalHost(), 69, userInput);
@@ -148,7 +140,7 @@ public class Floor implements Runnable {
 
 				/** TODO: Should wait until an elevator ack comes in, or a 5 second timeout occurs */
 				// Waits until the request is being serviced by the elevator
-				this.elevatorArrival(userInput.getFloor());
+				this.elevatorArrival(userInput.getCurrentFloor());
 
 				// Sleep for 1 second
 				try {
@@ -193,23 +185,23 @@ public class Floor implements Runnable {
 class UserInput{
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.S", Locale.ENGLISH);
 	private Date time; // Timestamp of when button was clicked
-	private int floor; // Floor that button was clicked on
+	private int currentFloor; // Floor that button was clicked on
 	private boolean floorButtonUp; // Direction that user wants to go
-	private int carButton; // Button that was clicked in elevator to decide destination floor
+	private int destinationFloor; // Button that was clicked in elevator to decide destination floor
 	
 	public UserInput(Date time, int floor, boolean floorButtonUp, int carButton) {
 		this.time = time;
-		this.floor = floor;
+		this.currentFloor = floor;
 		this.floorButtonUp= floorButtonUp;
-		this.carButton = carButton;
+		this.destinationFloor = carButton;
 	}
 
 	/** Default Constructor */
 	public UserInput() {
 		this.time = new Date();
-		this.floor = 0;
+		this.currentFloor = 0;
 		this.floorButtonUp= false;
-		this.carButton = 0;
+		this.destinationFloor = 0;
 	}
 
 	/**
@@ -219,28 +211,28 @@ class UserInput{
 	 */
 	public void convertPacket(FloorPacket floorPacket) {
 		this.time = floorPacket.getTime();
-		this.floor = floorPacket.getFloor();
+		this.currentFloor = floorPacket.getFloor();
 		this.floorButtonUp = floorPacket.getDirectionUp();
-		this.carButton = floorPacket.getDestinationFloor();
+		this.destinationFloor = floorPacket.getDestinationFloor();
 	}
 	
 	@Override
 	public String toString() {
-		return "{time: " + dateFormatter.format(time) + ", floor: " + floor + ", floor_button: " + floorButtonUp + ", car_button: " + carButton + "}";
+		return "{time: " + dateFormatter.format(time) + ", floor: " + currentFloor + ", floor_button: " + floorButtonUp + ", car_button: " + destinationFloor + "}";
 	}
 	
 	//Getting the data from the user input
 	public Date getTime() {
 		return time;
 	}
-	public int getFloor() {
-		return floor;
+	public int getCurrentFloor() {
+		return currentFloor;
 	}
 	public boolean getFloorButtonUp() {
 		return floorButtonUp;
 	}
-	public int getCarButton() {
-		return carButton;
+	public int getDestinationFloor() {
+		return destinationFloor;
 	}
 	
 }
@@ -274,12 +266,16 @@ class FloorButton {
 		System.out.println("FloorButton: Floor Button pressed on floor " + buttonFloor + " in Down direction");
 	}
 
-	// Sets the buttons state to Off and turns off the Lamps
-	public void reset() {
+	// Turns off the Floor's Up button
+	public void resetUp() {
 		upButtonState = false;
-		downButtonState = false;
 		upButtonLamp.turnOff();
-		downButtonLamp.turnOn();
+	}
+
+	// Turns off the Floor's Down button
+	public void resetDown() {
+		downButtonState = false;
+		downButtonLamp.turnOff();
 	}
 
 	// Returns the current state of the up Button
