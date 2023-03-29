@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Floor implements Runnable {
+	static final String FILENAME = "C:\\Users\\jtbub\\Documents\\University\\Classes\\SYSC 3303\\SYSC3303-G27\\Eclipse\\SYSC3303Project\\src\\floor_input.txt";
 	static final int NUMBER_OF_FLOORS = 20; // Number of floors in the building
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.S", Locale.ENGLISH);
 	
@@ -73,34 +74,59 @@ public class Floor implements Runnable {
 	}
 
 	/** Sends request to the Scheduler */
-	private void sendFloorRequest(UserInput userInput) {
+	private void sendFloorRequest(InetAddress address, int port, UserInput userInput) {
 		// Create FloorPacket
-		FloorPacket floorPacket = new FloorPacket(userInput.getFloor(), userInput.getTime(), userInput.getFloorButtonUp(), userInput.getCarButton());
+		FloorPacket floorPacket = new FloorPacket(userInput.getCurrentFloor(), userInput.getTime(), userInput.getFloorButtonUp(), userInput.getDestinationFloor());
 
-		// Send FloorPacket
-		try {
-			floorPacket.send(InetAddress.getLocalHost(), 23, sendReceiveSocket);
-		} catch (UnknownHostException e) {
-			System.out.println("Failed to send FloorPacket: " + e);
-			e.printStackTrace();
-		}
-		
+		// Send FloorPacket to scheduler
+		floorPacket.send(address, port, sendReceiveSocket, true);
+
 		System.out.println("Floor: Sent floor request to the scheduler: " + userInput);
 	}
 
-	/** Waits until Elevator has arrived, let users on, then reset buttons */
-	public void elevatorArrival(int floor) {
-		// Waits until the request is being serviced by the elevator
-//		UserInput userInput = scheduler.respondFloorRequest(floor);
-//		System.out.println("Floor: " + userInput + " is being serviced by the elevator");
-//
-//		// Reset the button depending on what floor it was pressed on
-//		for (FloorButton button : floorButton) {
-//			if (button.getButtonFloor() == userInput.getFloor()) {
-//				button.reset();
-//				break;
-//			}
-//		}
+	/** 
+	 * Receive response from the Scheduler
+	 * This is just a response ACK packet
+	 */
+	private void receiveFloorResponse() {
+		// Create FloorPacket
+		FloorPacket floorPacket = new FloorPacket();
+
+		// Receive FloorPacket from scheduler
+		System.out.println("Floor: Waiting for Scheduler Response...");
+		floorPacket.receive(sendReceiveSocket);
+
+		// Convert FloorPacket to UserInput
+		UserInput userInput = new UserInput();
+		userInput.convertPacket(floorPacket);
+		
+		System.out.println("Floor: Received response from Scheduler: " + userInput);
+	}
+
+	/** Scheduler sent a message saying that an elevator arraived at this floor */
+	public void elevatorArrival(boolean elevatorDirection, int floor) {
+		// Turn off button for direction
+		// Should be similar to buttonPress()
+		// Activate the correct button depending on user input
+		if (elevatorDirection) {
+		
+			for (FloorButton button : floorButton) {
+				if (button.getButtonFloor() == floor) {
+					// Set the button to be Up and turn it on
+					button.resetUp();
+					break;
+				}
+			}
+		} else {
+	
+			for (FloorButton button : floorButton) {
+				if (button.getButtonFloor() == floor) {
+					// Set the button to be Down and turn it on
+					button.resetDown();
+					break;
+				}
+			}
+		}
 	}
 
 	/** Function to be run on Thread.start() */
@@ -109,7 +135,7 @@ public class Floor implements Runnable {
 		BufferedReader reader;
 		try {
 			String line;
-			reader = new BufferedReader(new FileReader("C:\\Users\\Josh's PC\\Documents\\University\\Classes\\SYSC3303\\G27-Project\\Eclipse\\SYSC3303Project\\src\\floor_input.txt"));
+			reader = new BufferedReader(new FileReader(FILENAME));
 			
 			while((line = reader.readLine()) != null) {
 				// Returns a UserInput object from the next line in the text file
@@ -123,15 +149,20 @@ public class Floor implements Runnable {
 				}
 				System.out.println("Floor: Retreived " + userInput + " from file");
 
-				// Simulate a button press
-				buttonPress(userInput.getFloorButtonUp(), userInput.getFloor());
+				/** Simulate a button press */
+				this.buttonPress(userInput.getFloorButtonUp(), userInput.getCurrentFloor()); // TODO: Change FloorButtonUp to FloorButtonDirection and change carButton to floorDestination
 
-				// Send message to the Scheduler
-				sendFloorRequest(userInput);
+				/** Send message to the Scheduler */
+				this.sendFloorRequest(InetAddress.getLocalHost(), 69, userInput);
 
-				/** TODO: Should wait until an elevator ack comes in, or a 5 second timeout occurs */
+				/** Receive Floor response from Scheduler */
+				this.receiveFloorResponse();
+
+				/** TODO: Should wait until an FloorPacket to comes in, or a 5 second timeout occurs
+				 * This FloorPacket will say that the scheduler is picking people up on a specific floor
+				 */
 				// Waits until the request is being serviced by the elevator
-				elevatorArrival(userInput.getFloor());
+				this.elevatorArrival(userInput.getFloorButtonUp(), userInput.getCurrentFloor());
 
 				// Sleep for 1 second
 				try {
@@ -170,84 +201,60 @@ public class Floor implements Runnable {
         // Start Threads
         floor.start();
     }
-
-	/** Function to be run on Thread.start() */
-	// public void run() {
-	// 	// Open and read file line-by-line
-	// 	BufferedReader reader;
-	// 	try {
-	// 		String line;
-	// 		reader = new BufferedReader(new FileReader("C:\\Users\\Josh's PC\\Documents\\University\\Classes\\SYSC3303\\G27-Project\\Eclipse\\SYSC3303Project\\src\\floor_input.txt"));
-			
-	// 		while((line = reader.readLine()) != null) {
-	// 			UserInput userInput = fileToUser(line);
-	// 			System.out.println("Floor: Retreived " + userInput + " from file");
-
-	// 			// Puts the user_input into the scheduler
-	// 			scheduler.put(userInput);
-	// 			System.out.println("Floor: Put " + userInput + " into the scheduler");
-
-	// 			// Sleep for 1 second
-	// 			try {
-	// 				Thread.sleep(1000); 
-	// 			} catch (InterruptedException e) {
-	// 				e.printStackTrace();
-    //      				System.exit(1);
-	// 			}
-	// 		}
-	// 	} catch (FileNotFoundException e) {
-	// 		System.out.println("Failed to open File: " + e);
-	// 		return;
-	// 	} catch (IOException e) {
-	// 		System.out.println("Failed to read File: " + e);
-	// 		return;
-	// 	}
-		
-	// 	// Close reader
-	// 	try {
-	// 		reader.close();
-	// 	} catch (IOException e) {
-	// 		System.out.print("IO Exception: likely:");
-	// 		System.out.println("Failed to close File: " + e);
-    //      		System.exit(1);
-	// 	}
-	// }
 }
 
 /** Used to get the information for simulating a user from a text file */
 class UserInput{
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.S", Locale.ENGLISH);
 	private Date time; // Timestamp of when button was clicked
-	private int floor; // Floor that button was clicked on
+	private int currentFloor; // Floor that button was clicked on
 	private boolean floorButtonUp; // Direction that user wants to go
-	private int carButton; // Button that was clicked in elevator to decide destination floor
+	private int destinationFloor; // Button that was clicked in elevator to decide destination floor
 	
-	
-	//Making the constructor for the user input class
 	public UserInput(Date time, int floor, boolean floorButtonUp, int carButton) {
 		this.time = time;
-		this.floor = floor;
+		this.currentFloor = floor;
 		this.floorButtonUp= floorButtonUp;
-		this.carButton = carButton;
+		this.destinationFloor = carButton;
+	}
+
+	/** Default Constructor */
+	public UserInput() {
+		this.time = new Date();
+		this.currentFloor = 0;
+		this.floorButtonUp= false;
+		this.destinationFloor = 0;
+	}
+
+	/**
+	 * Converts a FloorPacket to a UserInput
+	 * 
+	 * @param floorPacket the floorpacket to be converted
+	 */
+	public void convertPacket(FloorPacket floorPacket) {
+		this.time = floorPacket.getTime();
+		this.currentFloor = floorPacket.getFloor();
+		this.floorButtonUp = floorPacket.getDirectionUp();
+		this.destinationFloor = floorPacket.getDestinationFloor();
 	}
 	
 	@Override
 	public String toString() {
-		return "{time: " + dateFormatter.format(time) + ", floor: " + floor + ", floor_button: " + floorButtonUp + ", car_button: " + carButton + "}";
+		return "{time: " + dateFormatter.format(time) + ", floor: " + currentFloor + ", floor_button: " + floorButtonUp + ", car_button: " + destinationFloor + "}";
 	}
 	
 	//Getting the data from the user input
 	public Date getTime() {
 		return time;
 	}
-	public int getFloor() {
-		return floor;
+	public int getCurrentFloor() {
+		return currentFloor;
 	}
 	public boolean getFloorButtonUp() {
 		return floorButtonUp;
 	}
-	public int getCarButton() {
-		return carButton;
+	public int getDestinationFloor() {
+		return destinationFloor;
 	}
 	
 }
@@ -281,12 +288,16 @@ class FloorButton {
 		System.out.println("FloorButton: Floor Button pressed on floor " + buttonFloor + " in Down direction");
 	}
 
-	// Sets the buttons state to Off and turns off the Lamps
-	public void reset() {
+	// Turns off the Floor's Up button
+	public void resetUp() {
 		upButtonState = false;
-		downButtonState = false;
 		upButtonLamp.turnOff();
-		downButtonLamp.turnOn();
+	}
+
+	// Turns off the Floor's Down button
+	public void resetDown() {
+		downButtonState = false;
+		downButtonLamp.turnOff();
 	}
 
 	// Returns the current state of the up Button
@@ -347,3 +358,4 @@ class DirectionLamp {
 		this.directionUp = direction;
 	}
 }
+  
