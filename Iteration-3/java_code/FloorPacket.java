@@ -21,6 +21,14 @@ public class FloorPacket {
         this.destinationFloor = destinationFloor;
 	}
 
+    /** Default Constructor */
+    public FloorPacket() {
+        this.floor = 0;
+        this.time = new Date();
+        this.directionUp = false;
+        this.destinationFloor = 0;
+	}
+
     /** 
      * Used to send the packet 
      * 
@@ -28,7 +36,7 @@ public class FloorPacket {
      * @port destination port, 
      * @sendFloorSocket socket to send on
     */
-    public void send(InetAddress address, int port, DatagramSocket sendFloorSocket) {
+    public void send(InetAddress address, int port, DatagramSocket sendFloorSocket, boolean sendToScheduler) {
         byte sendbytes[];
 
         // Convert the time to a bytes
@@ -36,6 +44,9 @@ public class FloorPacket {
         
         // Combine the different attributes of the packet into one array of bytes packet
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        if (sendToScheduler) {
+            outputStream.write(0); // Add first byte to let scheduler know it is a floor packet
+        }
 		outputStream.write(floor);
         outputStream.write(destinationFloor);
         outputStream.write(directionUp ? 1 : 0);

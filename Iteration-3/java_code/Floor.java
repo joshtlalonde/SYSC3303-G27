@@ -73,19 +73,33 @@ public class Floor implements Runnable {
 	}
 
 	/** Sends request to the Scheduler */
-	private void sendFloorRequest(UserInput userInput) {
+	private void sendFloorRequest(InetAddress address, int port, UserInput userInput) {
 		// Create FloorPacket
 		FloorPacket floorPacket = new FloorPacket(userInput.getFloor(), userInput.getTime(), userInput.getFloorButtonUp(), userInput.getCarButton());
 
-		// Send FloorPacket
-		try {
-			floorPacket.send(InetAddress.getLocalHost(), 23, sendReceiveSocket);
-		} catch (UnknownHostException e) {
-			System.out.println("Failed to send FloorPacket: " + e);
-			e.printStackTrace();
-		}
-		
+		// Send FloorPacket to scheduler
+		floorPacket.send(address, port, sendReceiveSocket, true);
+
 		System.out.println("Floor: Sent floor request to the scheduler: " + userInput);
+	}
+
+	/** 
+	 * Receive response from the Scheduler
+	 * This is just a response ACK packet
+	 */
+	private void receiveFloorResponse() {
+		// Create FloorPacket
+		FloorPacket floorPacket = new FloorPacket();
+
+		// Receive FloorPacket from scheduler
+		System.out.println("Floor: Waiting for Scheduler Response...");
+		floorPacket.receive(sendReceiveSocket);
+
+		// Convert FloorPacket to UserInput
+		UserInput userInput = new UserInput();
+		userInput.convertPacket(floorPacket);
+		
+		System.out.println("Floor: Received response from Scheduler: " + userInput);
 	}
 
 	/** Waits until Elevator has arrived, let users on, then reset buttons */
@@ -123,15 +137,18 @@ public class Floor implements Runnable {
 				}
 				System.out.println("Floor: Retreived " + userInput + " from file");
 
-				// Simulate a button press
-				buttonPress(userInput.getFloorButtonUp(), userInput.getFloor());
+				/** Simulate a button press */
+				this.buttonPress(userInput.getFloorButtonUp(), userInput.getFloor());
 
-				// Send message to the Scheduler
-				sendFloorRequest(userInput);
+				/** Send message to the Scheduler */
+				this.sendFloorRequest(InetAddress.getLocalHost(), 69, userInput);
+
+				/** Receive Floor response from Scheduler */
+				this.receiveFloorResponse();
 
 				/** TODO: Should wait until an elevator ack comes in, or a 5 second timeout occurs */
 				// Waits until the request is being serviced by the elevator
-				elevatorArrival(userInput.getFloor());
+				this.elevatorArrival(userInput.getFloor());
 
 				// Sleep for 1 second
 				try {
@@ -170,48 +187,6 @@ public class Floor implements Runnable {
         // Start Threads
         floor.start();
     }
-
-	/** Function to be run on Thread.start() */
-	// public void run() {
-	// 	// Open and read file line-by-line
-	// 	BufferedReader reader;
-	// 	try {
-	// 		String line;
-	// 		reader = new BufferedReader(new FileReader("C:\\Users\\Josh's PC\\Documents\\University\\Classes\\SYSC3303\\G27-Project\\Eclipse\\SYSC3303Project\\src\\floor_input.txt"));
-			
-	// 		while((line = reader.readLine()) != null) {
-	// 			UserInput userInput = fileToUser(line);
-	// 			System.out.println("Floor: Retreived " + userInput + " from file");
-
-	// 			// Puts the user_input into the scheduler
-	// 			scheduler.put(userInput);
-	// 			System.out.println("Floor: Put " + userInput + " into the scheduler");
-
-	// 			// Sleep for 1 second
-	// 			try {
-	// 				Thread.sleep(1000); 
-	// 			} catch (InterruptedException e) {
-	// 				e.printStackTrace();
-    //      				System.exit(1);
-	// 			}
-	// 		}
-	// 	} catch (FileNotFoundException e) {
-	// 		System.out.println("Failed to open File: " + e);
-	// 		return;
-	// 	} catch (IOException e) {
-	// 		System.out.println("Failed to read File: " + e);
-	// 		return;
-	// 	}
-		
-	// 	// Close reader
-	// 	try {
-	// 		reader.close();
-	// 	} catch (IOException e) {
-	// 		System.out.print("IO Exception: likely:");
-	// 		System.out.println("Failed to close File: " + e);
-    //      		System.exit(1);
-	// 	}
-	// }
 }
 
 /** Used to get the information for simulating a user from a text file */
@@ -222,13 +197,31 @@ class UserInput{
 	private boolean floorButtonUp; // Direction that user wants to go
 	private int carButton; // Button that was clicked in elevator to decide destination floor
 	
-	
-	//Making the constructor for the user input class
 	public UserInput(Date time, int floor, boolean floorButtonUp, int carButton) {
 		this.time = time;
 		this.floor = floor;
 		this.floorButtonUp= floorButtonUp;
 		this.carButton = carButton;
+	}
+
+	/** Default Constructor */
+	public UserInput() {
+		this.time = new Date();
+		this.floor = 0;
+		this.floorButtonUp= false;
+		this.carButton = 0;
+	}
+
+	/**
+	 * Converts a FloorPacket to a UserInput
+	 * 
+	 * @param floorPacket the floorpacket to be converted
+	 */
+	public void convertPacket(FloorPacket floorPacket) {
+		this.time = floorPacket.getTime();
+		this.floor = floorPacket.getFloor();
+		this.floorButtonUp = floorPacket.getDirectionUp();
+		this.carButton = floorPacket.getDestinationFloor();
 	}
 	
 	@Override
