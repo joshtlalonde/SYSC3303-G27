@@ -165,16 +165,16 @@ public class Scheduler {
 		}
 		
 		/** Determines if a person is about to be serviced by a moving elevator */
-		for(ElevatorInfo x : elevatorInfos) {
-			if(x.getIsMoving()) {
-				int ele_cf = x.getCurrentFloor();
-				int ele_df = x.getDestinationFloor();
-				for(UserInput y : floorRequests) {
-					if(x.getDirectionUp() && (ele_cf < y.getFloor()) && (ele_df > y.getFloor())) {
-						noService.add(y.getFloor());
+		for(ElevatorInfo elevatorInfo : elevatorInfos) {
+			if(elevatorInfo.getIsMoving()) {
+				// int ele_cf = elevatorInfo.getCurrentFloor();
+				// int ele_df = elevatorInfo.getDestinationFloor();
+				for(UserInput floorRequest : floorRequests) {
+					if(elevatorInfo.getDirectionUp() && (elevatorInfo.getCurrentFloor() < floorRequest.getCurrentFloor()) && (elevatorInfo.getDestinationFloor() > floorRequest.getCurrentFloor())) {
+						noService.add(floorRequest.getCurrentFloor());
 					}
-					else if((!x.getDirectionUp() && (ele_cf > y.getFloor()) && (ele_df < y.getFloor()))) {
-						noService.add(y.getFloor());
+					else if((!elevatorInfo.getDirectionUp() && (elevatorInfo.getCurrentFloor() > floorRequest.getCurrentFloor()) && (elevatorInfo.getDestinationFloor() < floorRequest.getCurrentFloor()))) {
+						noService.add(floorRequest.getCurrentFloor());
 					}
 				}
 			}
@@ -183,15 +183,18 @@ public class Scheduler {
 		/** Removes all of the floors to not service since there is already an elevator about to service them */
 		doService.removeAll(noService);
 		
-		/** Gets the longest waiting request out of the floors that the elevator should service */
+		/** 
+		 * Gets the longest waiting request out of the floor Requests that the elevator should service 
+		 * That isn't already being serviced by another elevator
+		*/
 		boolean noFloorRequests = true;
-		UserInput least_time = floorRequests.get(0);
-		for(Integer f : doService) {
-			for(UserInput y : floorRequests) {
-				if(y.getFloor() == f) {
+		UserInput longest_wait = floorRequests.get(0);
+		for (Integer floor : doService) {
+			for (UserInput floorRequest : floorRequests) {
+				if (floorRequest.getCurrentFloor() == floor) {
 					noFloorRequests = false;
-					if(y.getTime().getTime() < least_time.getTime().getTime()) {
-						least_time = y;
+					if (floorRequest.getTime().getTime() > longest_wait.getTime().getTime()) {
+						longest_wait = floorRequest;
 					}
 				}
 			}
@@ -199,11 +202,11 @@ public class Scheduler {
 		
 		/** If noone was on a floor to be serviced then we should move to the longest waiting request */
 		if (noFloorRequests) {
-			for(Integer f : noService) {
-				for(UserInput y : floorRequests) {
-					if(y.getFloor() == f) {
-						if(y.getTime().getTime() < least_time.getTime().getTime()) {
-							least_time = y;
+			for(Integer floor : noService) {
+				for(UserInput floorRequest : floorRequests) {
+					if(floorRequest.getCurrentFloor() == floor) {
+						if(floorRequest.getTime().getTime() < longest_wait.getTime().getTime()) {
+							longest_wait = floorRequest;
 						}
 					}
 				}
@@ -211,23 +214,20 @@ public class Scheduler {
 		}
 
 		/** Updates the destination floor that the elevator needs to go to pick up the floorRequest */
-		elevator.setDestinationFloor(least_time.getFloor());
+		elevator.setDestinationFloor(longest_wait.getDestinationFloor());
 		
 		return elevator;
 	}
 	
-		public ElevatorInfo serviceElevatorMovingUp(ElevatorInfo elevator) {
+	public ElevatorInfo serviceElevatorMovingUp(ElevatorInfo elevator) {
 		System.out.println("\nScheduler: Servicing Elevator in MOVING_UP State");
 		
-		for(UserInput y : floorRequests) {
-			if(y.getFloor() == elevator.getCurrentFloor() && y.getFloorButtonUp() == elevator.getDirectionUp()){
+		/** The elevator is on a floor with a current FloorRequest */
+		for(UserInput floorRequest : floorRequests) {
+			if(floorRequest.getCurrentFloor() == elevator.getCurrentFloor() && floorRequest.getFloorButtonUp() == elevator.getDirectionUp()){
 				elevator.setIsMoving(false);
 			}
-	
 		}
-		//Find request that can be serviced with Moving Up elevator within floors serviced
-			// If there is one tell elevator to stop by setting isMoving to false
-		// Refer to Elevator.java as to what information the elevator needs to updated on 'elevatorInfo'
 
 		return elevator;
 	}
@@ -235,16 +235,13 @@ public class Scheduler {
 	public ElevatorInfo serviceElevatorMovingDown(ElevatorInfo elevator) {
 		System.out.println("\nScheduler: Servicing Elevator in MOVING_DOWN State");
 		
-		for(UserInput y : floorRequests) {
-			if(y.getFloor() == elevator.getCurrentFloor() && y.getFloorButtonUp() == elevator.getDirectionUp()){
+		/** The elevator is on a floor with a current FloorRequest */
+		for(UserInput floorRequest : floorRequests) {
+			if(floorRequest.getCurrentFloor() == elevator.getCurrentFloor() && floorRequest.getFloorButtonUp() == elevator.getDirectionUp()){
 				elevator.setIsMoving(false);
 			}
 	
 		}
-
-		//Find request that can be serviced with Moving Down elevator within floors serviced
-			// If there is one tell elevator to stop by setting isMoving to false
-		// Refer to Elevator.java as to what information the elevator needs to updated on 'elevatorInfo'
 		
 		return elevator;
 	}
@@ -258,18 +255,18 @@ public class Scheduler {
 	}
 	public ElevatorInfo serviceElevatorDoorOpen(ElevatorInfo elevator) {
 		System.out.println("\nScheduler: Servicing Elevator in DOOR_OPEN State");
-		int k = 0;
-		for(Integer i : elevator.getPassengerDestinations()) {
-			if(elevator.getCurrentFloor() == i) {
-				elevator.getPassengerDestinations().remove(k);
+		
+		/** 
+		 * Searches through the passenger Destinations then remove all of the passengers
+		 * That have a destination on the elevators current floor
+		 */
+		for(Integer passenger : elevator.getPassengerDestinations()) {
+			if(elevator.getCurrentFloor() == passenger) {
+				elevator.getPassengerDestinations().remove(elevator.getCurrentFloor());
 			}
-			k++;
 		}
 
-		//Destinations cleared, people with same floor destination as elevator currentFloor removed. Done
-		//Send message to floor stating who got off the elevator (remove them from passengerDestinations)
-		//Update Floor Buttons/lights in floor.java (Send a packet back to floor (this needs to be implemented still))
-		// Refer to Elevator.java as to what information the elevator needs to updated on 'elevatorInfo'
+		
 		
 		return elevator;
 	}
@@ -279,25 +276,35 @@ public class Scheduler {
 		System.out.println("\nScheduler: Servicing Elevator in DOOR_CLOSE State");
 		ArrayList<Integer> Service = new ArrayList<Integer>();
 		
-		for(UserInput y : floorRequests) {
-			if(y.getFloor() == elevator.getCurrentFloor() && y.getFloorButtonUp() == elevator.getDirectionUp()){
-				elevator.addPassengerDestination(y.getCarButton());
+		/** 
+		 * Adds the passenger destinations for the any of the passengers that are on the same floor as the elevator
+		 * and are requesting to go in the same direction
+		 */
+		for(UserInput floorRequest : floorRequests) {
+			if(floorRequest.getCurrentFloor() == elevator.getCurrentFloor() && floorRequest.getFloorButtonUp() == elevator.getDirectionUp()){
+				elevator.addPassengerDestination(floorRequest.getDestinationFloor());
 			}
 	
 		}
 
-		//Destinations added, people that got on updated.
-	    // Add people to the passengerDestinations 
-		// Refer to Elevator.java as to what information the elevator needs to updated on 'elevatorInfo'
-
 		return elevator;
 	}
 	
+	public ElevatorInfo serviceElevatorDoorFault(ElevatorInfo elevator) {
+
+		// Sends message back with updated UserInfo saying that the Fault is now false
+
+		return elevator;
+	}
+
+	public ElevatorInfo serviceElevatorHardFault(ElevatorInfo elevator) {
+		
+		return elevator;
+	}
 	
 	/** 
 	 * Receives a FloorRequest packet from Floor
 	 * Returns the UserInput of the request
-	 * 		
 	 */
 	public UserInput receiveFloorPacket() {
 		// Create Default FloorPacket
@@ -326,7 +333,7 @@ public class Scheduler {
 	 */
 	private void sendFloorPacket(UserInput userInput, InetAddress address, int port) {
         // Create Floor Packet
-        FloorPacket floorPacket = new FloorPacket(userInput.getFloor(), userInput.getTime(), userInput.getFloorButtonUp(), userInput.getCarButton());
+        FloorPacket floorPacket = new FloorPacket(userInput.getCurrentFloor(), userInput.getTime(), userInput.getFloorButtonUp(), userInput.getDestinationFloor());
 
         // Send Elevator Packet
         System.out.println("Scheduler: Sending response to the floor");

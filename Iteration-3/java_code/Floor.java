@@ -138,9 +138,11 @@ public class Floor implements Runnable {
 				/** Receive Floor response from Scheduler */
 				this.receiveFloorResponse();
 
-				/** TODO: Should wait until an elevator ack comes in, or a 5 second timeout occurs */
+				/** TODO: Should wait until an FloorPacket to comes in, or a 5 second timeout occurs
+				 * This FloorPacket will say that the scheduler is picking people up on a specific floor
+				 */
 				// Waits until the request is being serviced by the elevator
-				this.elevatorArrival(userInput.getCurrentFloor());
+				this.elevatorArrival(userInput.getFloorButtonUp(), userInput.getCurrentFloor());
 
 				// Sleep for 1 second
 				try {

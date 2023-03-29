@@ -16,6 +16,12 @@ class Elevator implements Runnable
     private boolean directionUp; // Direction elevator is moving in
     private ArrayList<Integer> passengerDestinations = new ArrayList<Integer>(); // Holds an array of all of the passenger destinations. This can also be used to determine how many people are on the elevator
 
+    /** TODO Create a new Array of UserInfo's Which hold each of the passenger Information 
+     * Change the passengerDestinations to an array of UserInfos this way we can easily just change the eleavtorPackets and elevatroInfos
+     * to the same thing without having to worry about the elevtaor receiving a FloorPacket anywhere
+     * This should work...
+    */
+
     private DirectionLamp directionLamp = new DirectionLamp(); // Lamp to indicate direction moving and floor location
     private ArrivalSensor arrivalSensor = new ArrivalSensor(); // Sensor to indicate when an elevator is approaching a floor
     private Motor motor = new Motor(); // The elevators motor, controls motion of elevator
@@ -95,6 +101,11 @@ class Elevator implements Runnable
 
         // Update currentFloor and arrivalSensor as you are moving
         while (currentFloor < destinationFloor) {
+
+            /** TODO: Create TIMEOUT for if there is a HARD_FAULT in the UserInfo 
+             * Waits for a specific amount of time then moves to the HARD_FAULT state
+            */
+
             // Sleep for amount of time to move between floors
 			try {
 				Thread.sleep(2000);
@@ -146,6 +157,11 @@ class Elevator implements Runnable
 
         // Update currentFloor and arrivalSensor as you are moving
         while (currentFloor > destinationFloor) {
+
+            /** TODO: Create TIMEOUT for if there is a HARD_FAULT in the UserInfo 
+             * Waits for a specific amount of time then moves to the HARD_FAULT state
+            */
+
             // Sleep for amount of time to move between floors
 			try {
 				Thread.sleep(2000); // TODO: Must be the times we determined
@@ -272,8 +288,32 @@ class Elevator implements Runnable
             }
         }
 
+        /** TODO: Create TIMEOUT for if there is a DOOR_FAULT in the UserInfo 
+         * Waits for a specific amount of time then moves to the DOOR_FAULT state
+        */
+
         /** Change current State to IDLE */
         currentState = Elevator_State.IDLE;
+    }
+
+    public void doorFault() {
+
+        // Send request saying we are in DOOR_FAULT state
+        // Wait for response
+        // update currentState to Stopped state
+
+        /** There are Edits to the DOOR_OPEN to handle the TIMEOUT */
+        
+    }
+
+    public void hardFault() {
+
+        // Send request saying we are in HARD_FAULT state
+        // Wait for response
+        // Terminate the Thread
+
+        /** There are Edits to the MOVING_UP and MOVING_DOWN to handle the TIMEOUT */
+
     }
     
     public void run()
