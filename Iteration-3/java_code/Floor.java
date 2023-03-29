@@ -104,9 +104,29 @@ public class Floor implements Runnable {
 	}
 
 	/** Scheduler sent a message saying that an elevator arraived at this floor */
-	public void elevatorArrival( boolean elevatorDirection, int floor) {
+	public void elevatorArrival(boolean elevatorDirection, int floor) {
 		// Turn off button for direction
 		// Should be similar to buttonPress()
+		// Activate the correct button depending on user input
+		if (elevatorDirection) {
+			// Get the button of the floor that it was pressed on
+			for (FloorButton button : floorButton) {
+				if (button.getButtonFloor() == floor) {
+					// Set the button to be Up and turn it on
+					button.resetUp();
+					break;
+				}
+			}
+		} else {
+			// Get the button of the floor that it was pressed on
+			for (FloorButton button : floorButton) {
+				if (button.getButtonFloor() == floor) {
+					// Set the button to be Down and turn it on
+					button.resetDown();
+					break;
+				}
+			}
+		}
 	}
 
 	/** Function to be run on Thread.start() */
