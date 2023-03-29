@@ -347,3 +347,4 @@ class DirectionLamp {
 		this.directionUp = direction;
 	}
 }
+  
