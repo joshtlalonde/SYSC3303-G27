@@ -298,6 +298,8 @@ public class Scheduler {
 	}
 
 	public ElevatorInfo serviceElevatorHardFault(ElevatorInfo elevator) {
+
+		// Sends message back with updated UserInfo saying that the Fault is now false
 		
 		return elevator;
 	}
