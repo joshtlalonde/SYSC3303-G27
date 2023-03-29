@@ -109,7 +109,7 @@ public class Floor implements Runnable {
 		// Should be similar to buttonPress()
 		// Activate the correct button depending on user input
 		if (elevatorDirection) {
-			// Get the button of the floor that it was pressed on
+		
 			for (FloorButton button : floorButton) {
 				if (button.getButtonFloor() == floor) {
 					// Set the button to be Up and turn it on
@@ -118,7 +118,7 @@ public class Floor implements Runnable {
 				}
 			}
 		} else {
-			// Get the button of the floor that it was pressed on
+	
 			for (FloorButton button : floorButton) {
 				if (button.getButtonFloor() == floor) {
 					// Set the button to be Down and turn it on
