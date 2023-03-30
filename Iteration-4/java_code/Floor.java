@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Floor implements Runnable {
-	static final String FILENAME = "C:\\Users\\Josh's PC\\Documents\\University\\Classes\\SYSC3303\\Project\\SYSC3303-G27-main\\SYSC3303-G27\\Iteration-4\\floor_input.txt";
+	static final String FILENAME = "C:\\Users\\jtbub\\Documents\\University\\Classes\\SYSC 3303\\SYSC3303-G27\\SYSC3303-G27\\Iteration-4\\floor_input.txt";
 	static final int NUMBER_OF_FLOORS = 20; // Number of floors in the building
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
 	
@@ -44,8 +44,8 @@ public class Floor implements Runnable {
 		int f = Integer.parseInt(words[1]);
 		Boolean fb = words[2].toLowerCase().equals("up") ? true : false;
 		int cb = Integer.parseInt(words[3]);
-		Boolean df = words[2].toLowerCase().equals("true") ? true : false;
-		Boolean hf = words[2].toLowerCase().equals("true") ? true : false;
+		Boolean df = words[4].toLowerCase().equals("true") ? true : false;
+		Boolean hf = words[5].toLowerCase().equals("true") ? true : false;
 
 		// Create new user
 		return new UserInput(t, f, fb, cb, df, hf);

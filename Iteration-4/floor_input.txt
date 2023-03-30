@@ -4,4 +4,4 @@
 13:05:15.0,10,Down,7,false,false
 14:05:15.0,13,Down,9,false,false
 15:05:15.0,5,Up,12,true,false
-16:05:15.0,8,Up,18,false,false
+16:05:15.0,8,Up,18,true,true

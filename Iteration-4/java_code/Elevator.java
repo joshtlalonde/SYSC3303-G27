@@ -121,6 +121,7 @@ class Elevator implements Runnable
                     }
                     System.out.println("Elevator is stuck, Servicing elevator...");
                     currentState= Elevator_State.HARD_FAULT;
+                    return;
                 }
             }
 
@@ -192,6 +193,7 @@ class Elevator implements Runnable
                     }
                     System.out.println("Elevator is stuck, Servicing elevator...");
                     currentState= Elevator_State.HARD_FAULT;
+                    return;
                 }
             }
 
@@ -395,11 +397,19 @@ class Elevator implements Runnable
         // Set the updated passengers
         passengers = hardFaultResponse.getPassengers();
             
+        for (int i = 3; i > 0; i--) {
+            System.out.println("Self Destruct in " + i);
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("BOOOOOOOOOOOOOOM");
+
         //Terminate thread
         currentState = Elevator_State.BOOM;
-
-        /** There are Edits to the MOVING_UP and MOVING_DOWN to handle the TIMEOUT */
-
     }
     
     public void run()

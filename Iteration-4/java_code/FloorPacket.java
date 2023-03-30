@@ -181,8 +181,8 @@ public class FloorPacket {
     private void printPacket() {
         System.out.println("Floor number: " + floor + ", destination floor: " + destinationFloor + 
                             ", direction: " + (directionUp ? "Up" : "Down") + 
-                            ", doorFault: " + (doorFault ? "Yes" : "No") + 
-                            ", hardFault: " + (hardFault ? "Yes" : "No") + 
+                            ", doorFault: " + (doorFault ? "True" : "False") + 
+                            ", hardFault: " + (hardFault ? "True" : "False") + 
                             ", time: " + dateFormatter.format(time));
     }
 
