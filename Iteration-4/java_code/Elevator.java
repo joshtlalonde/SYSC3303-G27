@@ -294,6 +294,21 @@ class Elevator implements Runnable
             }
         }
 
+        /** Decides if state should change to MOVING_UP or MOVING_DOWN */
+        for (UserInput passenger : passengers) {
+            if (directionUp) {
+                if (destinationFloor < passenger.getDestinationFloor()) {
+                    /** Update destinationFloor if a passenger destinationFloor is larger than the current one */
+                    destinationFloor = passenger.getDestinationFloor();
+                }
+            } else {
+                if (destinationFloor > passenger.getDestinationFloor()) {
+                    /** Update destinationFloor if a passenger destinationFloor is smaller than the current one */
+                    destinationFloor = passenger.getDestinationFloor();
+                }
+            }
+        }
+
         /** TODO: Create TIMEOUT for if there is a DOOR_FAULT in the UserInfo doorfault = true
          * Waits for a specific amount of time then moves to the DOOR_FAULT state
          * loop through passengers then if any have it true move to doorFault
@@ -308,21 +323,6 @@ class Elevator implements Runnable
         } else if (!directionUp) {
             /** Change the current State to MOVING_DOWN */
             currentState = Elevator_State.MOVING_DOWN;
-        }
-
-        /** Decides if state should change to MOVING_UP or MOVING_DOWN */
-        for (UserInput passenger : passengers) {
-            if (directionUp) {
-                if (destinationFloor < passenger.getDestinationFloor()) {
-                    /** Update destinationFloor if a passenger destinationFloor is larger than the current one */
-                    destinationFloor = passenger.getDestinationFloor();
-                }
-            } else {
-                if (destinationFloor > passenger.getDestinationFloor()) {
-                    /** Update destinationFloor if a passenger destinationFloor is smaller than the current one */
-                    destinationFloor = passenger.getDestinationFloor();
-                }
-            }
         }
     }
 
