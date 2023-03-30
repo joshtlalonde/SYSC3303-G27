@@ -295,6 +295,12 @@ class UserInput{
 	public boolean gethardFault(){
 		return hardfault;
 	}
+	public void setDoorFault(){
+		doorFault = false;
+	}
+	public void setHardFault(){
+		hardFault = false;
+	}
 	
 	
 }
