@@ -322,7 +322,7 @@ public class Scheduler {
 	    // Sends message back with updated UserInfo saying that the Fault is now false
 	    for(UserInput passenger : elevator.getPassengers()) {
 		if(passenger.getDoorFault == True) {
-		    passenger.setDoorFault();
+		    passenger.setDoorFault(false);
 		    }
 	        }
 
@@ -330,7 +330,14 @@ public class Scheduler {
 	}
 	public ElevatorInfo serviceElevatorHardFault(ElevatorInfo elevator) {
 		
-		return elevator;
+	    // Sends message back with updated UserInfo saying that the Fault is now false
+	    for(UserInput passenger : elevator.getPassengers()) {
+		if(passenger.getHardFault == True) {
+		    passenger.setHardFault(false);
+		    }
+	        }
+
+	    return elevator;
 	}
 	
 	/** 
