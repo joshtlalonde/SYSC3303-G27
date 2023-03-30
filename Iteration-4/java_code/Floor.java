@@ -210,12 +210,16 @@ class UserInput{
 	private int currentFloor; // Floor that button was clicked on
 	private boolean floorButtonUp; // Direction that user wants to go
 	private int destinationFloor; // Button that was clicked in elevator to decide destination floor
+	private boolean doorFault; //Checks if there is a transient fault
+	private boolean hardFault; //Cehcks if there is a hard fault
 	
 	public UserInput(Date time, int floor, boolean floorButtonUp, int destinationFloor) {
 		this.time = time;
 		this.currentFloor = floor;
 		this.floorButtonUp= floorButtonUp;
 		this.destinationFloor = destinationFloor;
+		this.doorFault = false; // needs to change
+		this.hardfault = false; // needs to change
 	}
 
 	/** Default Constructor */
@@ -224,6 +228,8 @@ class UserInput{
 		this.currentFloor = 0;
 		this.floorButtonUp= false;
 		this.destinationFloor = 0;
+		this.doorFault = false;
+		this.hardfault = false; 
 	}
 
 	/**
@@ -283,6 +289,13 @@ class UserInput{
 	public int getDestinationFloor() {
 		return destinationFloor;
 	}
+	public boolean getDoorFault(){
+		return doorFault;
+	}
+	public boolean gethardFault(){
+		return hardfault;
+	}
+	
 	
 }
 
