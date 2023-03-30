@@ -316,7 +316,18 @@ class Elevator implements Runnable
 
     public void doorFault() {
         System.out.println("Elevator: Entering DOOR_FAULT state");
-
+		
+		
+	//Tells the scheduler that elevator is in door fault state
+	this.sendElevatorRequest()
+	//Waits for the scheduler to respond
+	ElevatorPacket doorFaultResponse = this.receiveSchedulerResponse();
+		
+	//Change current state to stopped
+        currentState = Elevator_State.Stopped;
+		
+		
+		
         // Send request saying we are in DOOR_FAULT state
         // Wait for response
         // update currentState to Stopped state
@@ -331,6 +342,15 @@ class Elevator implements Runnable
         // Send request saying we are in HARD_FAULT state
         // Wait for response
         // Terminate the Thread
+		
+	//Tells the scheduler that elevator is in door fault state
+	this.sendElevatorRequest();
+		
+	//Waits for the scheduler to respond
+	ElevatorPacket hardFaultResponse = this.receiveSchedulerResponse();
+		
+	//Terminate thread
+	Thread.stop();
 
         /** There are Edits to the MOVING_UP and MOVING_DOWN to handle the TIMEOUT */
 
