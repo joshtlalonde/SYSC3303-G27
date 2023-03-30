@@ -6,7 +6,7 @@ import java.util.*;
 public class Scheduler {
 	static final int NUMBER_OF_FLOORS = 20; // Number of floors in the building
 	static final int NUMBER_OF_ELEVATORS = 1; // Number of elevators in the building
-	private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.S", Locale.ENGLISH);
+	private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
 
 	private DatagramSocket receiveSocket; // Socket for receiving packets from Floor and Elevator
 	private DatagramPacket receivePacket; // Holds the most recently received packet.

@@ -10,7 +10,7 @@ import java.util.*;
 public class Floor implements Runnable {
 	static final String FILENAME = "C:\\Users\\jtbub\\Documents\\University\\Classes\\SYSC 3303\\SYSC3303-G27\\Eclipse\\SYSC3303Project\\src\\floor_input.txt";
 	static final int NUMBER_OF_FLOORS = 20; // Number of floors in the building
-	private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.S", Locale.ENGLISH);
+	private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
 	
 	private DirectionLamp directionLamp; // direction lamp for the floor	
 	private ArrayList<FloorButton> floorButton = new ArrayList<FloorButton>(); // Holds the buttons for each of the floors (up and down)
@@ -205,17 +205,17 @@ public class Floor implements Runnable {
 
 /** Used to get the information for simulating a user from a text file */
 class UserInput{
-	private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.S", Locale.ENGLISH);
+	private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
 	private Date time; // Timestamp of when button was clicked
 	private int currentFloor; // Floor that button was clicked on
 	private boolean floorButtonUp; // Direction that user wants to go
 	private int destinationFloor; // Button that was clicked in elevator to decide destination floor
 	
-	public UserInput(Date time, int floor, boolean floorButtonUp, int carButton) {
+	public UserInput(Date time, int floor, boolean floorButtonUp, int destinationFloor) {
 		this.time = time;
 		this.currentFloor = floor;
 		this.floorButtonUp= floorButtonUp;
-		this.destinationFloor = carButton;
+		this.destinationFloor = destinationFloor;
 	}
 
 	/** Default Constructor */
@@ -237,10 +237,37 @@ class UserInput{
 		this.floorButtonUp = floorPacket.getDirectionUp();
 		this.destinationFloor = floorPacket.getDestinationFloor();
 	}
+
+	/** Convert the UserInput to a Bytes */
+	public byte[] convertToBytes() {
+		// Convert Date object to bytes
+		byte timeBytes[] = dateFormatter.format(time).getBytes();
+
+		// Combine the different attributes of the UserInput into one array of bytes packet
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		outputStream.write(timeBytes, 0, timeBytes.length);
+		outputStream.write(currentFloor);
+		outputStream.write(floorButtonUp ? 1 : 0);
+		outputStream.write(destinationFloor);
+		// outputStream.write(0xFF); // Add null character at the end of UserInput
+		return outputStream.toByteArray();
+	}
 	
 	@Override
 	public String toString() {
-		return "{time: " + dateFormatter.format(time) + ", floor: " + currentFloor + ", floor_button: " + floorButtonUp + ", car_button: " + destinationFloor + "}";
+		return "{time: " + dateFormatter.format(time) + ", currentFloor: " + currentFloor + ", floorButtonUp: " + floorButtonUp + ", destinationFloor: " + destinationFloor + "}";
+	}
+
+	/** 
+	 * Returns the length of bytes in UserInput
+	 * 
+	 * Date time = 12 bytes
+	 * Int currentFloor = 1 byte
+	 * Boolean directionUp = 1 byte
+	 * Int destinationFloor = 1 byte
+	 */
+	public int byte_length() {
+		return 15; 
 	}
 	
 	//Getting the data from the user input

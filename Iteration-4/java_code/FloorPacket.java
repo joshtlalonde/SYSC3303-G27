@@ -4,7 +4,7 @@ import java.text.*;
 import java.util.*;
 
 public class FloorPacket {
-	private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.S", Locale.ENGLISH);
+	private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
 
     private DatagramPacket sendFloorPacket; // Holds the Sent Datagram Packet
     private DatagramPacket receiveFloorPacket; // Holds the Received Datagram Packet

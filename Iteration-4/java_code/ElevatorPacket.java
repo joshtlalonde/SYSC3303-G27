@@ -1,10 +1,13 @@
 import java.io.*;
 import java.net.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ElevatorPacket {
     static final int NUMBER_OF_FLOORS = 20; // Number of floors in the building
 
+    private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
     private Elevator_State currentState = Elevator_State.IDLE; // Holds the current State of the elevator
 
     private DatagramPacket sendElevatorPacket; // Holds the Sent Datagram Packet
@@ -15,15 +18,15 @@ public class ElevatorPacket {
     private int currentFloor; // Holds the current floor info
     private int destinationFloor; // Holds the destination floor info
     private boolean directionUp; // Holds the direction info
-    private ArrayList<Integer> passengerDestinations;
+    private ArrayList<UserInput> passengers = new ArrayList<UserInput>(); // Holds the array of passengers that are on the elevator
 
-    public ElevatorPacket(int elevatorNumber, boolean isMoving, int currentFloor, int destinationFloor, boolean directionUp, ArrayList<Integer> passengerDestinations, Elevator_State currentState) {
+    public ElevatorPacket(int elevatorNumber, boolean isMoving, int currentFloor, int destinationFloor, boolean directionUp, ArrayList<UserInput> passengers, Elevator_State currentState) {
         this.elevatorNumber = elevatorNumber;
         this.isMoving = isMoving;
         this.currentFloor = currentFloor;
         this.destinationFloor = destinationFloor;
         this.directionUp = directionUp;
-        this.passengerDestinations = passengerDestinations;
+        this.passengers = passengers;
         this.currentState = currentState;
 	}
 
@@ -34,7 +37,7 @@ public class ElevatorPacket {
         this.currentFloor = 0;
         this.destinationFloor = 0;
         this.directionUp = false;
-        this.passengerDestinations = new ArrayList<Integer>();
+        this.passengers = new ArrayList<UserInput>();
         this.currentState = Elevator_State.IDLE;
     }
 
@@ -59,8 +62,8 @@ public class ElevatorPacket {
         outputStream.write(destinationFloor);
         outputStream.write(directionUp ? 1 : 0);
         outputStream.write(this.convertStateToInt(currentState));
-        for (int passenger : passengerDestinations) {
-            outputStream.write(passenger);
+        for (UserInput passenger : passengers) {
+            outputStream.write(passenger.convertToBytes(), 0, passenger.convertToBytes().length);
         }
         outputStream.write(0xFF); // Write an ending character for the passengerDestinations array
         sendbytes = outputStream.toByteArray();
@@ -112,7 +115,12 @@ public class ElevatorPacket {
 		System.out.println("with length: " + receiveElevatorPacket.getLength());
 
         // Convert the bytes to assign packet variables
-        this.convertBytesToPacket(receiveElevatorPacket.getData());
+        try {
+            this.convertBytesToPacket(receiveElevatorPacket.getData());
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
 		// Print packet info
 		System.out.print("Containing: ");
@@ -123,7 +131,7 @@ public class ElevatorPacket {
         System.out.println();
     }
 
-    public void convertBytesToPacket(byte packet[]) {
+    public void convertBytesToPacket(byte packet[]) throws ParseException {
 		// Create new ElevatorPacket object from data
         elevatorNumber = packet[0];
         isMoving = packet[1] == 1 ? true : false;
@@ -132,13 +140,28 @@ public class ElevatorPacket {
         directionUp = packet[4] == 1 ? true : false;
         currentState = this.convertIntToState(packet[5]);
 
-        // Get each of the destination that the passengers want to go on this elevator
+        // Get each of the UserInputs that have been sent to the Elevator
         int i = 6;
         while (packet[i] != -1) {
-            // Convert bytes into int array
-            passengerDestinations.add(Integer.parseInt(Byte.toString(packet[i])));
-            System.out.println(i + ": " + packet[i]);
-            i++;
+            // Convert the Time bytes to a String
+            String timeString = new String(packet, i, 12);
+
+            // Convert the timeString into a Date object
+            Date time = dateFormatter.parse(timeString);
+            // Get the currentFloor int from the packet
+            int currentFloor = packet[i + 12];
+            // Get the floorButtonUp boolean from the packet
+            boolean floorButtonUp = packet[i + 13] == 1 ? true : false;
+            // Get the destinationFloor int from the packet
+            int destinationFloor = packet[i + 14];
+            
+            // Create the UserInput object from the bytes
+            UserInput userInput = new UserInput(time, currentFloor, floorButtonUp, destinationFloor);
+            // Add the UserInput object into the array of objects
+            passengers.add(userInput);
+
+            // Iterate by 13 as this is the length of the UserInput
+            i += userInput.byte_length();
         }
     }
 
@@ -176,8 +199,8 @@ public class ElevatorPacket {
         return currentState;
     }
 
-    public ArrayList<Integer> getPassengerDestinations() {
-        return passengerDestinations;
+    public ArrayList<UserInput> getPassengers() {
+        return passengers;
     }
 
     public DatagramPacket getSendElevatorPacket() {
@@ -205,6 +228,10 @@ public class ElevatorPacket {
                 return 5;
             case DOOR_CLOSE:
                 return 6;
+            case DOOR_FAULT:
+                return 7;
+            case HARD_FAULT:
+                return 8;
         }
 
         /** Error occured */
@@ -227,6 +254,10 @@ public class ElevatorPacket {
                 return Elevator_State.DOOR_OPEN;
             case 6:
                 return Elevator_State.DOOR_CLOSE;
+            case 7:
+                return Elevator_State.DOOR_FAULT;
+            case 8:
+                return Elevator_State.HARD_FAULT;
         }
 
         /** Error occured */
@@ -240,7 +271,7 @@ public class ElevatorPacket {
         System.out.println("Elevator number: " + elevatorNumber + ", elevator moving: " + (isMoving ? "Yes" : "No") + 
                             ", current floor: " + currentFloor + ", destination floor: " + destinationFloor + 
                             ", direction: " + (directionUp ? "Up" : "Down") + ", currentState: " + stateToString(currentState) +
-                            ", passenger destinations: " + (passengerDestinations.toString()));
+                            ", passengers: " + (passengers.toString()));
     }
 
     private void printPacketBytes(byte packet[]) {
@@ -251,7 +282,7 @@ public class ElevatorPacket {
 		System.out.println();
 	}
 
-    public String stateToString(Elevator_State state) {
+    private String stateToString(Elevator_State state) {
         switch(state) {
             case IDLE:
                 return "IDLE";
@@ -265,6 +296,10 @@ public class ElevatorPacket {
                 return "DOOR_OPEN";
             case DOOR_CLOSE:
                 return "DOOR_CLOSE";
+            case DOOR_FAULT:
+                return "DOOR_FAULT";
+            case HARD_FAULT:
+                return "HARD_FAULT";
         }
 
         /** Error occured */

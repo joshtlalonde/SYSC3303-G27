@@ -21,6 +21,7 @@ class Elevator implements Runnable
      * to the same thing without having to worry about the elevtaor receiving a FloorPacket anywhere
      * This should work...
     */
+    private ArrayList<UserInput> passengers = new ArrayList<UserInput>(); // Holds the array of passengers that are on the elevator
 
     private DirectionLamp directionLamp = new DirectionLamp(); // Lamp to indicate direction moving and floor location
     private ArrivalSensor arrivalSensor = new ArrivalSensor(); // Sensor to indicate when an elevator is approaching a floor
