@@ -14,14 +14,7 @@ class Elevator implements Runnable
     private int currentFloor; // Current Floor the elevator is on
     private int destinationFloor; // Floor the elevator is moving to
     private boolean directionUp; // Direction elevator is moving in
-    private ArrayList<Integer> passengerDestinations = new ArrayList<Integer>(); // Holds an array of all of the passenger destinations. This can also be used to determine how many people are on the elevator
-
-    /** TODO Create a new Array of UserInfo's Which hold each of the passenger Information 
-     * Change the passengerDestinations to an array of UserInfos this way we can easily just change the eleavtorPackets and elevatroInfos
-     * to the same thing without having to worry about the elevtaor receiving a FloorPacket anywhere
-     * This should work...
-    */
-    private ArrayList<UserInput> passengers = new ArrayList<UserInput>(); // Holds the array of passengers that are on the elevator
+    private ArrayList<UserInput> passengers = new ArrayList<UserInput>(); // Holds the array of passengers that are on the elevator 
 
     private DirectionLamp directionLamp = new DirectionLamp(); // Lamp to indicate direction moving and floor location
     private ArrivalSensor arrivalSensor = new ArrivalSensor(); // Sensor to indicate when an elevator is approaching a floor
@@ -77,7 +70,10 @@ class Elevator implements Runnable
         } else if (currentFloor > destinationFloor) {
             // Move down
             currentState = Elevator_State.MOVING_DOWN;
-        } // Add another else-if to account for destination of request being at same floor
+        } else if (currentFloor == destinationFloor) {
+            // Move to stopped
+            currentState = Elevator_State.STOPPED;
+        }
     }
 
     /** 
@@ -249,7 +245,7 @@ class Elevator implements Runnable
         ElevatorPacket doorOpenResponse = this.receiveSchedulerResponse();
 
         /** Update the passengerDestinations based on the changes made in the scheduler of who got off */
-        passengerDestinations = doorOpenResponse.getPassengerDestinations();
+        passengers = doorOpenResponse.getPassengers();
 
         /** Move to DOOR_CLOSE State */
         currentState = Elevator_State.DOOR_CLOSE;
@@ -277,13 +273,15 @@ class Elevator implements Runnable
         ElevatorPacket doorCloseResponse = this.receiveSchedulerResponse();
         
         /** Walk through the passenger destinations updated from the scheduler */
-        for (int passengerDestination : doorCloseResponse.getPassengerDestinations()) {
+        for (UserInput passenger : doorCloseResponse.getPassengers()) {
             /** Add Passenger Destinations to array */
-            this.passengerDestinations.add(passengerDestination);
+            this.passengers.add(passenger);
+
+            
 
             /** Update buttons clicked for anyone that got on the elevator */
             for (ElevatorButton button : elevatorButtons) {
-                if (button.getButtonFloor() == passengerDestination) {
+                if (button.getButtonFloor() == passenger.getDestinationFloor()) {
                     this.buttonPress(button.getButtonFloor());
                 }
             }
@@ -298,6 +296,7 @@ class Elevator implements Runnable
     }
 
     public void doorFault() {
+        System.out.println("Elevator: Entering DOOR_FAULT state");
 
         // Send request saying we are in DOOR_FAULT state
         // Wait for response
@@ -308,6 +307,7 @@ class Elevator implements Runnable
     }
 
     public void hardFault() {
+        System.out.println("Elevator: Entering HARD_FAULT state");
 
         // Send request saying we are in HARD_FAULT state
         // Wait for response
@@ -338,6 +338,12 @@ class Elevator implements Runnable
 					break;
 				case DOOR_CLOSE:
                     this.doorClose();
+					break;
+                case DOOR_FAULT:
+                    this.doorFault();
+					break;
+                case HARD_FAULT:
+                    this.hardFault();
 					break;
 			}
 
@@ -380,7 +386,7 @@ class Elevator implements Runnable
     /** Send a request to the scheduler to let it know the state of the elevator and ask what should be done */
 	private void sendElevatorRequest() {
         // Create Elevator Packet
-        ElevatorPacket elevatorPacket = new ElevatorPacket(elevatorNumber, isMoving, currentFloor, destinationFloor, directionUp, this.passengerDestinations, this.currentState);
+        ElevatorPacket elevatorPacket = new ElevatorPacket(elevatorNumber, isMoving, currentFloor, destinationFloor, directionUp, passengers, currentState);
         // Send Elevator Packet
         System.out.println("Elevator: Sending request to the scheduler");
         try {

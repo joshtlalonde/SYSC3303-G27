@@ -118,7 +118,7 @@ public class ElevatorPacket {
         try {
             this.convertBytesToPacket(receiveElevatorPacket.getData());
         } catch (ParseException e) {
-            // TODO Auto-generated catch block
+            System.out.println("Elevator: Failed to Convert Bytes to Elevator Packet");
             e.printStackTrace();
         }
 

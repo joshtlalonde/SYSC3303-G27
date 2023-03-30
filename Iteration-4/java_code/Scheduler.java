@@ -167,8 +167,6 @@ public class Scheduler {
 		/** Determines if a person is about to be serviced by a moving elevator */
 		for(ElevatorInfo elevatorInfo : elevatorInfos) {
 			if(elevatorInfo.getIsMoving()) {
-				// int ele_cf = elevatorInfo.getCurrentFloor();
-				// int ele_df = elevatorInfo.getDestinationFloor();
 				for(UserInput floorRequest : floorRequests) {
 					if(elevatorInfo.getDirectionUp() && (elevatorInfo.getCurrentFloor() < floorRequest.getCurrentFloor()) && (elevatorInfo.getDestinationFloor() > floorRequest.getCurrentFloor())) {
 						noService.add(floorRequest.getCurrentFloor());
@@ -188,13 +186,13 @@ public class Scheduler {
 		 * That isn't already being serviced by another elevator
 		*/
 		boolean noFloorRequests = true;
-		UserInput longest_wait = floorRequests.get(0);
+		UserInput earliest_request = floorRequests.get(0);
 		for (Integer floor : doService) {
 			for (UserInput floorRequest : floorRequests) {
 				if (floorRequest.getCurrentFloor() == floor) {
 					noFloorRequests = false;
-					if (floorRequest.getTime().getTime() > longest_wait.getTime().getTime()) {
-						longest_wait = floorRequest;
+					if (floorRequest.getTime().getTime() < earliest_request.getTime().getTime()) {
+						earliest_request = floorRequest;
 					}
 				}
 			}
@@ -205,16 +203,16 @@ public class Scheduler {
 			for(Integer floor : noService) {
 				for(UserInput floorRequest : floorRequests) {
 					if(floorRequest.getCurrentFloor() == floor) {
-						if(floorRequest.getTime().getTime() < longest_wait.getTime().getTime()) {
-							longest_wait = floorRequest;
+						if(floorRequest.getTime().getTime() < earliest_request.getTime().getTime()) {
+							earliest_request = floorRequest;
 						}
 					}
 				}
 			}
 		}
 
-		/** Updates the destination floor that the elevator needs to go to pick up the floorRequest */
-		elevator.setDestinationFloor(longest_wait.getDestinationFloor());
+		/** Updates the elevator destination floor to where the User is waiting */
+		elevator.setDestinationFloor(earliest_request.getCurrentFloor());
 		
 		return elevator;
 	}
@@ -259,10 +257,12 @@ public class Scheduler {
 		/** 
 		 * Searches through the passenger Destinations then remove all of the passengers
 		 * That have a destination on the elevators current floor
+		 * Also pops the user from the list of pending requests
 		 */
-		for(Integer passenger : elevator.getPassengerDestinations()) {
-			if(elevator.getCurrentFloor() == passenger) {
-				elevator.getPassengerDestinations().remove(elevator.getCurrentFloor());
+		for(UserInput passenger : elevator.getPassengers()) {
+			if(elevator.getCurrentFloor() == passenger.getCurrentFloor()) {
+				elevator.getPassengers().remove(elevator.getCurrentFloor());
+				// TODO: Should pop the passenger from the list of passengers
 			}
 		}
 
@@ -274,7 +274,6 @@ public class Scheduler {
 	
 	public ElevatorInfo serviceElevatorDoorClose(ElevatorInfo elevator) {
 		System.out.println("\nScheduler: Servicing Elevator in DOOR_CLOSE State");
-		ArrayList<Integer> Service = new ArrayList<Integer>();
 		
 		/** 
 		 * Adds the passenger destinations for the any of the passengers that are on the same floor as the elevator
@@ -282,7 +281,7 @@ public class Scheduler {
 		 */
 		for(UserInput floorRequest : floorRequests) {
 			if(floorRequest.getCurrentFloor() == elevator.getCurrentFloor() && floorRequest.getFloorButtonUp() == elevator.getDirectionUp()){
-				elevator.addPassengerDestination(floorRequest.getDestinationFloor());
+				elevator.addPassenger(floorRequest);
 			}
 	
 		}
@@ -354,7 +353,12 @@ public class Scheduler {
 		// Skip the byte first in the array
 		byte[] byteArr = Arrays.copyOfRange(this.receivePacket.getData(), 1, this.receivePacket.getData().length);
 		// Convert the bytes to an elevatorPacket
-		elevatorPacket.convertBytesToPacket(byteArr);
+		try {
+			elevatorPacket.convertBytesToPacket(byteArr);
+		} catch (ParseException e) {
+			System.out.println("Scheduler: Failed to Convert Bytes to Elevator Packet");
+			e.printStackTrace();
+		}
 
 		/** Update ElevatorInfo with the packet */
 		ElevatorInfo elevatorInfo = null;
@@ -410,18 +414,18 @@ class ElevatorInfo {
     private int currentFloor; // Holds the current floor info
     private int destinationFloor; // Holds the destination floor info
     private boolean directionUp; // Holds the direction info
-    private ArrayList<Integer> passengerDestinations; // Holds the array of passenger destination floors
+    private ArrayList<UserInput> passengers; // Holds the array of passenger destination floors
 	private Elevator_State currentState; // Holds the current state of the elevator
 
 	private int port; // Holds port that the Elevator exists on
 	private InetAddress address; // Holds the address that the Elevator exists on
 
-    public ElevatorInfo(int elevatorNumber, int currentFloor, int destinationFloor, boolean directionUp, ArrayList<Integer> passengerDestinations, Elevator_State currentState, int port, InetAddress address) {
+    public ElevatorInfo(int elevatorNumber, int currentFloor, int destinationFloor, boolean directionUp, ArrayList<UserInput> passengers, Elevator_State currentState, int port, InetAddress address) {
         this.elevatorNumber = elevatorNumber;
         this.currentFloor = currentFloor;
         this.destinationFloor = destinationFloor;
         this.directionUp = directionUp;
-        this.passengerDestinations = passengerDestinations;
+        this.passengers = passengers;
 		this.currentState = currentState;
 		this.port = port;
 		this.address = address;
@@ -433,7 +437,7 @@ class ElevatorInfo {
         this.currentFloor = 0;
         this.destinationFloor = 0;
         this.directionUp = false;
-        this.passengerDestinations = new ArrayList<Integer>();
+        this.passengers = new ArrayList<UserInput>();
 		this.currentState = Elevator_State.IDLE;
 	}
 
@@ -443,14 +447,14 @@ class ElevatorInfo {
         this.currentFloor = elevatorPacket.getCurrentFloor();
         this.destinationFloor = elevatorPacket.getDestinationFloor();
         this.directionUp = elevatorPacket.getDirectionUp();
-        this.passengerDestinations = elevatorPacket.getPassengerDestinations();
+        this.passengers = elevatorPacket.getPassengers();
 		this.currentState = elevatorPacket.getCurrentState();
 		this.port = port; /* TODO: Needs to be tested still */
 		this.address = address;
 	}
 
 	public void sendPacket(DatagramSocket socket) {
-		ElevatorPacket elevatorPacket = new ElevatorPacket(elevatorNumber, isMoving, currentFloor, destinationFloor, directionUp, passengerDestinations, currentState);
+		ElevatorPacket elevatorPacket = new ElevatorPacket(elevatorNumber, isMoving, currentFloor, destinationFloor, directionUp, passengers, currentState);
 		elevatorPacket.send(address, port, socket, false);
 	}
 
@@ -504,12 +508,12 @@ class ElevatorInfo {
         this.currentState = currentState;
     }
 
-    public ArrayList<Integer> getPassengerDestinations() {
-        return passengerDestinations;
+    public ArrayList<UserInput> getPassengers() {
+        return passengers;
     }
 
-	public boolean addPassengerDestination(int passengerDestination) {
-        return passengerDestinations.add(passengerDestination);
+	public boolean addPassenger(UserInput passenger) {
+        return passengers.add(passenger);
     }
 
 	public int getPort() {
@@ -534,6 +538,6 @@ class ElevatorInfo {
 	public String toString() {
 		return "Elevator number: " + elevatorNumber + ", is elevator moving: " + (isMoving ? "yes" : "no") + 
 				", current floor: " + currentFloor + ", destination floor: " + destinationFloor + 
-				", direction: " + (directionUp ? "up" : "down") + ", passenger destinations: " + (passengerDestinations.toString());
+				", direction: " + (directionUp ? "up" : "down") + ", passenger destinations: " + (passengers.toString());
 	}
 }
