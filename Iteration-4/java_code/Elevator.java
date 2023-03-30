@@ -229,37 +229,7 @@ class Elevator implements Runnable
      * Resets buttons and passengerDestinations for people getting off
      * 
      */
-    public void doorOpen() {
-        System.out.println("Elevator: Entering DOOR_OPEN state");
-
-        /** Reset button for floor */
-        this.buttonReset(currentFloor);
-        
-        /** Open the door */
-        door.open();
-
-        /** Tell scheduler that elevator is in door open state */
-        this.sendElevatorRequest();
-
-        /** Wait for response from scheduler saying who got off the elevator */ 
-        ElevatorPacket doorOpenResponse = this.receiveSchedulerResponse();
-
-        /** Update the passengerDestinations based on the changes made in the scheduler of who got off */
-        passengers = doorOpenResponse.getPassengers();
-
-        /** Move to DOOR_CLOSE State */
-        currentState = Elevator_State.DOOR_CLOSE;
-    }
-
-    /** 
-     * Elevator is in door close state 
-     * 
-     * Elevator closes door 
-     * Sends packet to update state
-     * Updates passengerDestinations for people getting on 
-     * Sets buttons to on for those destinations
-     * 
-     */
+    
     public void doorOpen() {
         System.out.println("Elevator: Entering DOOR_OPEN state");
 
@@ -327,7 +297,7 @@ class Elevator implements Runnable
 			Also checks for Door faults.
 		*/
         for (UserInput passenger : passengers) {
-	    if(passenger.getdoorFault == true){
+	    if(passenger.getDoorFault == true){
 		for(int i = 1;i<=5;i++){
 		    System.out.println("Door open for " + i + " seconds");
 			Thread.sleep(1000);
