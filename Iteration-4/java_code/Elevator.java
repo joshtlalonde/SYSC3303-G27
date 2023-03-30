@@ -277,8 +277,6 @@ class Elevator implements Runnable
             /** Add Passenger Destinations to array */
             this.passengers.add(passenger);
 
-            
-
             /** Update buttons clicked for anyone that got on the elevator */
             for (ElevatorButton button : elevatorButtons) {
                 if (button.getButtonFloor() == passenger.getDestinationFloor()) {
@@ -293,6 +291,27 @@ class Elevator implements Runnable
 
         /** Change current State to IDLE */
         currentState = Elevator_State.IDLE;
+        
+        /** Decides if state should change to MOVING_UP or MOVING_DOWN */
+        for (UserInput passenger : passengers) {
+            if (directionUp) {
+                if (destinationFloor < passenger.getDestinationFloor()) {
+                    /** Update destinationFloor if a passenger destinationFloor is larger than the current one */
+                    destinationFloor = passenger.getDestinationFloor();
+                }
+
+                /** Change the current State to MOVING_UP */
+                currentState = Elevator_State.MOVING_UP;
+            } else {
+                if (destinationFloor > passenger.getDestinationFloor()) {
+                    /** Update destinationFloor if a passenger destinationFloor is smaller than the current one */
+                    destinationFloor = passenger.getDestinationFloor();
+                }
+
+                /** Change the current State to MOVING_DOWN */
+                currentState = Elevator_State.MOVING_DOWN;
+            }
+        }
     }
 
     public void doorFault() {

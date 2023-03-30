@@ -162,7 +162,7 @@ public class Floor implements Runnable {
 				 * This FloorPacket will say that the scheduler is picking people up on a specific floor
 				 */
 				// Waits until the request is being serviced by the elevator
-				this.elevatorArrival(userInput.getFloorButtonUp(), userInput.getCurrentFloor());
+				// this.elevatorArrival(userInput.getFloorButtonUp(), userInput.getCurrentFloor());
 
 				// Sleep for 1 second
 				try {

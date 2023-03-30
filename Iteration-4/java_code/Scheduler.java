@@ -212,6 +212,7 @@ public class Scheduler {
 		}
 
 		/** Updates the elevator destination floor to where the User is waiting */
+		System.out.println("\nScheduler: Sending Elevator to User on floor " + earliest_request.getCurrentFloor());
 		elevator.setDestinationFloor(earliest_request.getCurrentFloor());
 		
 		return elevator;
@@ -246,11 +247,12 @@ public class Scheduler {
 	
 	public ElevatorInfo serviceElevatorStopped(ElevatorInfo elevator) {
 		System.out.println("\nScheduler: Servicing Elevator in STOPPED State");
-		// Send same shit back, no updates needed here
+		// Send same stuff back, no updates needed here
 		// Refer to Elevator.java as to what information the elevator needs to updated on 'elevatorInfo'
 		
 		return elevator;
 	}
+
 	public ElevatorInfo serviceElevatorDoorOpen(ElevatorInfo elevator) {
 		System.out.println("\nScheduler: Servicing Elevator in DOOR_OPEN State");
 		
@@ -259,15 +261,40 @@ public class Scheduler {
 		 * That have a destination on the elevators current floor
 		 * Also pops the user from the list of pending requests
 		 */
+		ArrayList<UserInput> removeList = new ArrayList<UserInput>();
 		for(UserInput passenger : elevator.getPassengers()) {
-			if(elevator.getCurrentFloor() == passenger.getCurrentFloor()) {
-				elevator.getPassengers().remove(elevator.getCurrentFloor());
-				// TODO: Should pop the passenger from the list of passengers
+			if(elevator.getCurrentFloor() == passenger.getDestinationFloor()) {
+				System.out.println("Scheduler: Passenger " + passenger.toString() + " exiting the elevator");
+				removeList.add(passenger);
 			}
 		}
 
-		
-		
+		/** 
+		 * Removes all the passengers from the elevator and floorRequests
+		 * Must be done here due to concurrentFault when removing within the loop
+		 * TODO: It has not been tested if the while loop can be done within the loop above
+		 */
+		for (UserInput passenger : removeList) {
+			/** Iterate through the floorRequests to remove all the ones that match the passengers to be removed */
+			Iterator<UserInput> iterator = floorRequests.iterator();
+			while (iterator.hasNext()) {
+				UserInput floorRequest = iterator.next();
+				// TODO: There is something wrong with the time not being Equal I am not sure why
+				// But this does not work dateFormatter.format(floorRequest.getTime()) == dateFormatter.format(passenger.getTime()) 
+				// And neither does this floorRequest.getTime() == passenger.getTime()
+				// And neither this floorRequest.equals(passenger)
+				// But we do need a way to make sure the time is the same as well
+				if (floorRequest.getCurrentFloor() == passenger.getCurrentFloor() && floorRequest.getDestinationFloor() == passenger.getDestinationFloor() && floorRequest.getFloorButtonUp() == passenger.getFloorButtonUp()) {
+					iterator.remove();
+				}
+			}
+
+			/** Remove the passenger from the elevators list */
+			if (!elevator.removePassenger(passenger)) {
+				System.out.println("Scheduler: FAILED to remove " + passenger.toString() + " from elevator");
+			}
+		}
+
 		return elevator;
 	}
 	
@@ -281,6 +308,7 @@ public class Scheduler {
 		 */
 		for(UserInput floorRequest : floorRequests) {
 			if(floorRequest.getCurrentFloor() == elevator.getCurrentFloor() && floorRequest.getFloorButtonUp() == elevator.getDirectionUp()){
+				System.out.println("Scheduler: Passenger " + floorRequest.toString() + " entering the elevator");
 				elevator.addPassenger(floorRequest);
 			}
 	
@@ -514,6 +542,10 @@ class ElevatorInfo {
 
 	public boolean addPassenger(UserInput passenger) {
         return passengers.add(passenger);
+    }
+
+	public boolean removePassenger(UserInput passenger) {
+        return passengers.remove(passenger);
     }
 
 	public int getPort() {
