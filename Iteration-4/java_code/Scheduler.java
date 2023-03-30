@@ -285,6 +285,11 @@ public class Scheduler {
 			if(elevator.getCurrentFloor() == passenger.getDestinationFloor()) {
 				System.out.println("Scheduler: Passenger " + passenger.toString() + " exiting the elevator");
 				removeList.add(passenger);
+
+				// /** Remove the passenger from the elevators list */
+				// if (!elevator.removePassenger(passenger)) {
+				// 	System.out.println("Scheduler: FAILED to remove " + passenger.toString() + " from elevator");
+				// }
 			}
 		}
 
@@ -294,19 +299,19 @@ public class Scheduler {
 		 * TODO: It has not been tested if the while loop can be done within the loop above
 		 */
 		for (UserInput passenger : removeList) {
-			/** Iterate through the floorRequests to remove all the ones that match the passengers to be removed */
-			Iterator<UserInput> iterator = floorRequests.iterator();
-			while (iterator.hasNext()) {
-				UserInput floorRequest = iterator.next();
-				// TODO: There is something wrong with the time not being Equal I am not sure why
-				// But this does not work dateFormatter.format(floorRequest.getTime()) == dateFormatter.format(passenger.getTime()) 
-				// And neither does this floorRequest.getTime() == passenger.getTime()
-				// And neither this floorRequest.equals(passenger)
-				// But we do need a way to make sure the time is the same as well
-				if (floorRequest.getCurrentFloor() == passenger.getCurrentFloor() && floorRequest.getDestinationFloor() == passenger.getDestinationFloor() && floorRequest.getFloorButtonUp() == passenger.getFloorButtonUp()) {
-					iterator.remove();
-				}
-			}
+			// /** Iterate through the floorRequests to remove all the ones that match the passengers to be removed */
+			// Iterator<UserInput> iterator = floorRequests.iterator();
+			// while (iterator.hasNext()) {
+			// 	UserInput floorRequest = iterator.next();
+			// 	// TODO: There is something wrong with the time not being Equal I am not sure why
+			// 	// But this does not work dateFormatter.format(floorRequest.getTime()) == dateFormatter.format(passenger.getTime()) 
+			// 	// And neither does this floorRequest.getTime() == passenger.getTime()
+			// 	// And neither this floorRequest.equals(passenger)
+			// 	// But we do need a way to make sure the time is the same as well
+			// 	if (floorRequest.getCurrentFloor() == passenger.getCurrentFloor() && floorRequest.getDestinationFloor() == passenger.getDestinationFloor() && floorRequest.getFloorButtonUp() == passenger.getFloorButtonUp()) {
+			// 		iterator.remove();
+			// 	}
+			// }
 
 			/** Remove the passenger from the elevators list */
 			if (!elevator.removePassenger(passenger)) {
@@ -329,9 +334,28 @@ public class Scheduler {
 			if(floorRequest.getCurrentFloor() == elevator.getCurrentFloor() && floorRequest.getFloorButtonUp() == elevator.getDirectionUp()){
 				System.out.println("Scheduler: Passenger " + floorRequest.toString() + " entering the elevator");
 				elevator.addPassenger(floorRequest);
+
+				/** TODO: This should be where the removal of the floorRequest occurs since now it exists within the elevator
+				 * That means DoorOpen should reference the elevator.getPassengers not the floorRequests
+				  */
 			}
-	
 		}
+
+		/**
+		 * Removes the floorRequest since it is going to be serviced by this elevator
+		 */
+		Iterator<UserInput> iterator = floorRequests.iterator();
+			while (iterator.hasNext()) {
+				UserInput floorRequest = iterator.next();
+				// TODO: There is something wrong with the time not being Equal I am not sure why
+				// But this does not work dateFormatter.format(floorRequest.getTime()) == dateFormatter.format(passenger.getTime()) 
+				// And neither does this floorRequest.getTime() == passenger.getTime()
+				// And neither this floorRequest.equals(passenger)
+				// But we do need a way to make sure the time is the same as well
+				if (floorRequest.getCurrentFloor() == elevator.getCurrentFloor() && floorRequest.getFloorButtonUp() == elevator.getDirectionUp()) {
+					iterator.remove();
+				}
+			}
 
 		return elevator;
 	}
@@ -375,7 +399,9 @@ public class Scheduler {
 		// floorPacket.receive(receiveSocket);
 
 		// Convert Floor Packet to UserInput
-		UserInput userInput = new UserInput(floorPacket.getTime(), floorPacket.getFloor(), floorPacket.getDirectionUp(), floorPacket.getDestinationFloor());
+		UserInput userInput = new UserInput(floorPacket.getTime(), floorPacket.getFloor(), 
+											floorPacket.getDirectionUp(), floorPacket.getDestinationFloor(),
+											floorPacket.getDoorFault(), floorPacket.getHardFault());
 
 		return userInput;
 	}
@@ -389,7 +415,9 @@ public class Scheduler {
 	 */
 	private void sendFloorPacket(UserInput userInput, InetAddress address, int port) {
         // Create Floor Packet
-        FloorPacket floorPacket = new FloorPacket(userInput.getCurrentFloor(), userInput.getTime(), userInput.getFloorButtonUp(), userInput.getDestinationFloor());
+        FloorPacket floorPacket = new FloorPacket(userInput.getCurrentFloor(), userInput.getTime(), 
+													userInput.getFloorButtonUp(), userInput.getDestinationFloor(),
+													userInput.getDoorFault(), userInput.getHardFault());
 
         // Send Elevator Packet
         System.out.println("Scheduler: Sending response to the floor");

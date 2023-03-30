@@ -113,9 +113,9 @@ public class ElevatorPacketTest extends junit.framework.TestCase{
         expectedOutput.write(elevatorPacket.convertStateToInt(elevatorPacket.getCurrentState()));
         try {
             ArrayList<UserInput> passengers = new ArrayList<UserInput>();
-            passengers.add(new UserInput(new Date(72), 0, false, 0));
-            passengers.add(new UserInput(new Date(100), 1, false, 2));
-            passengers.add(new UserInput(new Date(1680143675), 1, false, 2));
+            passengers.add(new UserInput(new Date(72), 0, false, 0, true, false));
+            passengers.add(new UserInput(new Date(100), 1, false, 2, false, true));
+            passengers.add(new UserInput(new Date(1680143675), 1, false, 2, true, true));
 
             for (UserInput passenger : passengers)
 			expectedOutput.write(passenger.convertToBytes());
@@ -136,9 +136,9 @@ public class ElevatorPacketTest extends junit.framework.TestCase{
                 
         
         ArrayList<UserInput> testPassengers = new ArrayList<UserInput>();
-        testPassengers.add(new UserInput(new Date(72), 0, false, 0));
-        testPassengers.add(new UserInput(new Date(100), 1, false, 2));
-        testPassengers.add(new UserInput(new Date(1680143675), 1, false, 2));
+        testPassengers.add(new UserInput(new Date(72), 0, false, 0, true, false));
+        testPassengers.add(new UserInput(new Date(100), 1, false, 2, false, true));
+        testPassengers.add(new UserInput(new Date(1680143675), 1, false, 2, true, true));
         
         assertEquals(elevatorPacket.getPassengers().size(), testPassengers.size());
         for (int i = 0; i < elevatorPacket.getPassengers().size(); i++) {

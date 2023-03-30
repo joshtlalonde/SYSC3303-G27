@@ -13,12 +13,16 @@ public class FloorPacket {
     private int destinationFloor; // Holds the destination floor info
     private Date time; // Holds the time info
     private boolean directionUp; // Holds the direction info
+    private boolean doorFault; // Holds the doorFault info
+	private boolean hardFault; // Holds the hardFault info
 
-    public FloorPacket(int floor, Date time, boolean directionUp, int destinationFloor) {
+    public FloorPacket(int floor, Date time, boolean directionUp, int destinationFloor, boolean doorFault, boolean hardFault) {
         this.floor = floor;
         this.time = time;
         this.directionUp = directionUp;
         this.destinationFloor = destinationFloor;
+        this.doorFault = doorFault;
+        this.hardFault = hardFault;
 	}
 
     /** Default Constructor */
@@ -27,6 +31,8 @@ public class FloorPacket {
         this.time = new Date();
         this.directionUp = false;
         this.destinationFloor = 0;
+        this.doorFault = false;
+        this.hardFault = false;
 	}
 
     /** 
@@ -50,8 +56,10 @@ public class FloorPacket {
 		outputStream.write(floor);
         outputStream.write(destinationFloor);
         outputStream.write(directionUp ? 1 : 0);
+        outputStream.write(doorFault ? 1 : 0);
+        outputStream.write(hardFault ? 1 : 0);
         outputStream.write(timeBytes, 0, timeBytes.length);
-        outputStream.write(0); // Add null character after string
+        outputStream.write(0xFF); // Add null character after string
         sendbytes = outputStream.toByteArray();
 
         // Create datagram packet
@@ -79,8 +87,8 @@ public class FloorPacket {
 
     /** Used to wait until a FloorPacket is received */
     public void receive(DatagramSocket receiveFloorSocket) {
-        // Construct a DatagramPacket for receiving packets up to 16 bytes long. Will not be longer
-		byte data[] = new byte[16];
+        // Construct a DatagramPacket for receiving packets up to 18 bytes long. Will not be longer
+		byte data[] = new byte[18];
 		receiveFloorPacket = new DatagramPacket(data, data.length);
 
 		// Block until a datagram packet is received from receiveSocket.
@@ -113,15 +121,18 @@ public class FloorPacket {
     }
 
     public void convertBytesToPacket(byte packet[]) {
+        this.printPacketBytes(packet);
 		// Create new FloorPacket object from data
         floor = packet[0];
         destinationFloor = packet[1];
         directionUp = packet[2] == 1 ? true : false;
+        doorFault = packet[3] == 1 ? true : false;
+        hardFault = packet[4] == 1 ? true : false;
 
-        // Skip the first 3 bytes then copy until the null character is reached, to get the Time string
-        int i = 3;
-        for (; i < packet.length && packet[i] != 0; i++) {}
-        String timeString = new String(packet, 3, i - 3);
+        // Skip the first 5 bytes then copy until the null character is reached, to get the Time string
+        int i = 5;
+        for (; i < packet.length && packet[i] != -1; i++) {}
+        String timeString = new String(packet, 5, i - 5);
         
         try {
             time = dateFormatter.parse(timeString);
@@ -148,6 +159,14 @@ public class FloorPacket {
     public int getDestinationFloor() {
         return destinationFloor;
     }
+
+    public boolean getDoorFault() {
+        return doorFault;
+    }
+    
+    public boolean getHardFault() {
+        return hardFault;
+    }
     
     public DatagramPacket getSendFloorPacket() {
         return sendFloorPacket;
@@ -161,7 +180,10 @@ public class FloorPacket {
 
     private void printPacket() {
         System.out.println("Floor number: " + floor + ", destination floor: " + destinationFloor + 
-                            ", direction: " + (directionUp ? "Up" : "Down") + ", time: " + dateFormatter.format(time));
+                            ", direction: " + (directionUp ? "Up" : "Down") + 
+                            ", doorFault: " + (doorFault ? "Yes" : "No") + 
+                            ", hardFault: " + (hardFault ? "Yes" : "No") + 
+                            ", time: " + dateFormatter.format(time));
     }
 
     private void printPacketBytes(byte packet[]) {
