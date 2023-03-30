@@ -158,6 +158,7 @@ public class Scheduler {
 
 		/** If there are no Floor Requests then return */
 		if (floorRequests.isEmpty()) {
+			elevator.setDestinationFloor(-1);	
 			return elevator;
 		}
 

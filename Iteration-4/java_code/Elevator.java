@@ -63,6 +63,13 @@ class Elevator implements Runnable
         /** Set the destination floor to go to */
         destinationFloor = newFloorRequest.getDestinationFloor();
 
+        /** Flag to state that there is no one waiting for an elevator */
+        if (destinationFloor == -1) {
+            // Stay in IDLE state
+            currentState = Elevator_State.IDLE;
+            return;
+        }
+
         // /** Start Moving to Pickup Passenger */
         if (currentFloor < destinationFloor) {
             // Move up
