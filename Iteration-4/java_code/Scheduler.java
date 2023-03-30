@@ -129,6 +129,16 @@ public class Scheduler {
 			case DOOR_CLOSE:
 				elevatorInfo = this.serviceElevatorDoorClose(elevatorInfo);
 				break;
+			case DOOR_FAULT:
+				elevatorInfo = this.serviceElevatorDoorFault(elevatorInfo);
+				break;
+			case HARD_FAULT:
+				elevatorInfo = this.serviceElevatorHardFault(elevatorInfo);
+				break;
+			case BOOM:
+				// Remove the elevator
+				elevatorInfos.remove(elevatorInfo);
+				break;
 		}
 
 		/** Update the elevatorInfo returned from the method */
@@ -361,25 +371,22 @@ public class Scheduler {
 	}
 	
 	public ElevatorInfo serviceElevatorDoorFault(ElevatorInfo elevator) {
+	    for(UserInput passenger : elevator.getPassengers()) {
+			if(passenger.getDoorFault() == true) {
+				passenger.setDoorFault(false);
+		    }
+		}
 
-		// Sends message back with updated UserInfo saying that the Fault is now false
-
-		// Walk through each of the passengers
-		// Find which one has the doorFault set to True
-		// Reset that passengers doorFault to False
-
-		return elevator;
+	    return elevator;
 	}
-
 	public ElevatorInfo serviceElevatorHardFault(ElevatorInfo elevator) {
+	    for(UserInput passenger : elevator.getPassengers()) {
+			if(passenger.getHardFault() == true) {
+				passenger.setHardFault(false);
+			}
+		}
 
-		// Sends message back with updated UserInfo saying that the Fault is now false
-
-		// Walk through each of the passengers
-		// Find which one has the hardFault set to True
-		// Reset that passengers hardFault to False
-		
-		return elevator;
+	    return elevator;
 	}
 	
 	/** 

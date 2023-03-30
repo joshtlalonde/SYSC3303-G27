@@ -232,8 +232,6 @@ class UserInput{
 		this.currentFloor = 0;
 		this.floorButtonUp= false;
 		this.destinationFloor = 0;
-		this.doorFault = false;
-		this.hardFault = false;
 	}
 
 	/**
@@ -308,6 +306,15 @@ class UserInput{
 	public boolean getHardFault() {
 		return hardFault;
 	}
+
+	public void setDoorFault(boolean doorFault) {
+		this.doorFault = doorFault;
+	}
+
+	public void setHardFault(boolean hardFault){
+		this.hardFault = hardFault;
+	}
+	
 	
 }
 

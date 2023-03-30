@@ -105,10 +105,24 @@ class Elevator implements Runnable
 
         // Update currentFloor and arrivalSensor as you are moving
         while (currentFloor < destinationFloor) {
+            
+            /** Check if any passengers have a HARD_FAULT */
+            for (UserInput passenger : passengers) {
+                if(passenger.getHardFault()){
+                    for(int i = 1; i <= 10; i++){
+                        System.out.println("Elevator stuck for " + i + " seconds");
 
-            /** TODO: Create TIMEOUT for if there is a HARD_FAULT in the UserInfo 
-             * Waits for a specific amount of time then moves to the HARD_FAULT state
-            */
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                    System.out.println("Elevator is stuck, Servicing elevator...");
+                    currentState= Elevator_State.HARD_FAULT;
+                }
+            }
 
             // Sleep for amount of time to move between floors
 			try {
@@ -162,10 +176,25 @@ class Elevator implements Runnable
 
         // Update currentFloor and arrivalSensor as you are moving
         while (currentFloor > destinationFloor) {
+            
+            /** Check if any passengers have a HARD_FAULT */
+            for (UserInput passenger : passengers) {
+                if(passenger.getHardFault()){
+                    for(int i = 1; i <= 10; i++){
+                        System.out.println("Elevator stuck for " + i + " seconds");
 
-            /** TODO: Create TIMEOUT for if there is a HARD_FAULT in the UserInfo 
-             * Waits for a specific amount of time then moves to the HARD_FAULT state
-            */
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                    System.out.println("Elevator is stuck, Servicing elevator...");
+                    currentState= Elevator_State.HARD_FAULT;
+                }
+            }
+
 
             // Sleep for amount of time to move between floors
 			try {
@@ -238,6 +267,7 @@ class Elevator implements Runnable
      * Resets buttons and passengerDestinations for people getting off
      * 
      */
+    
     public void doorOpen() {
         System.out.println("Elevator: Entering DOOR_OPEN state");
 
@@ -294,8 +324,37 @@ class Elevator implements Runnable
             }
         }
 
-        /** Decides if state should change to MOVING_UP or MOVING_DOWN */
+        if (currentFloor == destinationFloor && passengers.isEmpty()) {
+            /** Change current State to IDLE */
+            currentState = Elevator_State.IDLE;
+        } else if (directionUp) {
+            /** Change the current State to MOVING_UP */
+            currentState = Elevator_State.MOVING_UP;
+        } else if (!directionUp) {
+            /** Change the current State to MOVING_DOWN */
+            currentState = Elevator_State.MOVING_DOWN;
+        }
+        
+        /** 
+         * Decides if state should change to MOVING_UP or MOVING_DOWN 
+         * And checks for door faults
+        */
         for (UserInput passenger : passengers) {
+            if (passenger.getDoorFault() == true) {
+                for(int i = 1;i<=5;i++){
+                    System.out.println("Door stuck for " + i + " seconds");
+
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                System.out.println("Door is stuck, Servicing Door...");
+                currentState= Elevator_State.DOOR_FAULT;
+            }
+			
             if (directionUp) {
                 if (destinationFloor < passenger.getDestinationFloor()) {
                     /** Update destinationFloor if a passenger destinationFloor is larger than the current one */
@@ -308,41 +367,36 @@ class Elevator implements Runnable
                 }
             }
         }
-
-        /** TODO: Create TIMEOUT for if there is a DOOR_FAULT in the UserInfo doorfault = true
-         * Waits for a specific amount of time then moves to the DOOR_FAULT state
-         * loop through passengers then if any have it true move to doorFault
-        */
-
-        if (currentFloor == destinationFloor && passengers.isEmpty()) {
-            /** Change current State to IDLE */
-            currentState = Elevator_State.IDLE; // TODO: Should it go to idle state only if the destinationFloor and currentFloor are the same?
-        } else if (directionUp) {
-            /** Change the current State to MOVING_UP */
-            currentState = Elevator_State.MOVING_UP;
-        } else if (!directionUp) {
-            /** Change the current State to MOVING_DOWN */
-            currentState = Elevator_State.MOVING_DOWN;
-        }
     }
 
     public void doorFault() {
         System.out.println("Elevator: Entering DOOR_FAULT state");
-
-        // Send request saying we are in DOOR_FAULT state
-        // Wait for response
-        // update currentState to Stopped state
-
-        /** There are Edits to the DOOR_OPEN to handle the TIMEOUT */
-        
+		
+        //Tells the scheduler that elevator is in door fault state
+        this.sendElevatorRequest();
+        //Waits for the scheduler to respond
+        ElevatorPacket doorFaultResponse = this.receiveSchedulerResponse();
+        // Update the passengers
+        passengers = doorFaultResponse.getPassengers();
+            
+        //Change current state to stopped
+        currentState = Elevator_State.STOPPED;        
     }
 
     public void hardFault() {
         System.out.println("Elevator: Entering HARD_FAULT state");
+		
+        //Tells the scheduler that elevator is in door fault state
+        this.sendElevatorRequest();
+            
+        //Waits for the scheduler to respond
+        ElevatorPacket hardFaultResponse = this.receiveSchedulerResponse();
 
-        // Send request saying we are in HARD_FAULT state
-        // Wait for response
-        // Terminate the Thread
+        // Set the updated passengers
+        passengers = hardFaultResponse.getPassengers();
+            
+        //Terminate thread
+        currentState = Elevator_State.BOOM;
 
         /** There are Edits to the MOVING_UP and MOVING_DOWN to handle the TIMEOUT */
 
@@ -376,6 +430,8 @@ class Elevator implements Runnable
                 case HARD_FAULT:
                     this.hardFault();
 					break;
+                case BOOM:
+                    return;
 			}
 
             // Sleep for 1 second
