@@ -102,6 +102,17 @@ class Elevator implements Runnable
             /** TODO: Create TIMEOUT for if there is a HARD_FAULT in the UserInfo 
              * Waits for a specific amount of time then moves to the HARD_FAULT state
             */
+	    for (UserInput passenger : passengers) {
+		if(passenger.getHardFault == true){
+		    for(int i = 1;i<=10;i++){
+			System.out.println("Elevator moving for " + i + " seconds");
+			Thread.sleep(1000);
+		    }
+		    System.out.println("Elevator is stuck");
+		    System.out.println("Servicing elevator");
+		    currentState= Elevator_State.hardFault;
+		}
+	    }
 
             // Sleep for amount of time to move between floors
 			try {
@@ -158,6 +169,18 @@ class Elevator implements Runnable
             /** TODO: Create TIMEOUT for if there is a HARD_FAULT in the UserInfo 
              * Waits for a specific amount of time then moves to the HARD_FAULT state
             */
+	    or (UserInput passenger : passengers) {
+		if(passenger.getHardFault == true){
+		    for(int i = 1;i<=10;i++){
+			System.out.println("Elevator moving for " + i + " seconds");
+			Thread.sleep(1000);
+		    }
+		    System.out.println("Elevator is stuck");
+		    System.out.println("Servicing elevator");
+		    currentState= Elevator_State.hardFault;
+		}
+	    }
+
 
             // Sleep for amount of time to move between floors
 			try {
