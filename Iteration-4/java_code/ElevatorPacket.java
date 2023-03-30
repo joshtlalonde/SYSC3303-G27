@@ -271,7 +271,7 @@ public class ElevatorPacket {
         System.out.println("Elevator number: " + elevatorNumber + ", elevator moving: " + (isMoving ? "Yes" : "No") + 
                             ", current floor: " + currentFloor + ", destination floor: " + destinationFloor + 
                             ", direction: " + (directionUp ? "Up" : "Down") + ", currentState: " + stateToString(currentState) +
-                            ", passengers: " + (passengers.toString()));
+                            ",\n\t passengers: " + (passengers.toString()));
     }
 
     private void printPacketBytes(byte packet[]) {

@@ -156,6 +156,11 @@ public class Scheduler {
 	public ElevatorInfo serviceElevatorIdle(ElevatorInfo elevator) {
 		System.out.println("\nScheduler: Servicing Elevator in IDLE State");
 
+		/** If there are no Floor Requests then return */
+		if (floorRequests.isEmpty()) {
+			return elevator;
+		}
+
 		ArrayList<Integer> noService = new ArrayList<Integer>();
 		ArrayList<Integer> doService = new ArrayList<Integer>();
 		
@@ -228,6 +233,13 @@ public class Scheduler {
 			}
 		}
 
+		/** The elevator is on a floor with one of their passenger's destinations */
+		for (UserInput passenger : elevator.getPassengers()) {
+			if(passenger.getDestinationFloor() == elevator.getCurrentFloor()){
+				elevator.setIsMoving(false);
+			}	
+		}
+
 		return elevator;
 	}
 	
@@ -239,9 +251,15 @@ public class Scheduler {
 			if(floorRequest.getCurrentFloor() == elevator.getCurrentFloor() && floorRequest.getFloorButtonUp() == elevator.getDirectionUp()){
 				elevator.setIsMoving(false);
 			}
-	
 		}
 		
+		/** The elevator is on a floor with one of their passenger's destinations */
+		for (UserInput passenger : elevator.getPassengers()) {
+			if(passenger.getDestinationFloor() == elevator.getCurrentFloor()){
+				elevator.setIsMoving(false);
+			}	
+		}
+
 		return elevator;
 	}
 	
@@ -321,12 +339,20 @@ public class Scheduler {
 
 		// Sends message back with updated UserInfo saying that the Fault is now false
 
+		// Walk through each of the passengers
+		// Find which one has the doorFault set to True
+		// Reset that passengers doorFault to False
+
 		return elevator;
 	}
 
 	public ElevatorInfo serviceElevatorHardFault(ElevatorInfo elevator) {
 
 		// Sends message back with updated UserInfo saying that the Fault is now false
+
+		// Walk through each of the passengers
+		// Find which one has the hardFault set to True
+		// Reset that passengers hardFault to False
 		
 		return elevator;
 	}

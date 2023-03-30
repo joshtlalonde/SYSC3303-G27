@@ -125,6 +125,7 @@ class Elevator implements Runnable
             if (!movingResponsePacket.getIsMoving()) {
                 // Move to stopped state
                 currentState = Elevator_State.STOPPED;
+                return;
             }
         }
 
@@ -181,6 +182,7 @@ class Elevator implements Runnable
             if (!movingResponsePacket.getIsMoving()) {
                 // Move to stopped state
                 currentState = Elevator_State.STOPPED;
+                return;
             }
         }
 
@@ -271,12 +273,12 @@ class Elevator implements Runnable
 
         /** Wait for scheulder to say who got on the elevator */
         ElevatorPacket doorCloseResponse = this.receiveSchedulerResponse();
+
+        /** Update the new Passenger Destinations array */
+        passengers = doorCloseResponse.getPassengers();
         
         /** Walk through the passenger destinations updated from the scheduler */
-        for (UserInput passenger : doorCloseResponse.getPassengers()) {
-            /** Add Passenger Destinations to array */
-            this.passengers.add(passenger);
-
+        for (UserInput passenger : passengers) {
             /** Update buttons clicked for anyone that got on the elevator */
             for (ElevatorButton button : elevatorButtons) {
                 if (button.getButtonFloor() == passenger.getDestinationFloor()) {
@@ -285,13 +287,22 @@ class Elevator implements Runnable
             }
         }
 
-        /** TODO: Create TIMEOUT for if there is a DOOR_FAULT in the UserInfo 
+        /** TODO: Create TIMEOUT for if there is a DOOR_FAULT in the UserInfo doorfault = true
          * Waits for a specific amount of time then moves to the DOOR_FAULT state
+         * loop through passengers then if any have it true move to doorFault
         */
 
-        /** Change current State to IDLE */
-        currentState = Elevator_State.IDLE;
-        
+        if (currentFloor == destinationFloor && passengers.isEmpty()) {
+            /** Change current State to IDLE */
+            currentState = Elevator_State.IDLE; // TODO: Should it go to idle state only if the destinationFloor and currentFloor are the same?
+        } else if (directionUp) {
+            /** Change the current State to MOVING_UP */
+            currentState = Elevator_State.MOVING_UP;
+        } else if (!directionUp) {
+            /** Change the current State to MOVING_DOWN */
+            currentState = Elevator_State.MOVING_DOWN;
+        }
+
         /** Decides if state should change to MOVING_UP or MOVING_DOWN */
         for (UserInput passenger : passengers) {
             if (directionUp) {
@@ -299,17 +310,11 @@ class Elevator implements Runnable
                     /** Update destinationFloor if a passenger destinationFloor is larger than the current one */
                     destinationFloor = passenger.getDestinationFloor();
                 }
-
-                /** Change the current State to MOVING_UP */
-                currentState = Elevator_State.MOVING_UP;
             } else {
                 if (destinationFloor > passenger.getDestinationFloor()) {
                     /** Update destinationFloor if a passenger destinationFloor is smaller than the current one */
                     destinationFloor = passenger.getDestinationFloor();
                 }
-
-                /** Change the current State to MOVING_DOWN */
-                currentState = Elevator_State.MOVING_DOWN;
             }
         }
     }

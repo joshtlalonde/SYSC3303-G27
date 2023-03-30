@@ -210,6 +210,8 @@ class UserInput{
 	private int currentFloor; // Floor that button was clicked on
 	private boolean floorButtonUp; // Direction that user wants to go
 	private int destinationFloor; // Button that was clicked in elevator to decide destination floor
+	private boolean doorFault;
+	private boolean hardFault;
 	
 	public UserInput(Date time, int floor, boolean floorButtonUp, int destinationFloor) {
 		this.time = time;
@@ -303,16 +305,16 @@ class FloorButton {
 
 	// Sets the up button state On and turns on the up Lamp
 	public void pressUp() {
+		System.out.println("FloorButton: Floor Button pressed on floor " + buttonFloor + " in Up direction");
 		upButtonState = true;
 		upButtonLamp.turnOn();
-		System.out.println("FloorButton: Floor Button pressed on floor " + buttonFloor + " in Up direction");
 	}
 
 	// Sets the down button state On and turns on the down Lamp
 	public void pressDown() {
+		System.out.println("FloorButton: Floor Button pressed on floor " + buttonFloor + " in Down direction");
 		downButtonState = true;
 		downButtonLamp.turnOn();
-		System.out.println("FloorButton: Floor Button pressed on floor " + buttonFloor + " in Down direction");
 	}
 
 	// Turns off the Floor's Up button
