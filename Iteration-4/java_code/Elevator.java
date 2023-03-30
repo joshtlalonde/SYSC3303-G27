@@ -260,6 +260,37 @@ class Elevator implements Runnable
      * Sets buttons to on for those destinations
      * 
      */
+    public void doorOpen() {
+        System.out.println("Elevator: Entering DOOR_OPEN state");
+
+        /** Reset button for floor */
+        this.buttonReset(currentFloor);
+        
+        /** Open the door */
+        door.open();
+
+        /** Tell scheduler that elevator is in door open state */
+        this.sendElevatorRequest();
+
+        /** Wait for response from scheduler saying who got off the elevator */ 
+        ElevatorPacket doorOpenResponse = this.receiveSchedulerResponse();
+
+        /** Update the passengerDestinations based on the changes made in the scheduler of who got off */
+        passengers = doorOpenResponse.getPassengers();
+
+        /** Move to DOOR_CLOSE State */
+        currentState = Elevator_State.DOOR_CLOSE;
+    }
+
+    /** 
+     * Elevator is in door close state 
+     * 
+     * Elevator closes door 
+     * Sends packet to update state
+     * Updates passengerDestinations for people getting on 
+     * Sets buttons to on for those destinations
+     * 
+     */
     public void doorClose() {
         System.out.println("Elevator: Entering DOOR_CLOSE state");
 
@@ -292,8 +323,20 @@ class Elevator implements Runnable
         /** Change current State to IDLE */
         currentState = Elevator_State.IDLE;
         
-        /** Decides if state should change to MOVING_UP or MOVING_DOWN */
+        /** Decides if state should change to MOVING_UP or MOVING_DOWN 
+			Also checks for Door faults.
+		*/
         for (UserInput passenger : passengers) {
+	    if(passenger.getdoorFault == true){
+		for(int i = 1;i<=5;i++){
+		    System.out.println("Door open for " + i + " seconds");
+			Thread.sleep(1000);
+		    }
+		System.out.println("Door is stuck");
+		System.out.println("Servicing Door");
+		currentState= Elevator_State.doorFault;
+		}
+			
             if (directionUp) {
                 if (destinationFloor < passenger.getDestinationFloor()) {
                     /** Update destinationFloor if a passenger destinationFloor is larger than the current one */
@@ -324,15 +367,15 @@ class Elevator implements Runnable
 	ElevatorPacket doorFaultResponse = this.receiveSchedulerResponse();
 		
 	//Change current state to stopped
-        currentState = Elevator_State.Stopped;
+	currentState = Elevator_State.Stopped;
 		
 		
 		
-        // Send request saying we are in DOOR_FAULT state
-        // Wait for response
-        // update currentState to Stopped state
+	// Send request saying we are in DOOR_FAULT state
+	// Wait for response
+	// update currentState to Stopped state
 
-        /** There are Edits to the DOOR_OPEN to handle the TIMEOUT */
+       /** There are Edits to the DOOR_OPEN to handle the TIMEOUT */
         
     }
 
