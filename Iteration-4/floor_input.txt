@@ -1,7 +1,7 @@
-﻿10:05:15.0,2,Up,4
-11:05:15.0,5,Down,2
-12:05:15.0,7,Down,6
-13:05:15.0,10,Down,7
-14:05:15.0,13,Down,9
-15:05:15.0,5,Up,12
-16:05:15.0,8,Up,18
+﻿10:05:15.0,2,Up,4,false,false
+11:05:15.0,5,Down,2,false,false
+12:05:15.0,7,Down,6,false,false
+13:05:15.0,10,Down,7,false,false
+14:05:15.0,13,Down,9,false,false
+15:05:15.0,5,Up,12,true,false
+16:05:15.0,8,Up,18,false,false

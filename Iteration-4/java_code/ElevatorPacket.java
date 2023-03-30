@@ -154,9 +154,13 @@ public class ElevatorPacket {
             boolean floorButtonUp = packet[i + 13] == 1 ? true : false;
             // Get the destinationFloor int from the packet
             int destinationFloor = packet[i + 14];
+            // Get the floorButtonUp boolean from the packet
+            boolean doorFault = packet[i + 15] == 1 ? true : false;
+            // Get the floorButtonUp boolean from the packet
+            boolean hardFault = packet[i + 16] == 1 ? true : false;
             
             // Create the UserInput object from the bytes
-            UserInput userInput = new UserInput(time, currentFloor, floorButtonUp, destinationFloor);
+            UserInput userInput = new UserInput(time, currentFloor, floorButtonUp, destinationFloor, doorFault, hardFault);
             // Add the UserInput object into the array of objects
             passengers.add(userInput);
 
@@ -271,7 +275,7 @@ public class ElevatorPacket {
         System.out.println("Elevator number: " + elevatorNumber + ", elevator moving: " + (isMoving ? "Yes" : "No") + 
                             ", current floor: " + currentFloor + ", destination floor: " + destinationFloor + 
                             ", direction: " + (directionUp ? "Up" : "Down") + ", currentState: " + stateToString(currentState) +
-                            ", passengers: " + (passengers.toString()));
+                            ",\n\t passengers: " + (passengers.toString()));
     }
 
     private void printPacketBytes(byte packet[]) {

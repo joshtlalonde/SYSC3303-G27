@@ -44,9 +44,11 @@ public class Floor implements Runnable {
 		int f = Integer.parseInt(words[1]);
 		Boolean fb = words[2].toLowerCase().equals("up") ? true : false;
 		int cb = Integer.parseInt(words[3]);
+		Boolean df = words[2].toLowerCase().equals("true") ? true : false;
+		Boolean hf = words[2].toLowerCase().equals("true") ? true : false;
 
 		// Create new user
-		return new UserInput(t, f, fb, cb);
+		return new UserInput(t, f, fb, cb, df, hf);
 	}
 
 	/** Turns on the button for the specific floor and the direction */
@@ -76,7 +78,9 @@ public class Floor implements Runnable {
 	/** Sends request to the Scheduler */
 	private void sendFloorRequest(InetAddress address, int port, UserInput userInput) {
 		// Create FloorPacket
-		FloorPacket floorPacket = new FloorPacket(userInput.getCurrentFloor(), userInput.getTime(), userInput.getFloorButtonUp(), userInput.getDestinationFloor());
+		FloorPacket floorPacket = new FloorPacket(userInput.getCurrentFloor(), userInput.getTime(), 
+													userInput.getFloorButtonUp(), userInput.getDestinationFloor(), 
+													userInput.getDoorFault(), userInput.getHardFault());
 
 		// Send FloorPacket to scheduler
 		floorPacket.send(address, port, sendReceiveSocket, true);
@@ -210,16 +214,16 @@ class UserInput{
 	private int currentFloor; // Floor that button was clicked on
 	private boolean floorButtonUp; // Direction that user wants to go
 	private int destinationFloor; // Button that was clicked in elevator to decide destination floor
-	private boolean doorFault; //Checks if there is a transient fault
-	private boolean hardFault; //Cehcks if there is a hard fault
+	private boolean doorFault; // Flag for if a Door Fault has occured
+	private boolean hardFault; // Flag for if a Hard Fault has occured
 	
-	public UserInput(Date time, int floor, boolean floorButtonUp, int destinationFloor) {
+	public UserInput(Date time, int floor, boolean floorButtonUp, int destinationFloor, boolean doorFault, boolean hardFault) {
 		this.time = time;
 		this.currentFloor = floor;
 		this.floorButtonUp= floorButtonUp;
 		this.destinationFloor = destinationFloor;
-		this.doorFault = false; // needs to change
-		this.hardfault = false; // needs to change
+		this.doorFault = doorFault;
+		this.hardFault = hardFault;
 	}
 
 	/** Default Constructor */
@@ -228,8 +232,6 @@ class UserInput{
 		this.currentFloor = 0;
 		this.floorButtonUp= false;
 		this.destinationFloor = 0;
-		this.doorFault = false;
-		this.hardfault = false; 
 	}
 
 	/**
@@ -242,6 +244,8 @@ class UserInput{
 		this.currentFloor = floorPacket.getFloor();
 		this.floorButtonUp = floorPacket.getDirectionUp();
 		this.destinationFloor = floorPacket.getDestinationFloor();
+		this.doorFault = floorPacket.getDoorFault();
+		this.hardFault = floorPacket.getHardFault();
 	}
 
 	/** Convert the UserInput to a Bytes */
@@ -255,13 +259,15 @@ class UserInput{
 		outputStream.write(currentFloor);
 		outputStream.write(floorButtonUp ? 1 : 0);
 		outputStream.write(destinationFloor);
+		outputStream.write(doorFault ? 1 : 0);
+		outputStream.write(hardFault ? 1 : 0);
 		// outputStream.write(0xFF); // Add null character at the end of UserInput
 		return outputStream.toByteArray();
 	}
 	
 	@Override
 	public String toString() {
-		return "{time: " + dateFormatter.format(time) + ", currentFloor: " + currentFloor + ", floorButtonUp: " + floorButtonUp + ", destinationFloor: " + destinationFloor + "}";
+		return "{time: " + dateFormatter.format(time) + ", currentFloor: " + currentFloor + ", floorButtonUp: " + floorButtonUp + ", destinationFloor: " + destinationFloor + ", doorFault: " + doorFault + ", hardFault: " + hardFault + "}";
 	}
 
 	/** 
@@ -273,33 +279,40 @@ class UserInput{
 	 * Int destinationFloor = 1 byte
 	 */
 	public int byte_length() {
-		return 15; 
+		return 17; 
 	}
 	
 	//Getting the data from the user input
 	public Date getTime() {
 		return time;
 	}
+
 	public int getCurrentFloor() {
 		return currentFloor;
 	}
+
 	public boolean getFloorButtonUp() {
 		return floorButtonUp;
 	}
+
 	public int getDestinationFloor() {
 		return destinationFloor;
 	}
-	public boolean getDoorFault(){
+
+	public boolean getDoorFault() {
 		return doorFault;
 	}
-	public boolean gethardFault(){
-		return hardfault;
+
+	public boolean getHardFault() {
+		return hardFault;
 	}
-	public void setDoorFault(boolean var){
-		doorFault = var;
+
+	public void setDoorFault(boolean doorFault) {
+		this.doorFault = doorFault;
 	}
-	public void setHardFault(boolean var){
-		hardFault = var;
+
+	public void setHardFault(boolean hardFault){
+		this.hardFault = hardFault;
 	}
 	
 	
@@ -322,16 +335,16 @@ class FloorButton {
 
 	// Sets the up button state On and turns on the up Lamp
 	public void pressUp() {
+		System.out.println("FloorButton: Floor Button pressed on floor " + buttonFloor + " in Up direction");
 		upButtonState = true;
 		upButtonLamp.turnOn();
-		System.out.println("FloorButton: Floor Button pressed on floor " + buttonFloor + " in Up direction");
 	}
 
 	// Sets the down button state On and turns on the down Lamp
 	public void pressDown() {
+		System.out.println("FloorButton: Floor Button pressed on floor " + buttonFloor + " in Down direction");
 		downButtonState = true;
 		downButtonLamp.turnOn();
-		System.out.println("FloorButton: Floor Button pressed on floor " + buttonFloor + " in Down direction");
 	}
 
 	// Turns off the Floor's Up button
