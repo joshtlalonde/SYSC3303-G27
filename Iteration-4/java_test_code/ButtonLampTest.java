@@ -4,6 +4,7 @@ public class ButtonLampTest extends junit.framework.TestCase{
 
 	public ButtonLampTest()
 	{
+		
 		 
 	}
 	
