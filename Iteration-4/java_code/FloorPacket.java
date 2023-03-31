@@ -8,6 +8,7 @@ public class FloorPacket {
 
     private DatagramPacket sendFloorPacket; // Holds the Sent Datagram Packet
     private DatagramPacket receiveFloorPacket; // Holds the Received Datagram Packet
+    private boolean timeoutFlag; // Flag for determining if a timeout occurred or not
 
     private int floor; // Holds the floor info
     private int destinationFloor; // Holds the destination floor info
@@ -23,6 +24,7 @@ public class FloorPacket {
         this.destinationFloor = destinationFloor;
         this.doorFault = doorFault;
         this.hardFault = hardFault;
+        this.timeoutFlag = false;
 	}
 
     /** Default Constructor */
@@ -33,6 +35,7 @@ public class FloorPacket {
         this.destinationFloor = 0;
         this.doorFault = false;
         this.hardFault = false;
+        this.timeoutFlag = false;
 	}
 
     /** 
@@ -93,13 +96,11 @@ public class FloorPacket {
 
 		// Block until a datagram packet is received from receiveSocket.
 		try {        
-			// System.out.println("FloorPacket: Waiting for Floor Packet..."); // so we know we're waiting
 			receiveFloorSocket.receive(receiveFloorPacket);
+            timeoutFlag = false;
 		} catch (IOException e) {
-			System.out.print("IO Exception: likely:");
-			System.out.println("Receive Socket Timed Out.\n" + e);
-			e.printStackTrace();
-			System.exit(1);
+            timeoutFlag = true;
+			return;
 		}
 
 		// Process the received datagram.
@@ -121,7 +122,6 @@ public class FloorPacket {
     }
 
     public void convertBytesToPacket(byte packet[]) {
-        this.printPacketBytes(packet);
 		// Create new FloorPacket object from data
         floor = packet[0];
         destinationFloor = packet[1];
@@ -166,6 +166,10 @@ public class FloorPacket {
     
     public boolean getHardFault() {
         return hardFault;
+    }
+
+    public boolean getTimeoutFlag() {
+        return timeoutFlag;
     }
     
     public DatagramPacket getSendFloorPacket() {
