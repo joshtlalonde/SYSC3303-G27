@@ -15,6 +15,15 @@ public class FloorTest extends junit.framework.TestCase {
 	    assertEquals(Floor.NUMBER_OF_FLOORS, floor.floorRequests.size());
     
     public UserInput testFileToUser(String line) {
+	UserInput userinput = new Userinput;
+	assertEquals(userinput.getTime());
+    	assertEquals(userinput.getCurrentFloor(),5);
+    	assertEquals(userinput.getFloorButtonUp(),true);
+    	assertEquals(userinputt.getDestinationFloor(),16);
+    	assertEquals(userinput.getDoorFault(),false);
+    	assertEquals(userinput.getHardFault(),false);
+}
+	    
 
     }
 
