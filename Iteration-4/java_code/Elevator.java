@@ -115,7 +115,6 @@ class Elevator implements Runnable
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {
-                            // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
                     }
@@ -125,7 +124,7 @@ class Elevator implements Runnable
                 }
             }
 
-            // Sleep for amount of time to move between floors
+            /** Sleep for 2 seconds for moving between Floors */
 			try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e ) {
@@ -138,7 +137,7 @@ class Elevator implements Runnable
             // Tell arrival sensor what floor we're on
             arrivalSensor.setFloor(currentFloor);
             // Send updated elevator request to scheduler
-            this.sendElevatorRequest(); // TODO: Should activate serviceElevatorMovingRequest
+            this.sendElevatorRequest();
 
             // Wait for response, to see if there are new users to service or not
             ElevatorPacket movingResponsePacket = this.receiveSchedulerResponse();
@@ -187,7 +186,6 @@ class Elevator implements Runnable
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {
-                            // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
                     }
@@ -198,9 +196,9 @@ class Elevator implements Runnable
             }
 
 
-            // Sleep for amount of time to move between floors
+            /** Sleep for 2 seconds for moving between Floors */
 			try {
-				Thread.sleep(2000); // TODO: Must be the times we determined
+				Thread.sleep(2000);
 			} catch (InterruptedException e ) {
 				e.printStackTrace();
 				System.exit(1);
@@ -242,14 +240,6 @@ class Elevator implements Runnable
         motor.stopMoving();
         // Set elevator moving state
         isMoving = false;
-
-        /** Sleep for deceleration time */
-        try {
-            Thread.sleep(2000); // TODO: Must be the times we determined
-        } catch (InterruptedException e ) { // TODO: Should this be in motor.stopMoving
-            e.printStackTrace();
-            System.exit(1);
-        }
         
         /** Tell scheduler that elevator is in stopped state */
         this.sendElevatorRequest();
@@ -444,13 +434,13 @@ class Elevator implements Runnable
                     return;
 			}
 
-            // Sleep for 1 second
-            try {
-                Thread.sleep(1000); 
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                System.exit(1);
-            }
+            // Sleep for 1 second between states
+            // try {
+            //     Thread.sleep(1000); 
+            // } catch (InterruptedException e) {
+            //     e.printStackTrace();
+            //     System.exit(1);
+            // }
         }
     }
 
@@ -460,7 +450,6 @@ class Elevator implements Runnable
         for (ElevatorButton button : elevatorButtons) {
             if (button.getButtonFloor() == carButton) {
                 // Turn off the button for that floor
-                System.out.println("Elevator: Resetting the button for floor " + carButton);
                 button.reset();
                 break;
             }
@@ -473,7 +462,6 @@ class Elevator implements Runnable
         for (ElevatorButton button : elevatorButtons) {
             if (button.getButtonFloor() == carButton) {
                 // Turn on the button for that floor
-                System.out.println("Elevator: User has pressed button to go to floor " + carButton);
                 button.press();
                 break;
             }
@@ -519,13 +507,20 @@ class Motor {
     private boolean directionUp = false; // Which direction is the motor moving in
 
     // Starts the motor, in a specific direction
-    public void startMoving(boolean directionUp) { // TODO: Should include decelerating and accelerating
+    public void startMoving(boolean directionUp) { 
         if (directionUp) {
             System.out.println("Motor: Starting to move Up");
             this.directionUp = true;
         } else {
-            System.out.println("Motor: Starting to move Up");
+            System.out.println("Motor: Starting to move Down");
             this.directionUp = false;
+        }
+
+        /** Three Seconds for Acceleration */
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         isMoving = true;
@@ -534,6 +529,14 @@ class Motor {
     // Stops the motor
     public void stopMoving() {
         System.out.println("Motor: Stopping");
+
+        /** Three Seconds for Deceleration */
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         isMoving = false;
     }
 
@@ -553,14 +556,30 @@ class Door {
     private boolean isOpen = false;
 
     // Sets isOpen to true
-    public void open() { // TODO: Should take time for both
+    public void open() { 
         System.out.println("Door: Opening");
+
+        /** Four Seconds for Opening Door */
+        try {
+            Thread.sleep(4000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         isOpen = true;
     }
 
     // Sets isOpen to false
     public void close() {
         System.out.println("Door: Closing");
+
+        /** Four Seconds for Closing Door */
+        try {
+            Thread.sleep(4000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         isOpen = false;
     }
 
