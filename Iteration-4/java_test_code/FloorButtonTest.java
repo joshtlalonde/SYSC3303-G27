@@ -15,6 +15,7 @@ public class FloorButtonTest extends junit.framework.TestCase{
     		assertFalse(floorButton.getButtonDirectionUp());
     		floorButton.resetDown();
     		assertFalse(floorButton.getButtonDirectionDown());
+		assertEquals(floorButton.getButtonFloor(),5);
 		
 		 
 	}
