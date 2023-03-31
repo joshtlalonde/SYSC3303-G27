@@ -54,6 +54,9 @@ class Elevator implements Runnable
     public void idle() {
         System.out.println("Elevator: Entering IDLE state"); //probably shouldn't say this as it could be in Idle from the beginning.
 
+        /** Turn off the direction lamp */
+        directionLamp.turnOff();
+
         /** Send ElevatorPacket to tell scheduler we are in idle state (stopped, curr = dest, no passDests) */ 
         this.sendElevatorRequest();
 
@@ -97,15 +100,15 @@ class Elevator implements Runnable
 
         // Update the direction of the elevator
         directionUp = true;
-
+        // Set DirectionLamp direction
+        directionLamp.setDirectionUp(directionUp);
         // Start motor in Up direction
-        motor.startMoving(true);
+        motor.startMoving(directionUp);
         // Set elevator moving state
         isMoving = true;
 
         // Update currentFloor and arrivalSensor as you are moving
         while (currentFloor < destinationFloor) {
-            
             /** Check if any passengers have a HARD_FAULT */
             for (UserInput passenger : passengers) {
                 if(passenger.getHardFault()){
@@ -168,15 +171,15 @@ class Elevator implements Runnable
 
         // Update the direction of the elevator
         directionUp = false;
-
+        // Set DirectionLamp direction
+        directionLamp.setDirectionUp(directionUp);
         // Start motor in Up direction
-        motor.startMoving(false);
+        motor.startMoving(directionUp);
         // Set elevator moving state
         isMoving = true;
 
         // Update currentFloor and arrivalSensor as you are moving
         while (currentFloor > destinationFloor) {
-            
             /** Check if any passengers have a HARD_FAULT */
             for (UserInput passenger : passengers) {
                 if(passenger.getHardFault()){
@@ -195,7 +198,6 @@ class Elevator implements Runnable
                 }
             }
 
-
             /** Sleep for 2 seconds for moving between Floors */
 			try {
 				Thread.sleep(2000);
@@ -209,7 +211,7 @@ class Elevator implements Runnable
             // Tell arrival sensor what floor we're on
             arrivalSensor.setFloor(currentFloor);
             // Send updated elevator request to scheduler
-            this.sendElevatorRequest(); // TODO: Should activate serviceElevatorMovingRequest
+            this.sendElevatorRequest();
 
             // Wait for response, to see if there are new users to service or not
             ElevatorPacket movingResponsePacket = this.receiveSchedulerResponse();
@@ -663,5 +665,33 @@ class ElevatorLamp {
 	// Returns the lamp state
 	public boolean getLampState() {
 		return lampState;
+	}
+}
+
+class DirectionLamp {
+	private boolean directionLampState = false;
+	private boolean directionUp = false;
+
+    // Return Direction Lamp state
+	public boolean getState() {
+		return directionLampState;
+	}
+
+    // Return Direction Lamp direction
+	public boolean getDirectionUp() {
+		return directionUp;
+	}
+
+    // Turn off the Direction Lamp
+    public void turnOff() {
+        System.out.println("DirectionLamp: Turned off");
+		this.directionLampState = false;
+	}
+
+    // Turn on and set the direction of the Direction Lamp
+	public void setDirectionUp(boolean direction) {
+        System.out.println("DirectionLamp: Turned on in " + (direction ? "Up" : "Down") + " direction");
+        this.directionLampState = true;
+		this.directionUp = direction;
 	}
 }

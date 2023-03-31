@@ -396,25 +396,4 @@ class FloorLamp {
 		return lampState;
 	}
 }
-
-class DirectionLamp {
-	private int floor = 0;
-	private boolean directionUp = false;
-
-	public int getFloor() {
-		return floor;
-	}
-
-	public void setFloor(int floor) {
-		this.floor = floor;
-	}
-
-	public boolean getDirectionUp() {
-		return directionUp;
-	}
-
-	public void setDirectionUp(boolean direction) {
-		this.directionUp = direction;
-	}
-}
   
