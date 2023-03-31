@@ -13,7 +13,7 @@
 14:01:22.861,14,Down,11,true,true
 15:22:54.222,8,Up,18,false,false
 16:33:51.112,13,Down,4,false,false
-17:47:08.410,4,Down,0,true,false
+17:47:08.410,4,Down,0,false,false
 18:56:45.648,17,Down,9,false,false
 19:25:36.207,5,Up,14,true,false
 20:57:20.882,9,Down,7,false,false
