@@ -236,6 +236,8 @@ public class ElevatorPacket {
                 return 7;
             case HARD_FAULT:
                 return 8;
+            case BOOM:
+                return 9;
         }
 
         /** Error occured */
@@ -304,6 +306,8 @@ public class ElevatorPacket {
                 return "DOOR_FAULT";
             case HARD_FAULT:
                 return "HARD_FAULT";
+            case BOOM:
+                return "BOOM";
         }
 
         /** Error occured */

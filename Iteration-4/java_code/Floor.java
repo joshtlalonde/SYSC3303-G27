@@ -2,7 +2,6 @@ import java.io.*;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -14,14 +13,12 @@ public class Floor implements Runnable {
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
 	private DatagramSocket sendReceiveSocket;
 
-	private DirectionLamp directionLamp; // direction lamp for the floor	
 	private ArrayList<FloorButton> floorButton = new ArrayList<FloorButton>(); // Holds the buttons for each of the floors (up and down)
 	private ArrayList<UserInput> floorRequests = new ArrayList<UserInput>(); // Holds the list of floorRequests
 	
 	
 	/** Constructor for Floor */
-	public Floor(DirectionLamp directionLamp) {
-		this.directionLamp = directionLamp;
+	public Floor() {
 
 		// Create as many buttons as there are floors 
 		for (int i = 0; i < NUMBER_OF_FLOORS; i++) {
@@ -216,13 +213,9 @@ public class Floor implements Runnable {
 		}
 	}
 	
-    public static void main(String[] args) {
-        
-        // Create table that all threads will access
-		DirectionLamp directionLamp = new DirectionLamp();
-        
+    public static void main(String[] args) {        
 		// Create Floor Thread
-        Thread floor = new Thread(new Floor(directionLamp), "Floor");
+        Thread floor = new Thread(new Floor(), "Floor");
 
         // Start Threads
         floor.start();
