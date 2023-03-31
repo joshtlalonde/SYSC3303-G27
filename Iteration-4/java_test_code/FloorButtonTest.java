@@ -6,15 +6,15 @@ public class FloorButtonTest extends junit.framework.TestCase{
 	//private int buttonFloor = 0;
 
 	public void testConstructor() {
-    FloorButton floorbutton = new FloorButton(5);
-    floorButton.pressUp();
+    		FloorButton floorbutton = new FloorButton(5);
+    		floorButton.pressUp();
 		assertTrue(floorButton.getUpButtonState());
-    floorButton.pressDown();
+    		floorButton.pressDown();
 		assertTrue(floorButton.getButtonDirectionUp());
-    floorButton.resetUp();
-    assertFalse(floorButton.getButtonDirectionUp());
-    floorButton.resetDown();
-    assertFalse(floorButton.getButtonDirectionDown());
+    		floorButton.resetUp();
+    		assertFalse(floorButton.getButtonDirectionUp());
+    		floorButton.resetDown();
+    		assertFalse(floorButton.getButtonDirectionDown());
 		
 		 
 	}
