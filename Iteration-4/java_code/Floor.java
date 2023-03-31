@@ -8,13 +8,16 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Floor implements Runnable {
-	static final String FILENAME = "C:\\Users\\jtbub\\Documents\\University\\Classes\\SYSC 3303\\SYSC3303-G27\\SYSC3303-G27\\Iteration-4\\floor_input.txt";
+	static final String FILENAME = "C:\\Users\\Josh's PC\\Documents\\University\\Classes\\SYSC3303\\Project\\SYSC3303-G27-main\\SYSC3303-G27\\Iteration-4\\floor_input.txt";
 	static final int NUMBER_OF_FLOORS = 20; // Number of floors in the building
+
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
-	
+	private DatagramSocket sendReceiveSocket;
+
 	private DirectionLamp directionLamp; // direction lamp for the floor	
 	private ArrayList<FloorButton> floorButton = new ArrayList<FloorButton>(); // Holds the buttons for each of the floors (up and down)
-	private DatagramSocket sendReceiveSocket;
+	private ArrayList<UserInput> floorRequests = new ArrayList<UserInput>(); // Holds the list of floorRequests
+	
 	
 	/** Constructor for Floor */
 	public Floor(DirectionLamp directionLamp) {
@@ -28,6 +31,7 @@ public class Floor implements Runnable {
 		// Create Datagram Socket on random port
 		try {
 			sendReceiveSocket = new DatagramSocket();
+			sendReceiveSocket.setSoTimeout(3000);
 		} catch (SocketException e) {
 			System.out.println("Failed to create Datagram Socket: " + e);
 			e.printStackTrace();
@@ -92,7 +96,7 @@ public class Floor implements Runnable {
 	 * Receive response from the Scheduler
 	 * This is just a response ACK packet
 	 */
-	private void receiveFloorResponse() {
+	private UserInput receiveFloorResponse() {
 		// Create FloorPacket
 		FloorPacket floorPacket = new FloorPacket();
 
@@ -100,22 +104,32 @@ public class Floor implements Runnable {
 		System.out.println("Floor: Waiting for Scheduler Response...");
 		floorPacket.receive(sendReceiveSocket);
 
+		/** If timeout occurred then return null */
+		if (floorPacket.getTimeoutFlag()) {
+			return null;
+		}
+
 		// Convert FloorPacket to UserInput
 		UserInput userInput = new UserInput();
 		userInput.convertPacket(floorPacket);
 		
 		System.out.println("Floor: Received response from Scheduler: " + userInput);
+		return userInput;
 	}
 
-	/** Scheduler sent a message saying that an elevator arraived at this floor */
-	public void elevatorArrival(boolean elevatorDirection, int floor) {
-		// Turn off button for direction
-		// Should be similar to buttonPress()
-		// Activate the correct button depending on user input
-		if (elevatorDirection) {
+	/** 
+	 * Removes passenger that has gotten off the elevator at their destination
+	 * Resets the corresponding button
+	 */
+	public void elevatorArrival(UserInput floorRequest) {
 		
+		// Remove the floorRequest from the array of floorRequests
+		floorRequests.remove(floorRequest);
+
+		// Reset Button
+		if (floorRequest.getFloorButtonUp()) {
 			for (FloorButton button : floorButton) {
-				if (button.getButtonFloor() == floor) {
+				if (button.getButtonFloor() == floorRequest.getCurrentFloor()) {
 					// Set the button to be Up and turn it on
 					button.resetUp();
 					break;
@@ -124,7 +138,7 @@ public class Floor implements Runnable {
 		} else {
 	
 			for (FloorButton button : floorButton) {
-				if (button.getButtonFloor() == floor) {
+				if (button.getButtonFloor() == floorRequest.getCurrentFloor()) {
 					// Set the button to be Down and turn it on
 					button.resetDown();
 					break;
@@ -159,21 +173,17 @@ public class Floor implements Runnable {
 				/** Send message to the Scheduler */
 				this.sendFloorRequest(InetAddress.getLocalHost(), 69, userInput);
 
-				/** Receive Floor response from Scheduler */
-				this.receiveFloorResponse();
+				/** Add User to list of floorRequests */
+				floorRequests.add(userInput);
 
-				/** TODO: Should wait until an FloorPacket to comes in, or a 5 second timeout occurs
-				 * This FloorPacket will say that the scheduler is picking people up on a specific floor
+				/**
+				 * Wait for Scheduler Packet to let Floor know that an elevator has dropped off passengers
+				 * Timeout after 3 seconds if no packet arrives
 				 */
-				// Waits until the request is being serviced by the elevator
-				// this.elevatorArrival(userInput.getFloorButtonUp(), userInput.getCurrentFloor());
-
-				// Sleep for 1 second
-				try {
-					Thread.sleep(1000); 
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-         			System.exit(1);
+				UserInput schedulerResponse = this.receiveFloorResponse();
+				if (schedulerResponse != null) {
+					System.out.println("Floor: Scheduler responded with " + schedulerResponse.toString());
+					this.elevatorArrival(schedulerResponse);
 				}
 			}
 		} catch (FileNotFoundException e) {
@@ -191,6 +201,18 @@ public class Floor implements Runnable {
 			System.out.print("IO Exception: likely:");
 			System.out.println("Failed to close File: " + e);
          		System.exit(1);
+		}
+
+		/** Continues to wait for responses */
+		while (true) {
+			/**
+			 * Wait for Scheduler Packet to let Floor know that an elevator has dropped off passengers
+			 * Timeout after 3 seconds if no packet arrives
+			 */
+			UserInput schedulerResponse = this.receiveFloorResponse();
+			if (schedulerResponse != null) {
+				this.elevatorArrival(schedulerResponse);
+			}
 		}
 	}
 	
@@ -335,28 +357,38 @@ class FloorButton {
 
 	// Sets the up button state On and turns on the up Lamp
 	public void pressUp() {
-		System.out.println("FloorButton: Floor Button pressed on floor " + buttonFloor + " in Up direction");
-		upButtonState = true;
-		upButtonLamp.turnOn();
+		if (!upButtonState) {
+			System.out.println("FloorButton: Button on floor " + buttonFloor + " pressed in Up direction");
+			upButtonState = true;
+			upButtonLamp.turnOn();
+		}
 	}
 
 	// Sets the down button state On and turns on the down Lamp
 	public void pressDown() {
-		System.out.println("FloorButton: Floor Button pressed on floor " + buttonFloor + " in Down direction");
-		downButtonState = true;
-		downButtonLamp.turnOn();
+		if (!downButtonState) {
+			System.out.println("FloorButton: Button on floor " + buttonFloor + " pressed in Down direction");
+			downButtonState = true;
+			downButtonLamp.turnOn();
+		}
 	}
 
 	// Turns off the Floor's Up button
 	public void resetUp() {
-		upButtonState = false;
-		upButtonLamp.turnOff();
+		if (upButtonState) {
+			System.out.println("FloorButton: Button for floor " + buttonFloor + " has been reset in Up direction");
+			upButtonState = false;
+			upButtonLamp.turnOff();
+		}
 	}
 
 	// Turns off the Floor's Down button
 	public void resetDown() {
-		downButtonState = false;
-		downButtonLamp.turnOff();
+		if (downButtonState) {
+			System.out.println("FloorButton: Button for floor " + buttonFloor + " has been reset in Down direction");
+			downButtonState = false;
+			downButtonLamp.turnOff();
+		}
 	}
 
 	// Returns the current state of the up Button
