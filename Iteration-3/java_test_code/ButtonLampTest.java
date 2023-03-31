@@ -4,6 +4,7 @@ public class ButtonLampTest extends junit.framework.TestCase{
 
 	public ButtonLampTest()
 	{
+		
 		 
 	}
 	
@@ -15,6 +16,8 @@ public class ButtonLampTest extends junit.framework.TestCase{
 		assertTrue(floorlamp.getLampState());
 		//FloorButton FloorButton = new FloorButton(true, floorlamp, true,5);
 		//assertEquals(ui,testui);
+		floorlamp.turnOff();
+		assertTrue(floorlamp.getLampState());
 	}
 	public void testFloorButton()
 	{
@@ -23,9 +26,13 @@ public class ButtonLampTest extends junit.framework.TestCase{
 		floorButton.buttonLamp = floorlamp;
 		assertFalse(floorButton.getButtonState());
 		floorButton.pressUp();
-		assertTrue(floorButton.getButtonState());
+		assertTrue(floorButton.getDownButtonState());
+		
+		assertFalse(floorButton.getButtonState());
+		floorButton.pressDown();
 		assertTrue(floorButton.getButtonDirectionUp());
-		//assertEquals(floorButton.getButtonFloor(),5);
+		
+		assertEquals(floorButton.getButtonFloor(),5);
 
 	}
 
