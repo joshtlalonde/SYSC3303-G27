@@ -51,7 +51,7 @@ class Elevator implements Runnable
      * 
      */
     public void idle() {
-        System.out.println("Elevator: Entering IDLE state"); //probably shouldn't say this as it could be in Idle from the beginning.
+        System.out.println(Thread.currentThread().getName() + ": Entering IDLE state"); //probably shouldn't say this as it could be in Idle from the beginning.
 
         /** Turn off the direction lamp */
         directionLamp.turnOff();
@@ -64,6 +64,9 @@ class Elevator implements Runnable
 
         /** Set the destination floor to go to */
         destinationFloor = newFloorRequest.getDestinationFloor();
+
+        /** Get the requesting passenger */
+        passengers = newFloorRequest.getPassengers();
 
         /** Flag to state that there is no one waiting for an elevator */
         if (destinationFloor == -1) {
@@ -95,7 +98,7 @@ class Elevator implements Runnable
      * 
      */
     public void movingUp() {
-        System.out.println("Elevator: Entering MOVING_UP state");
+        System.out.println(Thread.currentThread().getName() + ": Entering MOVING_UP state");
 
         // Update the direction of the elevator
         directionUp = true;
@@ -166,7 +169,7 @@ class Elevator implements Runnable
      * 
      */
     public void movingDown() {
-        System.out.println("Elevator: Entering MOVING_DOWN state");
+        System.out.println(Thread.currentThread().getName() + ": Entering MOVING_DOWN state");
 
         // Update the direction of the elevator
         directionUp = false;
@@ -235,7 +238,7 @@ class Elevator implements Runnable
      * 
      */
     public void stopped() {
-        System.out.println("Elevator: Entering STOPPED state");
+        System.out.println(Thread.currentThread().getName() + ": Entering STOPPED state");
 
         // Stop the elevator motor
         motor.stopMoving();
@@ -246,7 +249,10 @@ class Elevator implements Runnable
         this.sendElevatorRequest();
 
         /** Wait for response from scheduler */ 
-        this.receiveSchedulerResponse();
+        ElevatorPacket stoppedResponsePacket = this.receiveSchedulerResponse();
+
+        /** Update Direction */
+        directionUp = stoppedResponsePacket.getDirectionUp();
         
         /** Move to Door open State */
         currentState = Elevator_State.DOOR_OPEN;
@@ -262,7 +268,7 @@ class Elevator implements Runnable
      */
     
     public void doorOpen() {
-        System.out.println("Elevator: Entering DOOR_OPEN state");
+        System.out.println(Thread.currentThread().getName() + ": Entering DOOR_OPEN state");
 
         /** Reset button for floor */
         this.buttonReset(currentFloor);
@@ -293,7 +299,7 @@ class Elevator implements Runnable
      * 
      */
     public void doorClose() {
-        System.out.println("Elevator: Entering DOOR_CLOSE state");
+        System.out.println(Thread.currentThread().getName() + ": Entering DOOR_CLOSE state");
 
         /** Close the door */
         door.close();
@@ -363,7 +369,7 @@ class Elevator implements Runnable
     }
 
     public void doorFault() {
-        System.out.println("Elevator: Entering DOOR_FAULT state");
+        System.out.println(Thread.currentThread().getName() + ": Entering DOOR_FAULT state");
 		
         //Tells the scheduler that elevator is in door fault state
         this.sendElevatorRequest();
@@ -377,7 +383,7 @@ class Elevator implements Runnable
     }
 
     public void hardFault() {
-        System.out.println("Elevator: Entering HARD_FAULT state");
+        System.out.println(Thread.currentThread().getName() + ": Entering HARD_FAULT state");
 		
         //Tells the scheduler that elevator is in door fault state
         this.sendElevatorRequest();
@@ -474,7 +480,7 @@ class Elevator implements Runnable
         // Create Elevator Packet
         ElevatorPacket elevatorPacket = new ElevatorPacket(elevatorNumber, isMoving, currentFloor, destinationFloor, directionUp, passengers, currentState);
         // Send Elevator Packet
-        System.out.println("Elevator: Sending request to the scheduler");
+        System.out.println(Thread.currentThread().getName() + ": Sending request to the scheduler");
         try {
             elevatorPacket.send(InetAddress.getLocalHost(), 69, sendReceiveSocket, true);
         } catch (UnknownHostException e) {
@@ -487,7 +493,7 @@ class Elevator implements Runnable
         // Create Default Elevator Packet
         ElevatorPacket elevatorPacket = new ElevatorPacket();
         // Receive Elevator Packet
-        System.out.println("Elevator: Waiting for Elevator Packet from Scheduler...");
+        System.out.println(Thread.currentThread().getName() + ": Waiting for Elevator Packet from Scheduler...");
         elevatorPacket.receive(sendReceiveSocket);
 
         return elevatorPacket;
@@ -495,10 +501,12 @@ class Elevator implements Runnable
 
     public static void main(String[] args) {        
 		// Create Elevator Thread
-        Thread elevator = new Thread(new Elevator(1), "Elevator");
+        Thread elevator1 = new Thread(new Elevator(1), "Elevator1");
+        Thread elevator2 = new Thread(new Elevator(2), "Elevator2");
 
         // Start Threads
-        elevator.start();
+        elevator1.start();
+        elevator2.start();
     }
 }
 

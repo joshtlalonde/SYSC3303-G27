@@ -238,12 +238,34 @@ public class Scheduler {
 		/** Updates the elevator destination floor to where the User is waiting */
 		System.out.println("\nScheduler: Sending Elevator to User on floor " + earliest_request.getCurrentFloor());
 		elevator.setDestinationFloor(earliest_request.getCurrentFloor());
+
+		/** Add the passenger to the elevator (even though they are not on yet) */
+		elevator.addPassenger(earliest_request);
+
+		/** Remove passenger from array of floorRequests */
+		floorRequests.remove(earliest_request);
 		
 		return elevator;
 	}
 	
 	public ElevatorInfo serviceElevatorMovingUp(ElevatorInfo elevator) {
 		System.out.println("\nScheduler: Servicing Elevator in MOVING_UP State");
+
+		/** The elevator is on a floor with one of their passenger's destinations */
+		for (UserInput passenger : elevator.getPassengers()) {
+			if (passenger.getDestinationFloor() == elevator.getCurrentFloor() && passenger.getFloorButtonUp() == elevator.getDirectionUp()){
+				elevator.setIsMoving(false);
+			}	
+
+			/** 
+			 * If the elevator is going in a different direction than the a passenger's request
+			 * Then that must mean that we are going to service a passenger from the IDLE state
+			 * Therefore, keep moving
+			*/
+			if (passenger.getFloorButtonUp() != elevator.getDirectionUp()) {
+				return elevator;
+			}
+		}
 		
 		/** The elevator is on a floor with a current FloorRequest */
 		for(UserInput floorRequest : floorRequests) {
@@ -252,12 +274,7 @@ public class Scheduler {
 			}
 		}
 
-		/** The elevator is on a floor with one of their passenger's destinations */
-		for (UserInput passenger : elevator.getPassengers()) {
-			if(passenger.getDestinationFloor() == elevator.getCurrentFloor()){
-				elevator.setIsMoving(false);
-			}	
-		}
+
 
 		return elevator;
 	}
@@ -265,18 +282,27 @@ public class Scheduler {
 	public ElevatorInfo serviceElevatorMovingDown(ElevatorInfo elevator) {
 		System.out.println("\nScheduler: Servicing Elevator in MOVING_DOWN State");
 		
+		/** The elevator is on a floor with one of their passenger's destinations */
+		for (UserInput passenger : elevator.getPassengers()) {
+			if(passenger.getDestinationFloor() == elevator.getCurrentFloor() && passenger.getFloorButtonUp() == elevator.getDirectionUp()){
+				elevator.setIsMoving(false);
+			}	
+
+			/** 
+			 * If the elevator is going in a different direction than the a passenger's request
+			 * Then that must mean that we are going to service a passenger from the IDLE state
+			 * Therefore, keep moving
+			*/
+			if (passenger.getFloorButtonUp() != elevator.getDirectionUp()) {
+				return elevator;
+			}
+		}
+
 		/** The elevator is on a floor with a current FloorRequest */
 		for(UserInput floorRequest : floorRequests) {
 			if(floorRequest.getCurrentFloor() == elevator.getCurrentFloor() && floorRequest.getFloorButtonUp() == elevator.getDirectionUp()){
 				elevator.setIsMoving(false);
 			}
-		}
-		
-		/** The elevator is on a floor with one of their passenger's destinations */
-		for (UserInput passenger : elevator.getPassengers()) {
-			if(passenger.getDestinationFloor() == elevator.getCurrentFloor()){
-				elevator.setIsMoving(false);
-			}	
 		}
 
 		return elevator;
@@ -284,9 +310,21 @@ public class Scheduler {
 	
 	public ElevatorInfo serviceElevatorStopped(ElevatorInfo elevator) {
 		System.out.println("\nScheduler: Servicing Elevator in STOPPED State");
-		// Send same stuff back, no updates needed here
-		// Refer to Elevator.java as to what information the elevator needs to updated on 'elevatorInfo'
 		
+		/** 
+		 * Updates the direction of the elevator to match that of the 
+		 * passenger's that are already on the elevator from the IDLE
+		 * state. 
+		 * This makes it so that if the elevator was moving to pick up
+		 * a passenger from the IDLE state it doesn't pick up anyone going 
+		 * in a different direction  
+		 * All passengers on an elevator should be moving in the same direction
+		 * at the point it is in the STOPPED state
+		*/		
+		for (UserInput passenger : elevator.getPassengers()) {
+			elevator.setDirectionUp(passenger.getFloorButtonUp());
+		}
+
 		return elevator;
 	}
 
@@ -296,12 +334,15 @@ public class Scheduler {
 		/** 
 		 * Searches through the passenger Destinations then remove all of the passengers
 		 * That have a destination on the elevator's current floor
+		 * As well as the direction of the request is the same as the direction of the elevator
+		 * 	This is to ensure that the elevator isn't still going to pick them up from an IDLE state
+		 * 
 		 * Also pops the user from the list of pending requests
 		 */
 		Iterator<UserInput> iterator = elevator.getPassengers().iterator();
 		while (iterator.hasNext()) {
 			UserInput passenger = iterator.next();
-			if(elevator.getCurrentFloor() == passenger.getDestinationFloor()) {
+			if(elevator.getCurrentFloor() == passenger.getDestinationFloor() && elevator.getDirectionUp() == passenger.getFloorButtonUp()) {
 				/** Remove passenger from the elevator's passengers array */
 				System.out.println("Scheduler: Passenger " + passenger.toString() + " exiting the elevator");
 				iterator.remove();
@@ -368,10 +409,6 @@ public class Scheduler {
 		byte[] byteArr = Arrays.copyOfRange(receivePacket.getData(), 1, receivePacket.getData().length);
 		// Convert the bytes to an elevatorPacket
 		floorPacket.convertBytesToPacket(byteArr);
-
-		// Wait for FloorPacket to arrive
-		// System.out.println("Scheduler: Waiting for Floor Packet..."); 
-		// floorPacket.receive(receiveSocket);
 
 		// Convert Floor Packet to UserInput
 		UserInput userInput = new UserInput(floorPacket.getTime(), floorPacket.getFloor(), 
