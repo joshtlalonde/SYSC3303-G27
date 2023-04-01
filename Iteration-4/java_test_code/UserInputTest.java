@@ -1,15 +1,9 @@
 public class UserInputTest extends junit.framework.TestCase{
   public void testConstructor() {
     SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
-    UserInput userinput = new UserInput(time, 4, true, 8, false, true);
-    Date date;
-        try {
-            date = dateFormatter.parse("12:10:09.5");
-        } catch (ParseException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-            return;
+    
         }
+    UserInput userinput = new UserInput(12:10:09.5, 4, true, 8, false, true);
     try {
             assertEquals(userinput.getTime(), dateFormatter.parse("12:10:09.5"));
         } catch (ParseException e) {
@@ -23,3 +17,16 @@ public class UserInputTest extends junit.framework.TestCase{
 		assertEquals(userinput.getHardFault(), true);
 
   }
+public void testConvertPacket() {
+        UserInput userInput = new UserInput();
+        FloorPacket floorPacket = new FloorPacket(3, "10:00:00.000", true, 5, false, true);
+	userInput.convertPacket(floorPacket);
+       
+        assertEquals(userInput.getCurrentFloor(), 3);
+        assertEquals(userInput.getTime(), "10:00:00.000");
+        assertTrue(userInput.getFloorButtonUp());
+        assertEquals(userInput.getDestinationFloor(), 5);
+        assertFalse(userInput.getDoorFault());
+        assertTrue(userInput.getHardFault());
+}
+        
