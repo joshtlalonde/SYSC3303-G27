@@ -15,28 +15,32 @@ public class FloorTest extends junit.framework.TestCase {
 	    assertEquals(Floor.NUMBER_OF_FLOORS, floor.floorRequests.size());
     
     public UserInput testFileToUser(String line) {
-	UserInput userinput = new Userinput;
-	assertEquals(userinput.getTime());
+	Floor floor = new Floor();
+	UserInput userinput = floor.fileToUser("04:10:30.200,5,Up,16,true,false");
     	assertEquals(userinput.getCurrentFloor(),5);
-    	assertEquals(userinput.getFloorButtonUp(),true);
+    	assertTrue(userinput.getFloorButtonUp());
     	assertEquals(userinputt.getDestinationFloor(),16);
-    	assertEquals(userinput.getDoorFault(),false);
-    	assertEquals(userinput.getHardFault(),false);
+    	assertTrue(userinput.getDoorFault());
+    	assertFalse(userinput.getHardFault());
 }
 	    
 
     }
 
-    public void testButtonPress(boolean floorButtonUp, int floor) {
+    public void testButtonPress() {
         Floor floor = new Floor();
         floor.buttonPress(true, 10);//pressed up button
-		assertTrue(floor.floorButton.get(4).getUpButton());
+	assertTrue(floor.floorButton.get(4).getUpButton());
         floor.buttonPress(false, 15);//pressed down button
         assertTrue(floor.floorButton.get(4).getDownButton());
 
     }
 
-    public void testElevatorArrival(boolean elevatorDirection, int floor) {
+    public void testElevatorArrival() throws Exception {
+	Floor floor = new Floor();
+	UserInput userinput = floor.fileToUser("04:10:30.200,5,Up,16,true,false");
+	floor.floorRequests.add(userInput);
+        floor.elevatorArrival(userInput);
         
         // verifying if the button was reset
         assertEquals(false, floor.floorButton.get(5).getUpButton());
