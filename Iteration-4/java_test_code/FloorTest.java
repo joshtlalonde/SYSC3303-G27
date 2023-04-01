@@ -14,7 +14,7 @@ public class FloorTest extends junit.framework.TestCase {
         //checking floor requests initialisation
 	    assertEquals(Floor.NUMBER_OF_FLOORS, floor.floorRequests.size());
     
-    public UserInput testFileToUser(String line) {
+    public UserInput testFileToUser() {
 	Floor floor = new Floor();
 	UserInput userinput = floor.fileToUser("04:10:30.200,5,Up,16,true,false");
     	assertEquals(userinput.getCurrentFloor(),5);
