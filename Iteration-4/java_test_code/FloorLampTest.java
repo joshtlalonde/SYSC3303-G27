@@ -2,7 +2,10 @@ public class FloorLampTest extends junit.framework.TestCase{
 	//private boolean lampState = false;
   	public LampTest()
 	{
-		
+		FloorLamp floorlamp = new FloorLamp();
+		assertFalse(floorlamp.getLampState());
+		floorlamp.turnOn();
+		assertTrue(floorlamp.getLampState());
 		 
 	}
 	
