@@ -1,0 +1,22 @@
+import javax.swing.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+
+
+
+public class Elevator_GUI_Image extends JPanel {
+    private Color squareColor;
+
+    public Elevator_GUI_Image(Color colour, int ElevatorNumber) {
+        this.squareColor = colour;
+        setPreferredSize(new Dimension(20, 50)); // Set the size of the square
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.setColor(squareColor);
+        g.fillRect(0, 0, getWidth(), getHeight()); // Draw a filled rectangle with the square color
+    }
+}
