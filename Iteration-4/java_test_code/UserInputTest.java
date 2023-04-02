@@ -32,6 +32,7 @@ public class UserInputTest extends junit.framework.TestCase{
     }
 		
 	public void testConvertPacket() {
+		SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH); 
         	UserInput userInput = new UserInput();
         	FloorPacket floorPacket = new FloorPacket(3, "10:00:00.000", true, 5, false, true);
 		userInput.convertPacket(floorPacket);
@@ -65,7 +66,7 @@ public class UserInputTest extends junit.framework.TestCase{
 	
 	public void testByteLength() {
 		UserInput userinput = new UserInput("12:10:09.5", 4, true, 8, false, true);
-        	assertEquals(17, userinput.byte_length());
+        	assertEquals(17, userinput.byteLength());
 	
 	
     	}
@@ -86,6 +87,7 @@ public class UserInputTest extends junit.framework.TestCase{
     	String myString = "{time: Apr 30, 2022 10:10:10.5 AM, currentFloor: 4, floorButtonUp: true, destinationFloor: 7, doorFault: false, hardFault: false}";
 
     	assertEquals(myString, userInput.toString());
+	return myString;
 }
 	public void testGettersAndSetters() throws ParseException {
         	SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
