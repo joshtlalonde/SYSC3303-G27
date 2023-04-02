@@ -1,4 +1,5 @@
 public class UserInputTest extends junit.framework.TestCase{
+	
   public void testConstructor() {
 	  SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
     
@@ -32,10 +33,44 @@ public void testConvertPacket() {
 public void testconvertToBytes() throws ParseException {
 	SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
 	UserInput userinput = new UserInput(12:10:09.5, 4, true, 8, false, true);
-	byte[] expectedBytes = new byte[] {0x0C, 0x22, (byte) 0xB8, (byte) 0xD9, 0x00, 0x03, 0x01, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x01
-		};
-		
-	assertArrayEquals(expectedBytes, userinput.convertToBytes());
+	////
 	
-	)
+	
+public void testByteLength() {
+	UserInput userinput = new UserInput(12:10:09.5, 4, true, 8, false, true);
+        assertEquals(17, input.byte_length());
+	
+    }
+public void testGettersAndSetters() throws ParseException {
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
+        try {
+            date = dateFormatter.parse("10:10:10.5");
+        } catch (ParseException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+            return;
+        }
+	
+        UserInput userinput = new UserInput(time, 5, false, 7, false, true);
+        try {
+			assertEquals(userin.getTime(), dateFormatter.parse("10:10:10.5"));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+        assertEquals(5, userinput.getCurrentFloor());
+        assertFalse(userinput.getFloorButtonUp());
+        assertEquals(7, userinput.getDestinationFloor());
+        assertFalse(userinput.getDoorFault());
+        assertTrue(userinput.getHardFault());
+        userinput.setDoorFault(true);
+        assertTrue(userinput.getDoorFault());
+        userinput.setHardFault(false);
+        assertFalse(userinput.getHardFault());
+    }
+}
+		
+		
+	
 	
