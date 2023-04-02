@@ -1,7 +1,7 @@
 public class UserInputTest extends junit.framework.TestCase{
 	public void testConstructor() {
 	 	SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
-    	  	UserInput userinput = new UserInput(12:10:09.5, 4, true, 8, false, true);
+    	  	UserInput userinput = new UserInput("12:10:09.5", 4, true, 8, false, true);
     	try {
             assertEquals(userinput.getTime(), dateFormatter.parse("12:10:09.5"));
         } catch (ParseException e) {
@@ -43,7 +43,7 @@ public class UserInputTest extends junit.framework.TestCase{
         	assertFalse(userInput.getDoorFault());
         	assertTrue(userInput.getHardFault());
 	}
-	public void testconvertToBytes() throws ParseException {
+	public void testConvertToBytes() throws ParseException {
 		SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
 		UserInput userInput = new UserInput();
 		userInput.setTime(dateFormatter.parse("12:10:09.5"));
@@ -55,19 +55,19 @@ public class UserInputTest extends junit.framework.TestCase{
 
 		byte[] testBytes = {49, 50, 58, 49, 48, 58, 48, 57, 46, 53, 0, 4, 1, 8, 0, 1};
 
-		assertArrayEquals(expectedBytes, userInput.convertToBytes());
+		assertArrayEquals(testBytes, userInput.convertToBytes());
 	
 	
 	public void testByteLength() {
 		UserInput userinput = new UserInput(12:10:09.5, 4, true, 8, false, true);
-        	assertEquals(17, input.byte_length());
+        	assertEquals(17, userinput.byte_length());
 	
 	
     	}
 	public String testToString(){
 		UserInput userInput = new UserInput();
     		try {
-			assertEquals(userin.getTime(), dateFormatter.parse("10:10:10.5"));
+			assertEquals(userInput.getTime(), dateFormatter.parse("10:10:10.5"));
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -85,7 +85,7 @@ public class UserInputTest extends junit.framework.TestCase{
 	public void testGettersAndSetters() throws ParseException {
         	SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
 	
-        	UserInput userinput = new UserInput(time, 5, false, 7, false, true);
+        	UserInput userinput = new UserInput("10:10:10.5", 5, false, 7, false, true);
         	try {
 			assertEquals(userInput.getTime(), dateFormatter.parse("10:10:10.5"));
 		} catch (ParseException e) {
