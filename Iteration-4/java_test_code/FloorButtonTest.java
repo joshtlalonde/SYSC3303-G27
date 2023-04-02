@@ -72,8 +72,8 @@ public class FloorButtonTest extends junit.framework.TestCase{
     }
 
 	public void testgetButtonFloor() {
-        FloorButton floorbutton = new FloorButton(1);
-        assertEquals(1, floorbutton.getButtonFloor());
+        	FloorButton floorbutton = new FloorButton(1);
+        	assertEquals(1, floorbutton.getButtonFloor());
     }
     }
 	
