@@ -48,4 +48,17 @@ public class FloorTest extends junit.framework.TestCase {
         assertEquals(true, floor.floorRequests.isEmpty());
 
     }
+    
+    public void testSendFloorRequest() throws Exception{
+    	Floor floor = new Floor();
+	InetAddress localAddr;
+		try {
+			localAddr = InetAddress.getLocalHost();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		}
+    }
+    
 }
