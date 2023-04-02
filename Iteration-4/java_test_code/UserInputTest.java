@@ -66,7 +66,7 @@ public class UserInputTest extends junit.framework.TestCase{
 	
 	public void testByteLength() {
 		UserInput userinput = new UserInput("12:10:09.5", 4, true, 8, false, true);
-        	assertEquals(17, userinput.byteLength());
+        	assertEquals(17, userinput.byte_length());
 	
 	
     	}
