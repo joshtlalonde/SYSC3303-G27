@@ -37,7 +37,11 @@ public class UserInputTest extends junit.framework.TestCase{
 		userInput.convertPacket(floorPacket);
        
         	assertEquals(userInput.getCurrentFloor(), 3);
-        	assertEquals(userInput.getTime(), "10:00:00.000");
+        	try {
+            	assertEquals(userInput.getTime(), dateFormatter.parse("10:00:00.000"));
+        	} catch (ParseException e) {
+            	e.printStackTrace();
+        	}
         	assertTrue(userInput.getFloorButtonUp());
         	assertEquals(userInput.getDestinationFloor(), 5);
         	assertFalse(userInput.getDoorFault());
@@ -56,10 +60,11 @@ public class UserInputTest extends junit.framework.TestCase{
 		byte[] testBytes = {49, 50, 58, 49, 48, 58, 48, 57, 46, 53, 0, 4, 1, 8, 0, 1};
 
 		assertArrayEquals(testBytes, userInput.convertToBytes());
+	}
 	
 	
 	public void testByteLength() {
-		UserInput userinput = new UserInput(12:10:09.5, 4, true, 8, false, true);
+		UserInput userinput = new UserInput("12:10:09.5", 4, true, 8, false, true);
         	assertEquals(17, userinput.byte_length());
 	
 	
@@ -87,7 +92,7 @@ public class UserInputTest extends junit.framework.TestCase{
 	
         	UserInput userinput = new UserInput("10:10:10.5", 5, false, 7, false, true);
         	try {
-			assertEquals(userInput.getTime(), dateFormatter.parse("10:10:10.5"));
+			assertEquals(userinput.getTime(), dateFormatter.parse("10:10:10.5"));
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
