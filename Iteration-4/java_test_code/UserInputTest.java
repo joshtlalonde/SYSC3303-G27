@@ -14,7 +14,7 @@ public class UserInputTest extends junit.framework.TestCase{
 		assertEquals(userinput.getDoorFault(), false);
 		assertEquals(userinput.getHardFault(), true);
 
-  }
+  `	}
 	public void testDefaultConstructor(){
 		SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
 		UserInput userInput = new UserInput();
@@ -89,7 +89,7 @@ public class UserInputTest extends junit.framework.TestCase{
 
     	assertEquals(myString, userInput.toString());
 	return myString;
-}
+	}
 	public void testGettersAndSetters() throws ParseException {
         	SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
 	
