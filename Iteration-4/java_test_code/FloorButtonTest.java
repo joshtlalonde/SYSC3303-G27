@@ -19,5 +19,64 @@ public class FloorButtonTest extends junit.framework.TestCase{
 		
 		 
 	}
+	public void testPressUp() {
+        	FloorButton floorbutton = new FloorButton(3);
+        	assertFalse(floorbutton.getUpButtonState());
+        	button.pressUp();
+        	assertTrue(floorbutton.getUpButtonState());
+        	floorbutton.pressUp(); 
+        	assertTrue(floorbutton.getUpButtonState());
+	}
+	public void testPressDown() {
+        	FloorButton floorbutton = new FloorButton(5);
+       		assertFalse(floorbutton.getDownButtonState());
+        	floorbutton.pressDown();
+        	assertTrue(floorbutton.getDownButtonState());
+        	floorbutton.pressDown(); 
+        	assertTrue(floorbutton.getDownButtonState());
+		}
+	public void testResetUp() {
+        	FloorButton floorbutton = new FloorButton(2);
+        	assertFalse(floorbutton.getUpButtonState());
+        	floorbutton.pressUp();
+        	assertTrue(floorbutton.getUpButtonState());
+        	floorbutton.resetUp();
+        	assertFalse(floorbutton.getUpButtonState());
+        	floorbutton.resetUp(); 
+        	floorassertFalse(button.getUpButtonState());
+		}
+        public void testResetDown() {
+        	FloorButton floorbutton = new FloorButton(4);
+        	assertFalse(floorbutton.getDownButtonState());
+        	floorbutton.pressDown();
+        	assertTrue(floorbutton.getDownButtonState());
+        	floorbutton.resetDown();
+        	assertFalse(floorbutton.getDownButtonState());
+        	floorbutton.resetDown(); 
+        	assertFalse(floorbutton.getDownButtonState());
+		}
+	public void testGetUpButtonState() {
+        	FloorButton floorbutton = new FloorButton(1);
+        	floorbutton.pressUp();
+        	assertTrue(floorbutton.getUpButtonState());
+        	button.resetUp();
+        	assertFalse(floorbutton.getUpButtonState());
+	}
+	
+    	public void testGetDownButtonState() {
+        	FloorButton floorbutton = new FloorButton(2);
+        	floorbutton.pressDown();
+        	assertTrue(floorbutton.getDownButtonState());
+       		floorbutton.resetDown();
+        	assertFalse(floorbutton.getDownButtonState());
+    }
+
+	public void testGetButtonFloor() {
+        	FloorButton floorbutton = new FloorButton(1);
+        	assertEquals(1, floorbutton.getButtonFloor());
+    }
+    }
+	
+	
 	
 	
