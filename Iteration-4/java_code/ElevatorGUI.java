@@ -11,12 +11,13 @@ import java.io.*;
 public class ElevatorGUI extends JFrame{
 	
 	
-	JSlider[] sliders;
 	JLabel[] elevatorNumbers;
 	JLabel[] elevatorStates;
 	JLabel[] numRequests;
 	Elevator_GUI_Image[] ELE;
-	JPanel[] Backgrounds;
+	JPanel LeftPanel;
+	JPanel RightPanel;
+	JPanel[] elevatorBackground;
 	
 	private int RECT_X;
 	private int RECT_Y;
@@ -66,36 +67,45 @@ public class ElevatorGUI extends JFrame{
 		//Backgrounds[0] = new JPanel();
 		//Initilization
 		setRectangle();
+		
 		ELE = new Elevator_GUI_Image[numElevators];
-		Backgrounds = new JPanel[numElevators+2];
-		Backgrounds[0] = new JPanel();
+		elevatorBackground = new JPanel[numElevators];
+
 		for(int i = 0; i < numElevators; i++) {
 			ELE[i] = new Elevator_GUI_Image(Color.gray, i);
-			Backgrounds[i+1] = new JPanel();
-			Backgrounds[i+1].add(ELE[i]);
+			elevatorBackground[i] = new JPanel(new GridBagLayout());
+			elevatorBackground[i].add(ELE[i], new GridBagConstraints());
 		}
-		Backgrounds[1 + numElevators] = new JPanel();
+		
+		LeftPanel = new JPanel(new GridBagLayout());
+		RightPanel = new JPanel(new GridBagLayout());
+		LeftPanel.setBackground(Color.black);
+		LeftPanel.setSize(getPreferredSize());
+		//LeftPanel.setSize(getPreferredSize());
+		RightPanel.setBackground(Color.black);
+		RightPanel.setSize(getPreferredSize());
+		//RightPanel.setSize(getPreferredSize());
+		
 		JFrame frame = new JFrame();
-		GridBagLayout GBLayout = new GridBagLayout();
-		GridBagConstraints GBConstraints = new GridBagConstraints();
 		JPanel Background = new JPanel();
 		
 			
 		//Frame setup
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setBounds(100, 100, 450, 300);
-			
+		frame.setBounds(500, 500, 550, 500);
 			
 		//Background Setup
-		Background.setForeground(new Color(193, 193, 255));
-		Background.setBackground(new Color(193, 193, 255));
+		Background.setForeground(Color.cyan);
+		Background.setBackground(Color.cyan);
 		Background.setBorder(new EmptyBorder(5,5,5,5));
-		Background.setLayout(GBLayout);
+		Background.add(LeftPanel);
 		
 		
-		for(int i = 0; i< (numElevators + 2); i++) {
-			Background.add(Backgrounds[i]);
+		
+		for(int i = 0; i< numElevators; i++) {
+			Background.add(elevatorBackground[i]);
 		}
+		Background.add(RightPanel);
 		
 		
 	
@@ -105,17 +115,12 @@ public class ElevatorGUI extends JFrame{
 		//leftPanel.setBackground(Color.white);
 		//rightPanel.setBackground(Color.white);
 			
-		//Add the elevator panels in between the left and right side panels		
+		//Add the elevator panels in between the left and right side panels	
 		frame.setContentPane(Background);  
+		frame.pack();
 		frame.setVisible(true);
 	}
 	
-	
-	
-	
-	public void setSlider(int elevatorNum, int floorNum) {
-		sliders[elevatorNum-1].setValue(floorNum);
-	}
 	
 	public void setRectangle() {
 		//Can make changes to Elevator Rectangles in here if need to
@@ -162,3 +167,4 @@ public class ElevatorGUI extends JFrame{
 	}
 	
 }
+
