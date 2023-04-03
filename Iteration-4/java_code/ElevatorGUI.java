@@ -73,17 +73,16 @@ public class ElevatorGUI extends JFrame{
 
 		for(int i = 0; i < numElevators; i++) {
 			ELE[i] = new Elevator_GUI_Image(Color.gray, i);
-			elevatorBackground[i] = new JPanel(new GridBagLayout());
+			elevatorBackground[i] = new JPanel(new GridLayout(21,1));
 			elevatorBackground[i].add(ELE[i], new GridBagConstraints());
 		}
 		
-		LeftPanel = new JPanel(new GridBagLayout());
-		RightPanel = new JPanel(new GridBagLayout());
+		LeftPanel = new JPanel(new GridLayout(21, 1));
+		RightPanel = new JPanel(new GridLayout(21,1));
 		LeftPanel.setBackground(Color.black);
-		LeftPanel.setSize(getPreferredSize());
+		
 		//LeftPanel.setSize(getPreferredSize());
 		RightPanel.setBackground(Color.black);
-		RightPanel.setSize(getPreferredSize());
 		//RightPanel.setSize(getPreferredSize());
 		
 		JFrame frame = new JFrame();
@@ -95,7 +94,6 @@ public class ElevatorGUI extends JFrame{
 		frame.setBounds(500, 500, 550, 500);
 			
 		//Background Setup
-		Background.setForeground(Color.cyan);
 		Background.setBackground(Color.cyan);
 		Background.setBorder(new EmptyBorder(5,5,5,5));
 		Background.add(LeftPanel);
@@ -124,10 +122,10 @@ public class ElevatorGUI extends JFrame{
 	
 	public void setRectangle() {
 		//Can make changes to Elevator Rectangles in here if need to
-		RECT_X = 20; 
+		RECT_X = 5; 
 		RECT_Y = RECT_X; 
-		RECT_WIDTH = 50; 
-		RECT_HEIGHT = 100;
+		RECT_WIDTH = 5; 
+		RECT_HEIGHT = 10;
 	}
 	
 	public void setState(int elevatorNum , Elevator_State currentState) {		
@@ -167,4 +165,3 @@ public class ElevatorGUI extends JFrame{
 	}
 	
 }
-
