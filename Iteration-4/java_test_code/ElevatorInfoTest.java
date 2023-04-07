@@ -11,6 +11,7 @@ public class ElevatorInfoTest extends junit.framework.TestCase{
     assertTrue(elevator.getPassengers().isEmpty());
     }
   
+  
   public void testDefaultConstructor() {
         ArrayList<UserInput> passengers = new ArrayList<>();
         passengers.add(new UserInput("Rose", 4));
