@@ -28,7 +28,7 @@ public class ElevatorInfoTest extends junit.framework.TestCase{
     }
   
   
-    }
+    
   
   
   public void testSendPacket() {
