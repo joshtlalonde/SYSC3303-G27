@@ -31,7 +31,6 @@ public class ElevatorInfoTest extends junit.framework.TestCase{
   
     
   
-  
   public void testSendPacket() {
         DatagramSocket socket = new DatagramSocket();
     
