@@ -323,6 +323,9 @@ class Elevator implements Runnable
             }
         }
 
+        /**
+         * Decides which state the elevator should move to
+         */
         if (currentFloor == destinationFloor && passengers.isEmpty()) {
             /** Change current State to IDLE */
             currentState = Elevator_State.IDLE;
@@ -335,8 +338,8 @@ class Elevator implements Runnable
         }
         
         /** 
-         * Decides if state should change to MOVING_UP or MOVING_DOWN 
-         * And checks for door faults
+         * Checks for Door Fault
+         * And updates the destination floor
         */
         for (UserInput passenger : passengers) {
             if (passenger.getDoorFault() == true) {

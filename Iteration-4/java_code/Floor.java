@@ -165,7 +165,7 @@ public class Floor implements Runnable {
 				System.out.println("Floor: Retreived " + userInput + " from file");
 
 				/** Simulate a button press */
-				this.buttonPress(userInput.getFloorButtonUp(), userInput.getCurrentFloor()); // TODO: Change FloorButtonUp to FloorButtonDirection and change carButton to floorDestination
+				this.buttonPress(userInput.getFloorButtonUp(), userInput.getCurrentFloor());
 
 				/** Send message to the Scheduler */
 				this.sendFloorRequest(InetAddress.getLocalHost(), 69, userInput);
@@ -197,7 +197,7 @@ public class Floor implements Runnable {
 		} catch (IOException e) {
 			System.out.print("IO Exception: likely:");
 			System.out.println("Failed to close File: " + e);
-			System.exit(1);
+         		System.exit(1);
 		}
 
 		/** Continues to wait for responses */
@@ -232,9 +232,9 @@ class UserInput{
 	private boolean doorFault; // Flag for if a Door Fault has occured
 	private boolean hardFault; // Flag for if a Hard Fault has occured
 	
-	public UserInput(Date time, int currentFloor, boolean floorButtonUp, int destinationFloor, boolean doorFault, boolean hardFault) {
+	public UserInput(Date time, int floor, boolean floorButtonUp, int destinationFloor, boolean doorFault, boolean hardFault) {
 		this.time = time;
-		this.currentFloor = currentFloor;
+		this.currentFloor = floor;
 		this.floorButtonUp= floorButtonUp;
 		this.destinationFloor = destinationFloor;
 		this.doorFault = doorFault;
@@ -247,8 +247,6 @@ class UserInput{
 		this.currentFloor = 0;
 		this.floorButtonUp= false;
 		this.destinationFloor = 0;
-		this.doorFault = false;
-		this.hardFault = false;
 	}
 
 	/**

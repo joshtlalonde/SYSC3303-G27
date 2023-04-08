@@ -349,7 +349,7 @@ public class Scheduler {
 		System.out.println("\nScheduler: Servicing Elevator in DOOR_CLOSE State");
 		
 		/** 
-		 * Adds the passenger destinations for the any of the passengers that are on the same floor as the elevator
+		 * Adds the passenger destinations for the passengers that are on the same floor as the elevator
 		 * and are requesting to go in the same direction
 		 * Removes the floorRequest since it is going to be serviced by this elevator
 		 */
