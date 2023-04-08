@@ -440,14 +440,6 @@ class Elevator implements Runnable
                 case BOOM:
                     return;
 			}
-
-            // Sleep for 1 second between states
-            // try {
-            //     Thread.sleep(1000); 
-            // } catch (InterruptedException e) {
-            //     e.printStackTrace();
-            //     System.exit(1);
-            // }
         }
     }
 
@@ -476,7 +468,7 @@ class Elevator implements Runnable
     }
 
     /** Send a request to the scheduler to let it know the state of the elevator and ask what should be done */
-	private void sendElevatorRequest() {
+	public void sendElevatorRequest() {
         // Create Elevator Packet
         ElevatorPacket elevatorPacket = new ElevatorPacket(elevatorNumber, isMoving, currentFloor, destinationFloor, directionUp, passengers, currentState);
         // Send Elevator Packet

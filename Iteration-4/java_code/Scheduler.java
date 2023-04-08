@@ -13,9 +13,7 @@ public class Scheduler {
 	private int floorPort;
 	private Scheduler_State currentState = Scheduler_State.RECEIVE;
 	
-	/** NOTE: Technically don't need syncs but never hurts? For now at least */
     private List<UserInput> floorRequests = Collections.synchronizedList(new ArrayList<UserInput>()); // Holds list of requests from Floor
-	// private ArrayList<ElevatorPacket> elevatorRequests = new ArrayList<ElevatorPacket>(); // Holds the list of request packets from the elevators
 	private List<ElevatorInfo> elevatorInfos = Collections.synchronizedList(new ArrayList<ElevatorInfo>()); // Holds the list of elevators and their associated information
 
 	public Scheduler() {
@@ -82,9 +80,6 @@ public class Scheduler {
 
 		/** Adds the userInput to the List of User's waiting */
 		floorRequests.add(userInput);
-		
-		/** Send ACK back to Floor */
-		// this.sendFloorPacket(userInput, receivePacket.getAddress(), receivePacket.getPort());
 
 		/** Move to RECEIVE state */
 		currentState = Scheduler_State.RECEIVE;
@@ -333,9 +328,7 @@ public class Scheduler {
 		
 		/** 
 		 * Searches through the passenger Destinations then remove all of the passengers
-		 * That have a destination on the elevator's current floor
-		 * As well as the direction of the request is the same as the direction of the elevator
-		 * 	This is to ensure that the elevator isn't still going to pick them up from an IDLE state
+		 * That have a destination on the elevator's current floor in the same direction
 		 * 
 		 * Also pops the user from the list of pending requests
 		 */
@@ -425,7 +418,7 @@ public class Scheduler {
 	 * @param address IP Address that the Floor exists on
 	 * @param port Port number that Floor exists on
 	 */
-	private void sendFloorPacket(UserInput userInput, InetAddress address, int port) {
+	public void sendFloorPacket(UserInput userInput, InetAddress address, int port) {
         // Create Floor Packet
         FloorPacket floorPacket = new FloorPacket(userInput.getCurrentFloor(), userInput.getTime(), 
 													userInput.getFloorButtonUp(), userInput.getDestinationFloor(),
