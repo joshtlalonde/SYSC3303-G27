@@ -1,209 +1,105 @@
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
+import java.awt.*;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.GridBagConstraints;
-import java.io.*;
+public class ElevatorGUI extends JFrame {
 
-public class ElevatorGUI extends JFrame{
-	
-	
-	JLabel[] elevatorNumbers;
-	JLabel[] elevatorStates;
-	JLabel[] numRequests;
-	Elevator_GUI_Image[] ELE;
-	JPanel LeftPanel;
-	JPanel RightPanel;
-	JPanel[] elevatorBackground;
-	
-	private int RECT_X;
-	private int RECT_Y;
-	private int RECT_HEIGHT;
-	private int RECT_WIDTH;
-	
-	
-	// create the frame and initialize the GUI
-	public ElevatorGUI(int numElevators, int numFloors) {
-		
-		//Backgrounds[0] = new JPanel();
-		//Initilization
-		/* setRectangle();
-		ELE = new Elevator_GUI_Image[numElevators];
-		Backgrounds = new JPanel[numElevators+2];
-		Backgrounds[0] = new JPanel();
-		for(int i = 0; i < numElevators; i++) {
-			ELE[i] = new Elevator_GUI_Image(Color.gray, i);
-			Backgrounds[i+1] = new JPanel();
-			Backgrounds[i+1].add(ELE[i]);
-		}
-		Backgrounds[1 + numElevators] = new JPanel();
-		JFrame frame = new JFrame();
-		GridBagLayout GBLayout = new GridBagLayout();
-		GridBagConstraints GBConstraints = new GridBagConstraints();
-		
-		
-		//Frame setup
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setBounds(100, 100, 450, 300);
-		
-		
-		//Background Setup
-		Backgrounds[0].setForeground(new Color(193, 193, 255));
-		Backgrounds[0].setBackground(new Color(193, 193, 255));
-		Backgrounds[0].setBorder(new EmptyBorder(5,5,5,5));
-		Backgrounds[0].setLayout(GBLayout);
-		
-		frame.setContentPane(Backgrounds[0]); 
-		
-		elevatorNumbers = new JLabel[numElevators];
-		elevatorStates = new JLabel[numElevators];
-		numRequests = new JLabel[numElevators];
-		   
-		frame.setVisible(true);
-		*/
-		//Backgrounds[0] = new JPanel();
-		//Initilization
-		setRectangle();
-		
-		
-		JFrame frame = new JFrame();
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setLayout(null);
-		frame.setSize(1200, 1200);
-		frame.getContentPane().setBackground(Color.cyan); 
-		//frame.setLayout(new GridLayout(21, 6));
-		//frame.setBounds(500, 500, 550, 500);
-		
-		
-		ELE = new Elevator_GUI_Image[numElevators];
-		elevatorBackground = new JPanel[numElevators];
-		int spacingWidth = 200;
+    private JLabel[] elevatorStatusLabel;
+    private JCheckBox[] elevatorDirectionCheckbox;
+    private ElevatorPanel[] elevatorPanels;
 
-		for(int i = 0; i < numElevators; i++) {
-			ELE[i] = new Elevator_GUI_Image(Color.gray, i);
-			elevatorBackground[i] = new JPanel(new GridLayout(21,1, 100, 0));
-			elevatorBackground[i].add(ELE[i], new GridBagConstraints());
-			elevatorBackground[i].setBounds(spacingWidth, 0, 180, 1200);
-			spacingWidth+=200;
-			frame.add(elevatorBackground[i]);
-		}
-	
-		LeftPanel = new JPanel(new BorderLayout());
-		RightPanel = new JPanel();
-		LeftPanel.setBackground(Color.black);
-		//LeftPanel.setPreferredSize(new Dimension(200, 1200));
-		
-		//LeftPanel.setSize(getPreferredSize());
-		RightPanel.setBackground(Color.black);
-		LeftPanel.setBounds(0, 0, 200, 1200);
-		RightPanel.setBounds(1000, 0, 200, 1200);
-		frame.add(LeftPanel);
-		frame.add(RightPanel);
-		
-		int hincrement = 90;
-		int hposition = 200;
-		int vposition = 57;
-		for(int x = 0; x < 21; x++) {
-			JLabel label = new JLabel();
-			label.setText(String.valueOf(x));
-			label.setFont(new Font("MV Boli", Font.PLAIN, 40));
-			label.setBackground(Color.red);
-			for(int y = 1; y < 5; y++) {
-				hposition += (y * hincrement);
-				label.setLocation(hposition, vposition);
-				LeftPanel.add(label);
-			}
-			vposition+= 57;
-		}
-		
-		frame.setVisible(true);
-		
-		//RightPanel.setSize(getPreferredSize());
-		
-		/*
-		JPanel Background = new JPanel();
-		
-			
-		//Frame setup
+    public ElevatorGUI() {
+        // Set up the main window
+        super("Elevator GUI");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(800, 600);
+        setLayout(new GridLayout(1, 4));
 
-			
-		//Background Setup
-		Background.setBackground(Color.cyan);
-		Background.setBorder(new EmptyBorder(0,0,1200,1200));
-		
-		
-		Background.add(LeftPanel);
-		
-		
-		
-		for(int i = 0; i< numElevators; i++) {
-			Background.add(elevatorBackground[i]);
-		}
-		Background.add(RightPanel);*/
-		
-		
-	
-		//Add the left and right side panels
-		//JPanel leftPanel = new JPanel();
-		//JPanel rightPanel = new JPanel();
-		//leftPanel.setBackground(Color.white);
-		//rightPanel.setBackground(Color.white);
-			
-		//Add the elevator panels in between the left and right side panels	
+        // Create the elevator status panels
+        elevatorStatusLabel = new JLabel[4];
+        elevatorDirectionCheckbox = new JCheckBox[4];
+        JPanel[] elevatorStatusPanels = new JPanel[4];
+        for (int i = 0; i < 4; i++) {
+            elevatorStatusLabel[i] = new JLabel("Elevator " + (i + 1) + " is on floor 0");
+            elevatorDirectionCheckbox[i] = new JCheckBox("Moving up");
+            elevatorStatusPanels[i] = new JPanel();
+            elevatorStatusPanels[i].setLayout(new GridLayout(2, 1));
+            elevatorStatusPanels[i].add(elevatorStatusLabel[i]);
+            elevatorStatusPanels[i].add(elevatorDirectionCheckbox[i]);
+            add(elevatorStatusPanels[i]);
+        }
 
-	}
-	
-	
-	public void setRectangle() {
-		//Can make changes to Elevator Rectangles in here if need to
-		RECT_X = 5; 
-		RECT_Y = RECT_X; 
-		RECT_WIDTH = 5; 
-		RECT_HEIGHT = 10;
-	}
-	
-	public void setState(int elevatorNum , Elevator_State currentState) {		
-		String stateName = "";
-		// depending on the current state the elevator is in then we set the message to be displayed in the state name label accordingly
-		switch(currentState) {
-			case IDLE:
-				stateName = "IDLE         ";
-				break;
-			case MOVING_UP:
-				stateName = "MOVING UP    ";
-				break;
-			case MOVING_DOWN:
-				stateName = "MOVING DOWN  ";
-				break;
-			case DOOR_OPEN:
-				stateName = "DOOR OPEN    ";
-				break;
-			case DOOR_CLOSE:
-				stateName = "DOOR CLOSED  ";
-				break;
-			case STOPPED:
-				stateName = "ARRIVED      ";
-				break;
-		}
-		// update the elevator's state label
-		elevatorStates[elevatorNum-1].setText("State: " + stateName);
-	}
-	public void setNumRequests(int elevatorNum, int newNumberRequests) {
-		// update the elevator's state label
-		numRequests[elevatorNum-1].setText("# Requests: " + newNumberRequests + "       ");
-	}
-	
-	public static void main(String[] args) {
-		ElevatorGUI GUI = new ElevatorGUI(4,20);
-		
-	}
-	
+        // Create the elevator panels
+        elevatorPanels = new ElevatorPanel[4];
+        for (int i = 0; i < 4; i++) {
+            elevatorPanels[i] = new ElevatorPanel();
+            add(elevatorPanels[i]);
+        }
+
+        // Show the GUI
+        setVisible(true);
+    }
+
+    public void updateStatus(int elevatorId, int currentFloor, boolean isMovingUp) {
+        elevatorStatusLabel[elevatorId].setText("Elevator " + (elevatorId + 1) + " is on floor " + currentFloor);
+        elevatorDirectionCheckbox[elevatorId].setSelected(isMovingUp);
+        elevatorPanels[elevatorId].setCurrentFloor(currentFloor);
+        elevatorPanels[elevatorId].repaint();
+    }
+
+    public static void main(String[] args) {
+        GUITestEle guiTestEle = new GUITestEle();
+        // Call the updateStatus method periodically to update the GUI based on the current state of the elevators
+        while (true) {
+            // Get the current state of each elevator
+            for (int i = 0; i < 4; i++) {
+                int currentFloor = getCurrentFloor(i);
+                boolean isMovingUp = isMovingUp(i);
+
+                // Update the GUI for the elevator
+                guiTestEle.updateStatus(i, currentFloor, isMovingUp);
+            }
+
+            // Wait for a short time before updating again
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static int getCurrentFloor(int elevatorId) {
+        // Your elevator logic to get the current floor of the elevator with ID elevatorId goes here
+        return 0;
+    }
+
+    private static boolean isMovingUp(int elevatorId) {
+        // Your elevator logic to determine whether the elevator with ID elevatorId is moving up goes here
+        return true;
+    }
+
+    private class ElevatorPanel extends JPanel {
+        private int currentFloor = 0;
+
+        public void setCurrentFloor(int currentFloor) {
+            this.currentFloor = currentFloor;
+        }
+
+        public void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            // Draw the elevator
+            g.setColor(Color.GRAY);
+            g.fillRect(50 + 200 * (getWidth() / 800), getHeight() - currentFloor * (getHeight() / 21) - 40, 100, 40);
+            g.setColor(Color.BLACK);
+            g.drawRect(50 + 200 * (getWidth() / 800), getHeight() - currentFloor * (getHeight() / 21) - 40, 100, 40);
+
+            // Draw the floors
+            g.setColor(Color.BLACK);
+            g.setFont(new Font("Arial", Font.PLAIN, 12));
+            for (int i = 0; i <= 21; i++) {
+                g.drawString(Integer.toString(i), 5 + 200 * (getWidth() / 800), getHeight() - i * (getHeight() / 21) + 5);
+                g.drawLine(50 + 200 * (getWidth() / 800), getHeight() - i * (getHeight() / 21), 150 + 200 * (getWidth() / 800), getHeight() - i * (getHeight() / 21));
+            }
+        }
+    }
 }
