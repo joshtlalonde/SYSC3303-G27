@@ -61,14 +61,17 @@ public class ElevatorGUI extends JFrame {
                 	
                 if(currentFloor < destinationFloor) {
                 	currentFloor = currentFloor + 1;
+                	isMovingUp = true;
                 }
                    
                 else if(destinationFloor < currentFloor) {
                 	currentFloor = currentFloor - 1;
+                	isMovingUp = true;
                 		
                 }
                 else {
                 	setDestinationFloor(i,(int)(Math.random() * 10));
+                	isMovingUp = false;
                 	
                 }
         
