@@ -366,8 +366,6 @@ public class Scheduler {
 
 				/** Remove passenger from the schedulers floorRequests array */
 				iterator.remove();
-
-
 			}
 		}
 		
