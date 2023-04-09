@@ -1,4 +1,5 @@
-﻿01:05:15.0,2,Up,4,false,false
+﻿00:02:45.5,1,Up,2,false,false
+01:05:15.0,2,Down,1,false,false
 02:05:15.0,5,Down,2,false,false
 03:05:15.0,7,Down,6,false,false
 04:05:15.0,10,Down,7,true,false
