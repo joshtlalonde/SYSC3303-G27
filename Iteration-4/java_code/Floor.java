@@ -8,7 +8,7 @@ import java.util.*;
 
 public class Floor implements Runnable {
 	static final String FILENAME = "C:\\Users\\Josh's PC\\Documents\\University\\Classes\\SYSC3303\\Project\\SYSC3303-G27-main\\SYSC3303-G27\\Iteration-4\\floor_input.txt";
-	static final int NUMBER_OF_FLOORS = 20; // Number of floors in the building
+	static final int NUMBER_OF_FLOORS = 22; // Number of floors in the building
 
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
 	private DatagramSocket sendReceiveSocket;

@@ -3,7 +3,7 @@ import java.util.*;
 
 class Elevator implements Runnable
 {
-    static final int NUMBER_OF_FLOORS = 20; // Number of floors in the building
+    static final int NUMBER_OF_FLOORS = 22; // Number of floors in the building
     static final int NUMBER_OF_ELEVATORS = 4; // Number of elevators in the building
 
     private Elevator_State currentState = Elevator_State.IDLE; // Holds the current State of the elevator
