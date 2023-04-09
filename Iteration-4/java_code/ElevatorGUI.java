@@ -5,7 +5,7 @@ import java.lang.Math;
 public class ElevatorGUI extends JFrame {
 
     private static JLabel[] elevatorStatusLabel;
-    private static JCheckBox[] elevatorDirectionCheckbox;
+    private static JLabel[] elevatorCurrentStatus;
     private static ElevatorPanel[] elevatorPanels;
 
     public ElevatorGUI() {
@@ -17,15 +17,15 @@ public class ElevatorGUI extends JFrame {
 
         // Create the elevator status panels
         elevatorStatusLabel = new JLabel[4];
-        elevatorDirectionCheckbox = new JCheckBox[4];
+        elevatorCurrentStatus = new JLabel[4];
         JPanel[] elevatorStatusPanels = new JPanel[4];
         for (int i = 0; i < 4; i++) {
             elevatorStatusLabel[i] = new JLabel("Elevator " + (i + 1) + " is on floor 0");
-            elevatorDirectionCheckbox[i] = new JCheckBox("Moving up");
+            elevatorCurrentStatus[i] = new JLabel("Moving up");
             elevatorStatusPanels[i] = new JPanel();
             elevatorStatusPanels[i].setLayout(new GridLayout(2, 1));
             elevatorStatusPanels[i].add(elevatorStatusLabel[i]);
-            elevatorStatusPanels[i].add(elevatorDirectionCheckbox[i]);
+            elevatorStatusPanels[i].add(elevatorCurrentStatus[i]);
             add(elevatorStatusPanels[i]);
         }
 
@@ -40,9 +40,9 @@ public class ElevatorGUI extends JFrame {
         setVisible(true);
     }
 
-    public void updateStatus(int elevatorId, int currentFloor, boolean isMovingUp) {
+    public void updateStatus(int elevatorId, int currentFloor, String state) {
         elevatorStatusLabel[elevatorId].setText("Elevator " + (elevatorId + 1) + " is on floor " + currentFloor);
-        elevatorDirectionCheckbox[elevatorId].setSelected(isMovingUp);
+        elevatorCurrentStatus[elevatorId].setText(state);
         elevatorPanels[elevatorId].setCurrentFloor(currentFloor);
         elevatorPanels[elevatorId].repaint();
     }
@@ -74,9 +74,10 @@ public class ElevatorGUI extends JFrame {
                 	isMovingUp = false;
                 	
                 }
+                
+               String state = "idle";
         
-        
-               guiTestEle.updateStatus(i, currentFloor, isMovingUp);
+               guiTestEle.updateStatus(i, currentFloor, state);
             }
 
             // Wait for a short time before updating again
@@ -139,4 +140,3 @@ public class ElevatorGUI extends JFrame {
         }
     }
 }
-
