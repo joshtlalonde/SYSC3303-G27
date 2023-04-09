@@ -4,7 +4,9 @@ import java.text.*;
 import java.util.*;
 
 public class Scheduler {
-	static final int NUMBER_OF_FLOORS = 22; // Number of floors in the building
+	static final int NUMBER_OF_FLOORS = 20; // Number of floors in the building
+	static final int NUMBER_OF_ELEVATORS = 1; // Number of elevators in the building
+	// private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
 
 	private DatagramSocket receiveSocket; // Socket for receiving packets from Floor and Elevator
 	private InetAddress floorAddress;
@@ -365,8 +367,18 @@ public class Scheduler {
 				/** Remove passenger from the schedulers floorRequests array */
 				iterator.remove();
 
+
+			}
+		}
+		
+		/**
+		 * Send message to the Floor for each passenger that just got on
+		 * Must be done using passengers in case the elevator was in the idle state
+		 */
+		for (UserInput passenger : elevator.getPassengers()) {
+			if(passenger.getCurrentFloor() == elevator.getCurrentFloor() && passenger.getFloorButtonUp() == elevator.getDirectionUp()){
 				/** Send message to the Floor to tell it an Elevator has Arrived */
-				this.sendFloorPacket(floorRequest, floorAddress, floorPort);
+				this.sendFloorPacket(passenger, floorAddress, floorPort);	
 			}
 		}
 
