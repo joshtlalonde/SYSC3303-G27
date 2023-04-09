@@ -1,11 +1,12 @@
 import javax.swing.*;
 import java.awt.*;
+import java.lang.Math;
 
 public class ElevatorGUI extends JFrame {
 
-    private JLabel[] elevatorStatusLabel;
-    private JCheckBox[] elevatorDirectionCheckbox;
-    private ElevatorPanel[] elevatorPanels;
+    private static JLabel[] elevatorStatusLabel;
+    private static JCheckBox[] elevatorDirectionCheckbox;
+    private static ElevatorPanel[] elevatorPanels;
 
     public ElevatorGUI() {
         // Set up the main window
@@ -47,16 +48,32 @@ public class ElevatorGUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        GUITestEle guiTestEle = new GUITestEle();
+        ElevatorGUI guiTestEle = new ElevatorGUI();
         // Call the updateStatus method periodically to update the GUI based on the current state of the elevators
         while (true) {
             // Get the current state of each elevator
             for (int i = 0; i < 4; i++) {
                 int currentFloor = getCurrentFloor(i);
                 boolean isMovingUp = isMovingUp(i);
+                int destinationFloor = getDestinationFloor(i);
 
                 // Update the GUI for the elevator
-                guiTestEle.updateStatus(i, currentFloor, isMovingUp);
+                	
+                if(currentFloor < destinationFloor) {
+                	currentFloor = currentFloor + 1;
+                }
+                   
+                else if(destinationFloor < currentFloor) {
+                	currentFloor = currentFloor - 1;
+                		
+                }
+                else {
+                	setDestinationFloor(i,(int)(Math.random() * 10));
+                	
+                }
+        
+        
+               guiTestEle.updateStatus(i, currentFloor, isMovingUp);
             }
 
             // Wait for a short time before updating again
@@ -70,19 +87,35 @@ public class ElevatorGUI extends JFrame {
 
     private static int getCurrentFloor(int elevatorId) {
         // Your elevator logic to get the current floor of the elevator with ID elevatorId goes here
-        return 0;
+    	return elevatorPanels[elevatorId].currentFloor;
+        
     }
 
     private static boolean isMovingUp(int elevatorId) {
         // Your elevator logic to determine whether the elevator with ID elevatorId is moving up goes here
-        return true;
+        return elevatorPanels[elevatorId].isMovingUp;
+    }
+    
+    private static int getDestinationFloor(int elevatorId) {
+    	return elevatorPanels[elevatorId].destinationFloor;
+    }
+    
+    private static void setDestinationFloor(int elevatorId, int destinationFloor) {
+    		elevatorPanels[elevatorId].destinationFloor = destinationFloor;
     }
 
     private class ElevatorPanel extends JPanel {
         private int currentFloor = 0;
+        private boolean isMovingUp = false;
+        private int destinationFloor = 5;
+        
 
         public void setCurrentFloor(int currentFloor) {
             this.currentFloor = currentFloor;
+        }
+        
+        public void setDestinationFloor(int destinationFloor) {
+        	this.destinationFloor = destinationFloor;
         }
 
         public void paintComponent(Graphics g) {
@@ -103,3 +136,4 @@ public class ElevatorGUI extends JFrame {
         }
     }
 }
+
