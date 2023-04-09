@@ -14,6 +14,7 @@ public class UserInputTest extends junit.framework.TestCase{
 		assertEquals(userinput.getDoorFault(), false);
 		assertEquals(userinput.getHardFault(), true);
 
+		
   `	}
 	public void testDefaultConstructor(){
 		SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
