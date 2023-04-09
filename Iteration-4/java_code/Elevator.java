@@ -4,6 +4,7 @@ import java.util.*;
 class Elevator implements Runnable
 {
     static final int NUMBER_OF_FLOORS = 20; // Number of floors in the building
+    static final int NUMBER_OF_ELEVATORS = 4; // Number of elevators in the building
 
     private Elevator_State currentState = Elevator_State.IDLE; // Holds the current State of the elevator
     private DatagramSocket sendReceiveSocket; // Socket that Elevator sends and receives packets from
@@ -494,14 +495,15 @@ class Elevator implements Runnable
         return elevatorPacket;
     }
 
-    public static void main(String[] args) {        
-		// Create Elevator Thread
-        Thread elevator1 = new Thread(new Elevator(1), "Elevator1");
-        Thread elevator2 = new Thread(new Elevator(2), "Elevator2");
+    public static void main(String[] args) {    
+    	// Create an elevator thread for each elevator
+    	for (int i = 1; i < NUMBER_OF_ELEVATORS + 1; i++) {
+    		// Create Elevator Thread
+            Thread elevator = new Thread(new Elevator(i), "Elevator" + (i));
+            // Start Thread
+            elevator.start();
+    	}
 
-        // Start Threads
-        elevator1.start();
-        elevator2.start();
     }
 }
 
