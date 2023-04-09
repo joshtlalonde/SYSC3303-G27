@@ -40,9 +40,9 @@ public class UserInputTest extends junit.framework.TestCase{
        
         	assertEquals(userInput.getCurrentFloor(), 3);
         	try {
-            	assertEquals(userInput.getTime(), dateFormatter.parse("10:00:00.000"));
+            		assertEquals(userInput.getTime(), dateFormatter.parse("10:00:00.000"));
         	} catch (ParseException e) {
-            	e.printStackTrace();
+            		e.printStackTrace();
         	}
         	assertTrue(userInput.getFloorButtonUp());
         	assertEquals(userInput.getDestinationFloor(), 5);
