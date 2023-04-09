@@ -5,8 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ElevatorPacket {
-    static final int NUMBER_OF_FLOORS = 20; // Number of floors in the building
-
     private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
     private Elevator_State currentState = Elevator_State.IDLE; // Holds the current State of the elevator
 
