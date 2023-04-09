@@ -11,7 +11,7 @@ public class Scheduler {
 	private DatagramSocket receiveSocket; // Socket for receiving packets from Floor and Elevator
 	private InetAddress floorAddress;
 	private int floorPort;
-	private Scheduler_State currentState = Scheduler_State.RECEIVE;
+	private Scheduler_State currentState;
 	
     private List<UserInput> floorRequests = Collections.synchronizedList(new ArrayList<UserInput>()); // Holds list of requests from Floor
 	private List<ElevatorInfo> elevatorInfos = Collections.synchronizedList(new ArrayList<ElevatorInfo>()); // Holds the list of elevators and their associated information
@@ -20,6 +20,9 @@ public class Scheduler {
 		try {
 			// Construct a datagram socket and bind it to port 69 
 			receiveSocket = new DatagramSocket(69);
+
+			// Set current state to Receive
+			currentState = Scheduler_State.RECEIVE;
 			
 		} catch (SocketException se) {
 			se.printStackTrace();
@@ -467,6 +470,49 @@ public class Scheduler {
 		}
 
 		return elevatorInfo;
+	}
+
+	
+	/**
+	 * Getter for receiveSocket
+	 */
+	public DatagramSocket getReceiveSocket() {
+		return receiveSocket;
+	}
+
+	/**
+	 * Getter for floorAddress
+	 */
+	public InetAddress getFloorAddress() {
+		return floorAddress;
+	}
+
+	/**
+	 * Getter for floorPort
+	 */
+	public int getFloorPort() {
+		return floorPort;
+	}
+
+	/**
+	 * Getter for currentState
+	 */
+	public Scheduler_State getCurrentState() {
+		return currentState;
+	}
+
+	/**
+	 * Getter for floorRequests
+	 */
+	public List<UserInput> getFloorRequests() {
+		return floorRequests;
+	}
+
+	/**
+	 * Getter for elevatorInfos
+	 */
+	public List<ElevatorInfo> getElevatorInfos () {
+		return elevatorInfos;
 	}
 
     public static void main(String[] args) {
