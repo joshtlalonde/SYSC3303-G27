@@ -149,14 +149,66 @@ public class SchedulerTest extends junit.framework.TestCase {
     }
 
     public void testServiceElevatorMovingUp() {
+    	Scheduler scheduler = new Scheduler();
+    	ElevatorInfo elevatorInfo = null;
+    	ElevatorInfo elevator = new ElevatorInfo();
 
+		try {
+			elevatorInfo = new ElevatorInfo(1, 2, 5, true, new ArrayList<UserInput>(), Elevator_State.MOVING_UP, 69, InetAddress.getLocalHost());
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	elevator = scheduler.serviceElevatorMovingUp(elevatorInfo);
+    	
+    	assertEquals(elevator.getCurrentFloor(), 2);
+    	assertEquals(elevator.getCurrentState(), Elevator_State.MOVING_UP);
+    	assertEquals(elevator.getDestinationFloor(), 5);
+    	
+    	
+    	scheduler.getReceiveSocket().close();
     }
 
     public void testServiceElevatorMovingDown() {
+    	Scheduler scheduler = new Scheduler();
+    	ElevatorInfo elevatorInfo = null;
+    	ElevatorInfo elevator = new ElevatorInfo();
 
+		try {
+			elevatorInfo = new ElevatorInfo(1, 2, 5, false, new ArrayList<UserInput>(), Elevator_State.MOVING_DOWN, 69, InetAddress.getLocalHost());
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	elevator = scheduler.serviceElevatorMovingDown(elevatorInfo);
+    	
+    	assertEquals(elevator.getCurrentFloor(), 2);
+    	/** Assert that current state is RECEIVE */
+    	assertEquals(elevator.getCurrentState(), Elevator_State.MOVING_DOWN);
+    	assertEquals(elevator.getDestinationFloor(), 5);
+
+    	scheduler.getReceiveSocket().close();
     }
 
     public void testServiceElevatorStopped() {
+    	Scheduler scheduler = new Scheduler();
+    	ElevatorInfo elevatorInfo = null;
+    	ElevatorInfo elevator = new ElevatorInfo();
+
+		try {
+			elevatorInfo = new ElevatorInfo(1, 2, 5, true, new ArrayList<UserInput>(), Elevator_State.STOPPED, 69, InetAddress.getLocalHost());
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	elevator = scheduler.serviceElevatorStopped(elevatorInfo);
+    	
+    	assertEquals(elevator.getCurrentFloor(), 2);
+    	/** Assert that current state is RECEIVE */
+    	assertEquals(elevator.getCurrentState(), Elevator_State.STOPPED);
+    	assertEquals(elevator.getDestinationFloor(), 5);
+    	
+    	scheduler.getReceiveSocket().close();
 
     }
 
