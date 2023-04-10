@@ -495,8 +495,18 @@ public class Scheduler {
 					break;
 			}
 
+			// Update the GUI based on the current states of the elevator
 			for (ElevatorInfo elevator : scheduler.elevatorInfos) {
-				elevatorGUI.updateStatus(elevator.getElevatorNumber() - 1, elevator.getCurrentFloor(), elevator.getCurrentState().toString(), elevator.getPassengers().size());
+				int num_passengers = 0;
+				for (UserInput passenger : elevator.getPassengers()) {
+					if (passenger.getCurrentFloor() < elevator.getCurrentFloor() && elevator.getDirectionUp() && elevator.getCurrentState() != Elevator_State.IDLE) {
+						num_passengers++;
+					}
+					else if (passenger.getCurrentFloor() > elevator.getCurrentFloor() && !elevator.getDirectionUp() && elevator.getCurrentState() != Elevator_State.IDLE) {
+						num_passengers++;
+					}
+				}
+				elevatorGUI.updateStatus(elevator.getElevatorNumber() - 1, elevator.getCurrentFloor(), elevator.getCurrentState().toString(), num_passengers, elevator.getDestinationFloor());
 			}
 			
 
