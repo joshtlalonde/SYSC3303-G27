@@ -4,9 +4,8 @@ import java.text.*;
 import java.util.*;
 
 public class Scheduler {
-	static final int NUMBER_OF_FLOORS = 20; // Number of floors in the building
-	static final int NUMBER_OF_ELEVATORS = 1; // Number of elevators in the building
-	// private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
+	static final int NUMBER_OF_FLOORS = 22; // Number of floors in the building
+	static final int NUMBER_OF_ELEVATORS = 4; // Number of elevators in the building
 
 	private DatagramSocket receiveSocket; // Socket for receiving packets from Floor and Elevator
 	private InetAddress floorAddress;
