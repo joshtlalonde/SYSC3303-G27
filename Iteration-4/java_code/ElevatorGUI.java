@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.lang.Math;
 
 public class ElevatorGUI extends JFrame {
 
@@ -57,74 +56,23 @@ public class ElevatorGUI extends JFrame {
         elevatorPanels[elevatorId].repaint();
     }
 
-    // public void Running() {
-    //     ElevatorGUI guiTestEle = new ElevatorGUI();
-    //     int passengers = 0;
-    //     // Call the updateStatus method periodically to update the GUI based on the current state of the elevators
-    //     // Get the current state of each elevator
-    //     for (int i = 0; i < 4; i++) {
-    //     	int currentFloor = getCurrentFloor(i);
-    //         String state = getState(i);
-    //         int destinationFloor = getDestinationFloor(i);
-
-    //          // Update the GUI for the elevator
-                	
-    //          if(currentFloor < destinationFloor) {
-    //         	 currentFloor = currentFloor + 1;
-    //              state = "Moving Up";
-    //           }
-    //          else if(destinationFloor < currentFloor) {
-    //         	 currentFloor = currentFloor - 1;
-    //         	 state = "Moving Down";
-    //          	}
-    //          else {
-    //         	 setDestinationFloor(i,(int)(Math.random() * 10));
-    //         	 state = "Idle";
-    //         }
-        
-    //            guiTestEle.updateStatus(i, currentFloor, state, passengers);
-    //         }
-
-    //         // Wait for a short time before updating again
-    //         try {
-    //             Thread.sleep(100);
-    //         } catch (InterruptedException e) {
-    //             e.printStackTrace();
-    //         }
-    //     }
-
     public int getCurrentFloor(int elevatorId) {
         // Your elevator logic to get the current floor of the elevator with ID elevatorId goes here
     	return elevatorPanels[elevatorId].currentFloor;
-        
     }
 
-    // public void setState(int elevatorId, String state) {
-    // 	elevatorPanels[elevatorId].state = state;
-    // }
     public int getDestinationFloor(int elevatorId) {
     	return elevatorPanels[elevatorId].destinationFloor;
-    }
-    // public  String getState(int elevatorId) {
-    // 	return elevatorPanels[elevatorId].state;
-    // }
-    
-    private static void setDestinationFloor(int elevatorId, int destinationFloor) {
-    	elevatorPanels[elevatorId].destinationFloor = destinationFloor;
     }
 
     public class ElevatorPanel extends JPanel {
         private int currentFloor = 0;
-        private boolean isMovingUp = false;
         private int destinationFloor = 5;
-        private int numPassengers = 0;
         
-
         public void setCurrentFloor(int currentFloor) {
             this.currentFloor = currentFloor;
         }
         
-
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
             // Draw the elevator
