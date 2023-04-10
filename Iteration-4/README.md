@@ -35,7 +35,20 @@ A test for all classes within the project are in the `tests` folder.
 The names of the tests match the class name that they are testing
 
 # Setup and Test Instructions
-### Add JUnit Library to exclipse
+### Adding Files to ecplipse
+Unzip the Project Submission folder. Within the folder should be a folder named `Eclipse`, to access this folder in eclipse you should start eclipse and then set your workspace to the location of the `Eclipse` folder.
+If this does not work these are the alternative steps to follow:
+1. Start a new project in Eclipse with any name
+2. Delete the `module-info` folder/file
+3. Locate the folder of this new project on your computer
+4. Once located, go to the directory `<ProjectName>/src` and insert the files located in our `G27_Code/src` directory
+5. Then right click on the project directory on the eclipse package explorer to add a new `Source Folder`, name this folder `tests`
+6. Locate the new tests directory in your computers file explorer, then insert the files located in our `G27_Code/tests` directory into the new tests folder you just created
+7. Move the `floor_input.txt` and `README.md` into your directory `<ProjectName>` 
+8. Now you should be able to `refresh` the package explorer by right clicking and selecting `refresh`
+9. You should now see the src and tests folders along with the floor_input.txt and the README.md
+
+### Add JUnit Library to eclipse
 1. Right click on each of the files in the `tests` folder
 2. Go to properties
 3. Click on library
