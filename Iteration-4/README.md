@@ -118,6 +118,8 @@ The `tests` folder contains the different Unit Test files that are used to ensur
 ##### Sanskar : 101189876 
 - Created Elevator State Machine
 - Created Scheduler State Machine
+- Coded full GUI template, part operation
+- Coded Scheduler algorithms: Idle, Stopped
   
 ##### Jakob : 101201314 
  - Coded GUI, particularly GUI operating
