@@ -28,6 +28,24 @@ public class ElevatorInfoTest extends junit.framework.TestCase{
         assertEquals(InetAddress.getLocalHost(), elevator.getAddress());
     }
   
+  public void testConvertPacket() {
+        ElevatorInfo elevatorInfo = new ElevatorInfo();
+        ElevatorPacket elevatorPacket = new ElevatorPacket(1, true, 2, 3, true, new ArrayList<UserInput>(), Elevator_State.MOVING_DOWN);
+        try {
+            InetAddress address = InetAddress.getLocalHost();
+            elevatorInfo.convertPacket(elevatorPacket, 1234, address);
+            assertEquals(1, elevatorInfo.getElevatorNumber());
+            assertEquals(true, elevatorInfo.getIsMoving());
+            assertEquals(2, elevatorInfo.getCurrentFloor());
+            assertEquals(3, elevatorInfo.getDestinationFloor());
+            assertEquals(true, elevatorInfo.getDirectionUp());
+            assertEquals(Elevator_State.MOVING_DOWN, elevatorInfo.getCurrentState());
+            assertEquals(1234, elevatorInfo.getPort());
+            assertEquals(address, elevatorInfo.getAddress());
+        } catch (UnknownHostException e) {
+            fail("UnknownHostException thrown");
+        }
+    }
   
     
   
