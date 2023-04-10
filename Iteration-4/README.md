@@ -120,8 +120,8 @@ The `tests` folder contains the different Unit Test files that are used to ensur
 - Created Scheduler State Machine
   
 ##### Jakob : 101201314 
- - Coded ELevator Handler States execpt Idle
- - Aided with Diagrams 
+ - Coded GUI, particularly GUI operating
+ - Coded Scheduler test methods
   
 ##### Sanya : 101205395
 - Helped with UML diagrams
