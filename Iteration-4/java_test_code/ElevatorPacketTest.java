@@ -9,9 +9,10 @@ import org.junit.Assert.*;
 public class ElevatorPacketTest extends junit.framework.TestCase{ 
 
     public void testConstructor() {
+        /** Create an elevatorPacket */
         ElevatorPacket elevatorPacket = new ElevatorPacket(1, true, 2, 4, false, new ArrayList<UserInput>(), Elevator_State.MOVING_DOWN);
 
-        // Assert each of the attributs are equal
+        /** Assert each of the attributs are what they are expected to be */
         assertEquals(elevatorPacket.getElevatorNumber(), 1);
         assertEquals(elevatorPacket.getIsMoving(), true);
         assertEquals(elevatorPacket.getCurrentFloor(), 2);
@@ -22,9 +23,10 @@ public class ElevatorPacketTest extends junit.framework.TestCase{
     }
 
     public void testDefaultConstructor() {
+        /** Create an elevatorPacket */
         ElevatorPacket elevatorPacket = new ElevatorPacket();
 
-        // Assert each of the attributs are equal
+        /** Assert each of the attributs are what they are expected to be */
         assertEquals(elevatorPacket.getElevatorNumber(), 0);
         assertEquals(elevatorPacket.getIsMoving(), false);
         assertEquals(elevatorPacket.getCurrentFloor(), 0);
@@ -35,8 +37,10 @@ public class ElevatorPacketTest extends junit.framework.TestCase{
     }
 
     public void testSend() {
+        /** Create an elevatorPacket */
         ElevatorPacket elevatorPacket = new ElevatorPacket(1, true, 1, 2, true, new ArrayList<UserInput>(),  Elevator_State.MOVING_UP);
 
+        /** Get local address to be sent to the test IP address */
         InetAddress localAddr;
 		try {
 			localAddr = InetAddress.getLocalHost();
@@ -46,6 +50,7 @@ public class ElevatorPacketTest extends junit.framework.TestCase{
 			return;
 		}
 		
+        /** Send the Packet */
         try {
 			elevatorPacket.send(localAddr, 69, new DatagramSocket(), false);
 		} catch (SocketException e) {
@@ -53,6 +58,7 @@ public class ElevatorPacketTest extends junit.framework.TestCase{
 			e.printStackTrace();
 		}
 
+        /** Assert that the values expected are what we sent in the UDP datagram packet */
         byte testData[] = {0x01, 0x01, 0x01, 0x02, 0x01, 0x02, (byte)0xFF};
         assertTrue(Arrays.equals(elevatorPacket.getSendElevatorPacket().getData(), testData));
         assertEquals(elevatorPacket.getSendElevatorPacket().getLength(), testData.length);
@@ -61,8 +67,10 @@ public class ElevatorPacketTest extends junit.framework.TestCase{
     }
 
     public void testReceive() {
+        /** Create an elevatorPacket */
         ElevatorPacket elevatorPacket = new ElevatorPacket(1, true, 1, 2, true, new ArrayList<UserInput>(), Elevator_State.MOVING_UP);
 
+        /** Get local address to be sent to the test IP address */
         InetAddress localAddr;
 		try {
 			localAddr = InetAddress.getLocalHost();
@@ -72,6 +80,7 @@ public class ElevatorPacketTest extends junit.framework.TestCase{
 			return;
 		}
 		
+        /** Create a socket to send on and receive on */
         DatagramSocket sendSocket, receiveSocket;
 		try {
 			sendSocket = new DatagramSocket();
@@ -82,9 +91,11 @@ public class ElevatorPacketTest extends junit.framework.TestCase{
 			return;
 		}
 
+        /** Send then receive the Packet */
         elevatorPacket.send(localAddr, 69, sendSocket, false);
 		elevatorPacket.receive(receiveSocket);
 
+        /** Compare and assert that the data in the receive packet is as expected */
         byte testData[] = new byte[100];
         testData[0] = 0x01;
         testData[1] = 0x01;
@@ -100,9 +111,10 @@ public class ElevatorPacketTest extends junit.framework.TestCase{
     }
 
     public void testConvertBytesToPacket() {
+        /** Create an elevatorPacket */
         ElevatorPacket elevatorPacket = new ElevatorPacket(2, true, 4, 7, true, new ArrayList<UserInput>(), Elevator_State.MOVING_UP);
         
-        // Create the expected Bytes from the elevator
+        /** Create the expected Bytes from the elevator */
         byte testPacket[];
         ByteArrayOutputStream expectedOutput = new ByteArrayOutputStream();
         expectedOutput.write(elevatorPacket.getElevatorNumber());
@@ -126,7 +138,7 @@ public class ElevatorPacketTest extends junit.framework.TestCase{
         expectedOutput.write(0xFF);
         testPacket = expectedOutput.toByteArray();
         
-        // Call the Testing function
+        /** Call the Testing function */
         try {
 			elevatorPacket.convertBytesToPacket(testPacket);
 		} catch (ParseException e) {
@@ -134,7 +146,7 @@ public class ElevatorPacketTest extends junit.framework.TestCase{
 			e.printStackTrace();
 		}
                 
-        
+        /** Compare and assert that the data in the receive packet is as expected */
         ArrayList<UserInput> testPassengers = new ArrayList<UserInput>();
         testPassengers.add(new UserInput(new Date(72), 0, false, 0, true, false));
         testPassengers.add(new UserInput(new Date(100), 1, false, 2, false, true));
@@ -153,28 +165,36 @@ public class ElevatorPacketTest extends junit.framework.TestCase{
     }
 
     public void testGettersSetters() {
+        /** Create an elevatorPacket */
         ElevatorPacket elevatorPacket = new ElevatorPacket(1, true, 1, 2, true, new ArrayList<UserInput>(), Elevator_State.MOVING_UP);
         
-        // Assert Getters
+        /** Assert Getters */
         assertEquals(elevatorPacket.getElevatorNumber(), 1);
-        assertEquals(elevatorPacket.getIsMoving(), true);
+        elevatorPacket.setIsMoving(false);
+        assertEquals(elevatorPacket.getIsMoving(), false);
         assertEquals(elevatorPacket.getCurrentFloor(), 1);
         elevatorPacket.setDestinationFloor(5);
         assertEquals(elevatorPacket.getDestinationFloor(), 5);
         assertEquals(elevatorPacket.getDirectionUp(), true);
         assertEquals(elevatorPacket.getCurrentState(), Elevator_State.MOVING_UP);
+        elevatorPacket.getPassengers().add(new UserInput());
+        assertEquals(elevatorPacket.getPassengers().size(), 1);
     }
 
     public void testConvertStateToInt() {
+        /** Create an elevatorPacket */
         ElevatorPacket elevatorPacket = new ElevatorPacket(1, true, 1, 2, true, new ArrayList<UserInput>(), Elevator_State.MOVING_UP);
 
+        /** Assert that the state is as expected */
         int elevatorStateInt = elevatorPacket.convertStateToInt(Elevator_State.MOVING_UP);
         assertEquals(elevatorStateInt, 2);
     }
 
     public void testConvertIntToState() {
+        /** Create an elevatorPacket */
         ElevatorPacket elevatorPacket = new ElevatorPacket(1, true, 1, 2, true, new ArrayList<UserInput>(), Elevator_State.MOVING_UP);
 
+        /** Assert that the state is as expected */
         Elevator_State elevatorState = elevatorPacket.convertIntToState(4);
         assertEquals(elevatorState, Elevator_State.STOPPED);
     }

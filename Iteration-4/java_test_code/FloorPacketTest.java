@@ -7,6 +7,7 @@ import org.junit.Assert.*;
 public class FloorPacketTest extends junit.framework.TestCase {
 
     public void testConstructor() {
+        /** Create a Floor Packet */
         SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
         Date date;
         try {
@@ -18,7 +19,7 @@ public class FloorPacketTest extends junit.framework.TestCase {
         }
         FloorPacket floorPacket = new FloorPacket(1, date, false, 2, true, false);
 
-        // Assert each of the attributs are equal
+        /** Assert each of the attributs are equal */
         assertEquals(floorPacket.getFloor(), 1);
         try {
             assertEquals(floorPacket.getTime(), dateFormatter.parse("10:10:10.5"));
@@ -33,6 +34,7 @@ public class FloorPacketTest extends junit.framework.TestCase {
     }
 
     public void testSend() {
+        /** Create a Floor Packet */
         SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
         Date date;
         try {
@@ -44,6 +46,7 @@ public class FloorPacketTest extends junit.framework.TestCase {
         }
         FloorPacket floorPacket = new FloorPacket(1, date, false, 2, true, false);
 
+        /** Get local address to be sent to the test IP address */
         InetAddress localAddr;
         try {
             localAddr = InetAddress.getLocalHost();
@@ -53,6 +56,7 @@ public class FloorPacketTest extends junit.framework.TestCase {
             return;
         }
 
+        /** Send the Packet */
         try {
             floorPacket.send(localAddr, 23, new DatagramSocket(), false);
         } catch (SocketException e) {
@@ -60,6 +64,7 @@ public class FloorPacketTest extends junit.framework.TestCase {
             e.printStackTrace();
         }
 
+        /** Assert that the values expected are what we sent in the UDP datagram packet */
         byte testData[] = new byte[18];
         testData[0] = 0x01;
         testData[1] = 0x02;
@@ -76,7 +81,6 @@ public class FloorPacketTest extends junit.framework.TestCase {
         floorPacket.convertBytesToPacket(testData);
         floorPacket.convertBytesToPacket(floorPacket.getSendFloorPacket().getData());
 
-        // Assert the data
         assertTrue(Arrays.equals(floorPacket.getSendFloorPacket().getData(), testData));
         assertEquals(floorPacket.getSendFloorPacket().getLength(), 18);
         assertEquals(floorPacket.getSendFloorPacket().getAddress(), localAddr);
@@ -84,6 +88,7 @@ public class FloorPacketTest extends junit.framework.TestCase {
     }
 
     public void testReceive() {
+        /** Create a Floor Packet */
         SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
         Date date;
         try {
@@ -95,6 +100,7 @@ public class FloorPacketTest extends junit.framework.TestCase {
         }
         FloorPacket floorPacket = new FloorPacket(1, date, false, 2, true, false);
 
+        /** Get local address to be sent to the test IP address */
         InetAddress localAddr;
         try {
             localAddr = InetAddress.getLocalHost();
@@ -104,6 +110,7 @@ public class FloorPacketTest extends junit.framework.TestCase {
             return;
         }
 
+        /** Create a socket to send on and receive on */
         DatagramSocket sendSocket, receiveSocket;
         try {
             sendSocket = new DatagramSocket();
@@ -114,9 +121,11 @@ public class FloorPacketTest extends junit.framework.TestCase {
             return;
         }
 
+        /** Send then receive the Packet */
         floorPacket.send(localAddr, 69, sendSocket, false);
         floorPacket.receive(receiveSocket);
 
+        /** Compare and assert that the data in the receive packet is as expected */
         byte testData[] = new byte[18];
         testData[0] = 0x01;
         testData[1] = 0x02;
@@ -136,6 +145,7 @@ public class FloorPacketTest extends junit.framework.TestCase {
     }
 
     public void testConvertBytesToPacket() {
+        /** Create a Floor Packet */
         SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
         Date date;
         try {
@@ -147,9 +157,13 @@ public class FloorPacketTest extends junit.framework.TestCase {
         }
         FloorPacket floorPacket = new FloorPacket(1, date, false, 2, true, false);
 
+        /** Create the expected Bytes from the floor */
         byte testPacket[] = { 0x01, 0x02, 0x00, 0x01, 0x00, 0x31, 0x30, 0x3A, 0x31, 0x30, 0x3A, 0x31, 0x30, 0x2E, 0x35, (byte)0xFF };
+
+        /** Call the Testing function */
         floorPacket.convertBytesToPacket(testPacket);
 
+        /** Compare and assert that the data in the receive packet is as expected */
         assertEquals(floorPacket.getFloor(), 1);
         assertEquals(floorPacket.getDestinationFloor(), 2);
         assertEquals(floorPacket.getDirectionUp(), false);
@@ -164,6 +178,7 @@ public class FloorPacketTest extends junit.framework.TestCase {
     }
 
     public void testGettersSetters() {
+        /** Create a Floor Packet */
         SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
         Date date;
         try {
@@ -175,7 +190,7 @@ public class FloorPacketTest extends junit.framework.TestCase {
         }
         FloorPacket floorPacket = new FloorPacket(1, date, false, 2, true, false);
 
-        // Assert Getters
+        /** Assert Getters */
         assertEquals(floorPacket.getFloor(), 1);
         try {
 			assertEquals(floorPacket.getTime(), dateFormatter.parse("10:10:10.5"));
@@ -187,5 +202,6 @@ public class FloorPacketTest extends junit.framework.TestCase {
         assertEquals(floorPacket.getDestinationFloor(), 2);
         assertEquals(floorPacket.getDoorFault(), true);
         assertEquals(floorPacket.getHardFault(), false);
+        assertEquals(floorPacket.getTimeoutFlag(), false);
     }
 }
