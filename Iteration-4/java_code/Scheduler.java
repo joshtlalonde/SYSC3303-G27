@@ -479,6 +479,7 @@ public class Scheduler {
     public static void main(String[] args) {
         // Create table that all threads will access
         Scheduler scheduler = new Scheduler();
+		ElevatorGUI elevatorGUI = new ElevatorGUI();
 
 		DatagramPacket receivePacket = null;
 		while (true) {
@@ -493,6 +494,11 @@ public class Scheduler {
 					scheduler.processElevator(receivePacket);
 					break;
 			}
+
+			for (ElevatorInfo elevator : scheduler.elevatorInfos) {
+				elevatorGUI.updateStatus(elevator.getElevatorNumber() - 1, elevator.getCurrentFloor(), elevator.getCurrentState().toString(), elevator.getPassengers().size());
+			}
+			
 
 			// Sleep for 1 second
 			try {
