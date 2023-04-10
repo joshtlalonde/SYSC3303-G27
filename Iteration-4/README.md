@@ -120,6 +120,7 @@ The `tests` folder contains the different Unit Test files that are used to ensur
 - Created Scheduler State Machine
 - Coded full GUI template, part operation
 - Coded Scheduler algorithms: Idle, Stopped
+- Helped with scheduler stopped, moving unit tests
   
 ##### Jakob : 101201314 
  - Coded GUI, particularly GUI operating
