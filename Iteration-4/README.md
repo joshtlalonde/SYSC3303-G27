@@ -118,3 +118,5 @@ The `tests` folder contains the different Unit Test files that are used to ensur
 ##### Partha : 101191302
 - Helped with State diagrams
 - Helped with Elevator.java
+- Created unit tests for Elevator.java
+- Coded the Transient Faults and the Hard Faults for the Elevator
