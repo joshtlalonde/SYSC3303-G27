@@ -1,4 +1,5 @@
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -21,7 +22,7 @@ public class FloorTest extends junit.framework.TestCase {
 		UserInput userinput = floor.fileToUser("04:10:30.200,5,Up,16,true,false");
     		assertEquals(userinput.getCurrentFloor(),5);
     		assertTrue(userinput.getFloorButtonUp());
-    		assertEquals(userinputt.getDestinationFloor(),16);
+    		assertEquals(userinput.getDestinationFloor(),16);
     		assertTrue(userinput.getDoorFault());
     		assertFalse(userinput.getHardFault());
 		}
@@ -41,7 +42,7 @@ public class FloorTest extends junit.framework.TestCase {
 	public void testSendFloorRequest() throws Exception{
     		Floor floor = new Floor();
 		SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
-        	Date date;
+        	Date date=null;
         	try {
             		date = dateFormatter.parse("10:10:10.5");
        		 } catch (ParseException e1) {
@@ -51,7 +52,7 @@ public class FloorTest extends junit.framework.TestCase {
         	}
 		UserInput userInput = new UserInput(date, 5, true, 10, false, false);
 	
-		InetAddress localAddr;
+		InetAddress localAddr=null;
 			try {
 				localAddr = InetAddress.getLocalHost();
 			} catch (UnknownHostException e) {
@@ -62,10 +63,12 @@ public class FloorTest extends junit.framework.TestCase {
 		floor.sendFloorRequest(localAddr, 23, userInput);
     }
     	public void testReceiveFloorResponse() throws Exception{
+		Floor floor = new Floor();
 		//wait for response
 		Thread.sleep(1000);
 		//calling the method to recieve response
 		UserInput userInput = floor.receiveFloorResponse();
+		assertNotNull(userInput);
     	
 }
 
