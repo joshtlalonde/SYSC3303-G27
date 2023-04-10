@@ -4,7 +4,8 @@ import java.lang.Math;
 
 public class ElevatorGUI extends JFrame {
 
-    private static JLabel[] elevatorStatusLabel;
+    private static JLabel[] elevatorCurrentFloor;
+    private static JLabel[] elevatorDestinationFloor;
     private static JLabel[] elevatorCurrentStatus;
     private static JLabel[] elevatorPassengers;
     private static ElevatorPanel[] elevatorPanels;
@@ -14,20 +15,23 @@ public class ElevatorGUI extends JFrame {
         super("Elevator GUI");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
-        setLayout(new GridLayout(1, 4));
+        setLayout(new GridLayout(2, 4));
 
         // Create the elevator status panels
-        elevatorStatusLabel = new JLabel[4];
+        elevatorCurrentFloor = new JLabel[4];
+        elevatorDestinationFloor = new JLabel[4];
         elevatorCurrentStatus = new JLabel[4];
         elevatorPassengers = new JLabel[4];
         JPanel[] elevatorStatusPanels = new JPanel[4];
         for (int i = 0; i < 4; i++) {
-            elevatorStatusLabel[i] = new JLabel("Elevator " + (i + 1) + " is on floor 0");
-            elevatorCurrentStatus[i] = new JLabel("Idle");
-            elevatorPassengers[i] = new JLabel("0");
+            elevatorCurrentFloor[i] = new JLabel("Elevator" + (i + 1) + " current floor: 0");
+            elevatorDestinationFloor[i] = new JLabel("Elevator" + (i + 1) + " destination floor: 0");
+            elevatorCurrentStatus[i] = new JLabel("Elevator" + (i + 1)  + " state: IDLE");
+            elevatorPassengers[i] = new JLabel("Elevator" + (i + 1)  + " has 0 passengers");
             elevatorStatusPanels[i] = new JPanel();
-            elevatorStatusPanels[i].setLayout(new GridLayout(3, 1));
-            elevatorStatusPanels[i].add(elevatorStatusLabel[i]);
+            elevatorStatusPanels[i].setLayout(new GridLayout(4, 1));
+            elevatorStatusPanels[i].add(elevatorCurrentFloor[i]);
+            elevatorStatusPanels[i].add(elevatorDestinationFloor[i]);
             elevatorStatusPanels[i].add(elevatorCurrentStatus[i]);
             elevatorStatusPanels[i].add(elevatorPassengers[i]);
             add(elevatorStatusPanels[i]);
@@ -44,10 +48,11 @@ public class ElevatorGUI extends JFrame {
         setVisible(true);
     }
 
-    public void updateStatus(int elevatorId, int currentFloor, String state, int numPassengers) {
-        elevatorStatusLabel[elevatorId].setText("Elevator " + (elevatorId + 1) + " is on floor " + currentFloor);
-        elevatorCurrentStatus[elevatorId].setText("Elevator " + (elevatorId + 1)  + " is in state " + state);
-        elevatorPassengers[elevatorId].setText("Elevator " + (elevatorId + 1)  + " has " + numPassengers + " passengers");
+    public void updateStatus(int elevatorId, int currentFloor, String state, int numPassengers, int destinationFloor) {
+        elevatorCurrentFloor[elevatorId].setText("Elevator" + (elevatorId + 1) + " current floor: " + currentFloor);
+        elevatorDestinationFloor[elevatorId].setText("Elevator" + (elevatorId + 1) + " destination floor: " + destinationFloor);
+        elevatorCurrentStatus[elevatorId].setText("Elevator" + (elevatorId + 1)  + " state: " + state);
+        elevatorPassengers[elevatorId].setText("Elevator" + (elevatorId + 1)  + " has " + numPassengers + " passengers");
         elevatorPanels[elevatorId].setCurrentFloor(currentFloor);
         elevatorPanels[elevatorId].repaint();
     }
@@ -124,9 +129,9 @@ public class ElevatorGUI extends JFrame {
             super.paintComponent(g);
             // Draw the elevator
             g.setColor(Color.GRAY);
-            g.fillRect(50 + 200 * (getWidth() / 800), getHeight() - currentFloor * (getHeight() / 21) - 40, 100, 40);
+            g.fillRect(50 + 200 * (getWidth() / 800), getHeight() - currentFloor * (getHeight() / 21) - 20, 100, 20);
             g.setColor(Color.BLACK);
-            g.drawRect(50 + 200 * (getWidth() / 800), getHeight() - currentFloor * (getHeight() / 21) - 40, 100, 40);
+            g.drawRect(50 + 200 * (getWidth() / 800), getHeight() - currentFloor * (getHeight() / 21) - 20, 100, 20);
 
             // Draw the floors
             g.setColor(Color.BLACK);
