@@ -526,6 +526,7 @@ public class Scheduler {
     public static void main(String[] args) {
         // Create table that all threads will access
         Scheduler scheduler = new Scheduler();
+		ElevatorGUI elevatorGUI = new ElevatorGUI();
 
 		DatagramPacket receivePacket = null;
 		while (true) {
@@ -540,6 +541,21 @@ public class Scheduler {
 					scheduler.processElevator(receivePacket);
 					break;
 			}
+
+			// Update the GUI based on the current states of the elevator
+			for (ElevatorInfo elevator : scheduler.elevatorInfos) {
+				int num_passengers = 0;
+				for (UserInput passenger : elevator.getPassengers()) {
+					if (passenger.getCurrentFloor() < elevator.getCurrentFloor() && elevator.getDirectionUp() && elevator.getCurrentState() != Elevator_State.IDLE) {
+						num_passengers++;
+					}
+					else if (passenger.getCurrentFloor() > elevator.getCurrentFloor() && !elevator.getDirectionUp() && elevator.getCurrentState() != Elevator_State.IDLE) {
+						num_passengers++;
+					}
+				}
+				elevatorGUI.updateStatus(elevator.getElevatorNumber() - 1, elevator.getCurrentFloor(), elevator.getCurrentState().toString(), num_passengers, elevator.getDestinationFloor());
+			}
+			
 
 			// Sleep for 1 second
 			try {
