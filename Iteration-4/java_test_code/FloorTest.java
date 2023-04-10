@@ -1,3 +1,9 @@
+import org.junit.jupiter.api.*;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.text.ParseException;
+import java.util.Date;
 
 public class FloorTest extends junit.framework.TestCase {
 	public void testConstructor() {
@@ -34,6 +40,17 @@ public class FloorTest extends junit.framework.TestCase {
 	
 	public void testSendFloorRequest() throws Exception{
     		Floor floor = new Floor();
+		SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ENGLISH);
+        	Date date;
+        	try {
+            		date = dateFormatter.parse("10:10:10.5");
+       		 } catch (ParseException e1) {
+            		// TODO Auto-generated catch block
+           	 e1.printStackTrace();
+            	return;
+        	}
+		UserInput userInput = new UserInput(date, 5, true, 10, false, false);
+	
 		InetAddress localAddr;
 			try {
 				localAddr = InetAddress.getLocalHost();
@@ -42,8 +59,13 @@ public class FloorTest extends junit.framework.TestCase {
 				e.printStackTrace();
 				return;
 		}
+		floor.sendFloorRequest(localAddr, 23, userInput);
     }
     	public void testReceiveFloorResponse() throws Exception{
+		//wait for response
+		Thread.sleep(1000);
+		//calling the method to recieve response
+		UserInput userInput = floor.receiveFloorResponse();
     	
 }
 
