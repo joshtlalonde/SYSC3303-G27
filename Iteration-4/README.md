@@ -37,7 +37,7 @@ The names of the tests match the class name that they are testing
 # Setup and Test Instructions
 ### Adding Files to ecplipse
 Unzip the Project Submission folder. Within the folder should be a folder named `Eclipse`, to access this folder in eclipse you should start eclipse and then set your workspace to the location of the `Eclipse` folder.
-If this does not work these are the alternative steps to follow:
+##### If this does not work these are the alternative steps to follow:
 1. Start a new project in Eclipse with any name
 2. Delete the `module-info` folder/file
 3. Locate the folder of this new project on your computer
