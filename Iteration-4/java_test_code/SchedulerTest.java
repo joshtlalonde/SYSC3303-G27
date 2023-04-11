@@ -213,10 +213,23 @@ public class SchedulerTest extends junit.framework.TestCase {
     }
 
     public void testServiceElevatorDoorOpen() {
+	    Scheduler scheduler = new Scheduler();
 	    
 	    
+	    ArrayList<UserInput> passengers = new ArrayList<UserInput>();
+	    passengers.add(new UserInput(2, true, false));
 	    
-
+	    try {
+	    	ElevatorInfo elevator = new ElevatorInfo(1, 2, 5, true, passengers, Elevator_State.DOOR_OPEN, 69, InetAddress.getLocalHost());
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    ElevatorInfo elevator = scheduler.serviceElevatorDoorOpen(elevator);
+	    
+	    assertTrue(elevator.getPassengers().isEmpty());
+	    
+	    
     }
 
     public void testServiceElevatorDoorClose() {
