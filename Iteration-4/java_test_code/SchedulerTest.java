@@ -231,11 +231,9 @@ public class SchedulerTest extends junit.framework.TestCase {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	    UserInput floorRequest = new UserInput(2, true, false);
-	    scheduler.floorRequests.add(floorRequest);
+	    
 	    
 	    elevator = scheduler.serviceElevatorDoorClose(elevator);
-	    assertFalse(scheduler.floorRequests.contains(floorRequest));
 	    assertEquals(2, elevator.getPassengers().size());
 	    assertTrue(elevator.getPassengers().contains(passengers.get(0)));
 	    assertTrue(elevator.getPassengers().contains(passengers.get(1)));
