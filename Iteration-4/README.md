@@ -137,6 +137,8 @@ The `tests` folder contains the different Unit Test files that are used to ensur
  - Coded SchedulerTest stopped, idle and moving unit tests
  - Aided with Elevator State Machine
  - Aided with Scheduler State Machine
+ - Created Sequence Diagram 
+ - Helped Code Scheduler Algorthims: MovingUp, MovingDown, Stopped
   
 ##### Sanya : 101205395
 - Helped with Class diagrams
