@@ -114,6 +114,18 @@ The `tests` folder contains the different Unit Test files that are used to ensur
 - Coded the complete Floor class
 - Coded the UserInput and FloorButton and FloorLamp classes
 - Coded Elevator Idle, Moving, and Door Open States
+- Helped with coding of the Fault states
+- Coded the Motor, Door, ArrivalSensor, ElevatorButton, ElevatorLamp, and DirectionLamp Classes
+- Coded Scheduler receive, processFloor, processElevator, serviceElevatorDoorOpen, serviceElevatorDoorClose
+- Helped with all service states and ensured multithreading capabilities
+- Inserted ElevatorGUI into the scheduler
+- Coded ElevatorInfo class
+- Coded Unit Tests for ElevatorPacket and FloorPacket Classes
+- Coded the Unit Tests for the receive, processFloor, processElevator states of the scheduler
+- Created Class Diagram
+- Helped with the coding of the Fault States
+- Helped with the building of our state diagrams
+- Helped with the building of our sequence diagram
 
 ##### Sanskar : 101189876 
 - Created Elevator State Machine
