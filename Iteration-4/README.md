@@ -2,42 +2,8 @@
 
 # ======= Final Project =======
 
-## Files included:
-##### Elevator_State
-An enumeration file to enumerate the states of the elevator.
-
-##### Elevator
-Holds Elevator state based control object.
-Holds the Elevator boundary objects.
-
-##### ElevatorGUI
-Holds the GUI for the elevator subsystem.
-
-##### ElevatorPacket
-Holds the application logic object to enable communication between the scheduler and elevator.
-
-##### Floor
-Holds the Floor periodic control object.
-Holds the Floor boundary objects.
-Holds the UserInput entity object.
-
-##### FloorPacket
-Holds the application logic object to enable communication between the scheduler and floor.
-
-##### Scheduler_State
-An enumeration file to enumerate the states of the scheduler.
-
-##### Scheduler
-Holds the Scheduler state based coordinator control object.
-
-##### Unit Tests
-A test for all classes within the project are in the `tests` folder.
-The names of the tests match the class name that they are testing
-
 # Setup and Test Instructions
 ### Adding Files to ecplipse
-Unzip the Project Submission folder. Within the folder should be a folder named `Eclipse`, to access this folder in eclipse you should start eclipse and then set your workspace to the location of the `Eclipse` folder.
-##### If this does not work these are the alternative steps to follow:
 1. Start a new project in Eclipse with any name
 2. Delete the `module-info` folder/file
 3. Locate the folder of this new project on your computer
@@ -72,6 +38,38 @@ The following three files must have the constants matching eachother
 
 ##### Scheduler.java
 - Edit the constant `NUMBER_OF_FLOORS` at the top of the file to desired number of floors
+
+## Files included:
+##### Elevator_State
+An enumeration file to enumerate the states of the elevator.
+
+##### Elevator
+Holds Elevator state based control object.
+Holds the Elevator boundary objects.
+
+##### ElevatorGUI
+Holds the GUI for the elevator subsystem.
+
+##### ElevatorPacket
+Holds the application logic object to enable communication between the scheduler and elevator.
+
+##### Floor
+Holds the Floor periodic control object.
+Holds the Floor boundary objects.
+Holds the UserInput entity object.
+
+##### FloorPacket
+Holds the application logic object to enable communication between the scheduler and floor.
+
+##### Scheduler_State
+An enumeration file to enumerate the states of the scheduler.
+
+##### Scheduler
+Holds the Scheduler state based coordinator control object.
+
+##### Unit Tests
+A test for all classes within the project are in the `tests` folder.
+The names of the tests match the class name that they are testing
 
 # In-depth description about each file and their roles:
 ##### Diagrams 
