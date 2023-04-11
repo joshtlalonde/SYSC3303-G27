@@ -217,7 +217,7 @@ public class SchedulerTest extends junit.framework.TestCase {
 	    
 	    
 	    ArrayList<UserInput> passengers = new ArrayList<UserInput>();
-	    passengers.add(new UserInput(2, true, false));
+	    passengers.add(new UserInput(new Date(72), 0, false, 0, true, false));
 	    
 	    try {
 	    	ElevatorInfo elevator = new ElevatorInfo(1, 2, 5, true, passengers, Elevator_State.DOOR_OPEN, 69, InetAddress.getLocalHost());
@@ -235,8 +235,8 @@ public class SchedulerTest extends junit.framework.TestCase {
     public void testServiceElevatorDoorClose() {
 	    Scheduler scheduler = new Scheduler();
 	    ArrayList<UserInput> passengers = new ArrayList<UserInput>();
-	    passengers.add(new UserInput(2, true, false));
-	    passengers.add(new UserInput(2, true, false));
+	    passengers.add(new UserInput(new Date(72), 0, false, 0, true, false));
+            passengers.add(new UserInput(new Date(100), 1, false, 2, false, true));
 	    ElevatorInfo elevatorInfo = null;
 	    try {
 	    	ElevatorInfo elevator = new ElevatorInfo(1, 2, 5, true, passengers, Elevator_State.DOOR_CLOSE, 69, InetAddress.getLocalHost());
