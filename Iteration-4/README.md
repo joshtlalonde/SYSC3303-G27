@@ -139,7 +139,7 @@ The `tests` folder contains the different Unit Test files that are used to ensur
  - Aided with Scheduler State Machine
  - Aided with Project Class Diagram
  - Created Sequence Diagram 
- - Helped Code Scheduler Algorthims: MovingUp, MovingDown, Stopped, DoorOpen, DoorClosed
+ - Helped Code Scheduler Algorithms: MovingUp, MovingDown, Stopped, DoorOpen, DoorClosed
   
 ##### Sanya : 101205395
 - Helped with Class diagrams.
