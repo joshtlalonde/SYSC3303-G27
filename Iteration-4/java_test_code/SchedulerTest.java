@@ -145,6 +145,25 @@ public class SchedulerTest extends junit.framework.TestCase {
     
 
     public void testServiceElevatorIdle() {
+    	Scheduler scheduler = new Scheduler();
+    	ElevatorInfo elevatorInfo = null;
+    	ElevatorInfo elevator = new ElevatorInfo();
+    	
+    	try {
+			elevatorInfo = new ElevatorInfo(1, 2, 5, true, new ArrayList<UserInput>(), Elevator_State.IDLE, 69, InetAddress.getLocalHost());
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	elevator = scheduler.serviceElevatorIdle(elevatorInfo);
+    	
+    	assertEquals(elevator.getCurrentFloor(), 2);
+    	assertEquals(elevator.getCurrentState(), Elevator_State.IDLE);
+    	assertEquals(elevator.getDestinationFloor(), -1);
+    	
+    	
+    	scheduler.getReceiveSocket().close();
+    	
 
     }
 
