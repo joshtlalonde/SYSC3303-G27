@@ -129,9 +129,11 @@ The `tests` folder contains the different Unit Test files that are used to ensur
  - Aided with Scheduler State Machine
   
 ##### Sanya : 101205395
-- Helped with UML diagrams
+- Helped with Class diagrams
 - Helped with the code
 - Aided in creation and editing of UML diagrams
+- Created unit tests for Floor.java
+- Created unit tests for Scheduler.java
 
  
 ##### Partha : 101191302
