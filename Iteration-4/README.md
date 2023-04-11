@@ -139,9 +139,12 @@ The `tests` folder contains the different Unit Test files that are used to ensur
   
 ##### Jakob : 101201314 
  - Coded GUI, particularly GUI operation
- - Coded SchedulerTest stopped, idle and moving unit tests
+ - Coded SchedulerTest Stopped, Idle and moving unit tests
  - Aided with Elevator State Machine
  - Aided with Scheduler State Machine
+ - Aided with Project Class Diagram
+ - Created Sequence Diagram 
+ - Helped Code Scheduler Algorthims: MovingUp, MovingDown, Stopped, DoorOpen, DoorClosed
   
 ##### Sanya : 101205395
 - Helped with Class diagrams
