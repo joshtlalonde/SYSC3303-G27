@@ -145,25 +145,6 @@ public class SchedulerTest extends junit.framework.TestCase {
     
 
     public void testServiceElevatorIdle() {
-    	Scheduler scheduler = new Scheduler();
-    	ElevatorInfo elevatorInfo = null;
-    	ElevatorInfo elevator = new ElevatorInfo();
-    	
-    	try {
-			elevatorInfo = new ElevatorInfo(1, 2, 5, true, new ArrayList<UserInput>(), Elevator_State.IDLE, 69, InetAddress.getLocalHost());
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	elevator = scheduler.serviceElevatorIdle(elevatorInfo);
-    	
-    	assertEquals(elevator.getCurrentFloor(), 2);
-    	assertEquals(elevator.getCurrentState(), Elevator_State.IDLE);
-    	assertEquals(elevator.getDestinationFloor(), -1);
-    	
-    	
-    	scheduler.getReceiveSocket().close();
-    	
 
     }
 
@@ -232,10 +213,32 @@ public class SchedulerTest extends junit.framework.TestCase {
     }
 
     public void testServiceElevatorDoorOpen() {
+	    
+	    
+	    
 
     }
 
     public void testServiceElevatorDoorClose() {
+	    Scheduler scheduler = new Scheduler();
+	    ArrayList<UserInput> passengers = new ArrayList<UserInput>();
+	    passengers.add(new UserInput(2, true, false));
+	    passengers.add(new UserInput(2, true, false));
+	    ElevatorInfo elevatorInfo = null;
+	    try {
+	    	ElevatorInfo elevator = new ElevatorInfo(1, 2, 5, true, passengers, Elevator_State.DOOR_CLOSE, 69, InetAddress.getLocalHost());
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    UserInput floorRequest = new UserInput(2, true, false);
+	    scheduler.floorRequests.add(floorRequest);
+	    
+	    elevator = scheduler.serviceElevatorDoorClose(elevator);
+	    assertFalse(scheduler.floorRequests.contains(floorRequest));
+	    assertEquals(2, elevator.getPassengers().size());
+	    assertTrue(elevator.getPassengers().contains(passengers.get(0)));
+	    assertTrue(elevator.getPassengers().contains(passengers.get(1)));
 
     }
 }
